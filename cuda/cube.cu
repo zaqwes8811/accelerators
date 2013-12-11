@@ -1,11 +1,14 @@
-﻿#include <stdio.h>
+ #include <stdio.h>
 
 __global__ void cube(float * d_out, float * d_in){
 	// Todo: Fill in this function
+  int idx = threadIdx.x;
+  float value = d_in[idx];
+  d_out[idx] = value*value*value;
 }
 
 int main(int argc, char ** argv) {
-	const int ARRAY_SIZE = 64;
+	const int ARRAY_SIZE = 96;
 	const int ARRAY_BYTES = ARRAY_SIZE * sizeof(float);
 
 	// generate the input array on the host
