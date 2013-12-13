@@ -1,16 +1,27 @@
-# Compiled Object files
-*.slo
-*.lo
-*.o
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-
+*.beam
+*.cache
+*.dep
+*.dll
 *.exe
+*.exe.*
+*.idb
+*.ilk
+*.lastbuildstate
+*.log
+*.manifest
+*.ncb
+*.o
+*.o.d
 *.obj
+*.opensdf
+*.pch
+*.pdb
+*.pyc
+*.res
+*.sdf
+*.tlog
+*.suo
+*BuildLog.htm
+*~
+/deployer/dist/*
+*.ipch
