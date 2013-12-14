@@ -2,6 +2,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
 
+
 #include "utils.h"
 
 void compareImages(std::string reference_filename, std::string test_filename, 

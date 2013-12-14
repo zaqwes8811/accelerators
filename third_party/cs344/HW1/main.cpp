@@ -1,5 +1,8 @@
 //Udacity HW1 Solution
 
+// http://msdn.microsoft.com/en-us/library/9yb4317s.aspx
+// http://stackoverflow.com/questions/8888111/nodefaultlib-nightmare-in-vs2010-c-project-links-fine-in-debug-cant-find-a
+
 #include <iostream>
 #include "timer.h"
 #include "utils.h"
