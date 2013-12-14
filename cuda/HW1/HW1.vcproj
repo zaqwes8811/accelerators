@@ -437,7 +437,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="D:\home\third_party\opencv\build\include;&quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include&quot;"
+				AdditionalIncludeDirectories="D:\home\third_party\opencv2.3.1\opencv\build\include;&quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include&quot;"
 				PreprocessorDefinitions="WIN64;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -456,10 +456,168 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cudart.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\IlmImf.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\IlmImfd.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\libjasper.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\libjasperd.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\libjpeg.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\libjpegd.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\libpng.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\libpngd.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\libtiff.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\libtiffd.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_calib3d247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_calib3d247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_contrib247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_contrib247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_core247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_core247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_features2d247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_features2d247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_flann247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_flann247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_gpu247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_gpu247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_highgui247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_highgui247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_imgproc247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_imgproc247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_legacy247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_legacy247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_ml247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_ml247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_nonfree247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_nonfree247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_objdetect247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_objdetect247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_ocl247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_ocl247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_photo247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_photo247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_stitching247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_stitching247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_superres247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_superres247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_ts247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_ts247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_video247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_video247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_videostab247.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\opencv_videostab247d.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\zlib.lib D:\home\third_party\opencv\build\x64\vc10\staticlib\zlibd.lib"
+				AdditionalDependencies="cudart.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_features2d231d.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_highgui231d.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_core231d.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_imgproc231d.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_ml231d.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_objdetect231d.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_video231d.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_contrib231d.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_calib3d231d.lib"
 				AdditionalLibraryDirectories="&quot;$(CUDA_PATH_V5_5)\lib\$(PlatformName)&quot;"
-				IgnoreDefaultLibraryNames=""
+				IgnoreDefaultLibraryNames="LIBCMT.lib"
 				GenerateDebugInformation="true"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="echo copy &quot;$(CUDA_PATH_V5_5)\bin\cudart*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(CUDA_PATH_V5_5)\bin\cudart*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
+			/>
+		</Configuration>
+		<Configuration
+			Name="release_x64|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			CharacterSet="2"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="Cudart Build Rule"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				EnableIntrinsicFunctions="true"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="cudart.lib"
+				AdditionalLibraryDirectories="&quot;$(CUDA_PATH_V5_5)\lib\$(PlatformName)&quot;"
+				GenerateDebugInformation="true"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="echo copy &quot;$(CUDA_PATH_V5_5)\bin\cudart*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;copy &quot;$(CUDA_PATH_V5_5)\bin\cudart*.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
+			/>
+		</Configuration>
+		<Configuration
+			Name="release_x64|x64"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			CharacterSet="2"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="Cudart Build Rule"
+				TargetMachinePlatform="1"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="D:\home\third_party\opencv2.3.1\opencv\build\include;&quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include&quot;"
+				PreprocessorDefinitions="WIN64;NDEBUG;_CONSOLE"
+				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="true"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="cudart.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_features2d231.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_highgui231.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_core231.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_imgproc231.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_ml231.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_objdetect231.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_video231.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_contrib231.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_calib3d231.lib"
+				AdditionalLibraryDirectories="&quot;$(CUDA_PATH_V5_5)\lib\$(PlatformName)&quot;"
+				IgnoreDefaultLibraryNames="MSVCRT.lib"
+				GenerateDebugInformation="true"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -504,6 +662,14 @@
 			</File>
 			<File
 				RelativePath="..\..\third_party\cs344\HW1\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\third_party\cs344\HW1\reference_calc.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\third_party\cs344\HW1\student_func.cu"
 				>
 			</File>
 			<File
