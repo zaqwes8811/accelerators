@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="sln-vs08-sp1"
-	ProjectGUID="{FCAE79FE-0D86-4B96-B234-227AC28FE66A}"
-	RootNamespace="sln_vs08_sp1"
+	Name="HW1"
+	ProjectGUID="{F949AC01-2509-4AF5-900A-5968977E5B55}"
+	RootNamespace="HW1"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -334,7 +334,7 @@
 	</References>
 	<Files>
 		<Filter
-			Name="src"
+			Name="Source Files"
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
@@ -342,21 +342,19 @@
 				RelativePath=".\kernel.cu"
 				>
 			</File>
-			<File
-				RelativePath="..\src\hw1\reference_hw1.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
-			Name="tools"
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl;inc;xsd"
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			>
+		</Filter>
+		<Filter
+			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
-		<File
-			RelativePath="..\src\hw1\reference_main.cpp"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
