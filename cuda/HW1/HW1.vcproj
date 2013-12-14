@@ -339,7 +339,39 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\kernel.cu"
+				RelativePath="..\..\third_party\cs344\HW1\compare.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\third_party\cs344\HW1\compare.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\third_party\cs344\HW1\HW1.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\third_party\cs344\HW1\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\third_party\cs344\HW1\reference_calc.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\third_party\cs344\HW1\reference_calc.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\third_party\cs344\HW1\student_func.cu"
+				>
+			</File>
+			<File
+				RelativePath="..\..\third_party\cs344\HW1\timer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\third_party\cs344\HW1\utils.h"
 				>
 			</File>
 		</Filter>

@@ -338,14 +338,6 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath=".\kernel.cu"
-				>
-			</File>
-			<File
-				RelativePath="..\src\hw1\reference_hw1.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="tools"
@@ -353,10 +345,6 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
-		<File
-			RelativePath="..\src\hw1\reference_main.cpp"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
