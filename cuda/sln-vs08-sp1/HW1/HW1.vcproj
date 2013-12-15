@@ -594,7 +594,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="D:\home\third_party\opencv2.3.1\opencv\build\include;&quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include&quot;"
+				AdditionalIncludeDirectories="D:\home\third_party\opencv2.3.1\opencv\build\include;&quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include&quot;;&quot;D:\home\lugansky-igor\parallel-computing\third_party\gmock-1.6.0\fused-src&quot;"
 				PreprocessorDefinitions="WIN64;NDEBUG;_CONSOLE"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -652,6 +652,10 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath="..\..\src\hw1\hw1_test.cc"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="third_party"
@@ -674,10 +678,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\third_party\cs344\HW1\main.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\third_party\cs344\HW1\reference_calc.cpp"
 					>
 				</File>
@@ -690,11 +690,19 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\third_party\cs344\HW1\utils.cc"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\third_party\cs344\HW1\utils.h"
 					>
 				</File>
 			</Filter>
 		</Filter>
+		<File
+			RelativePath="..\..\src\launcher.cc"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
