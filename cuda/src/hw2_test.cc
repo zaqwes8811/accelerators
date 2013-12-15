@@ -1,22 +1,22 @@
 //Udacity HW2 Driver
 
 #include <iostream>
-#include "timer.h"
-#include "utils.h"
+#include "cs344/reuse/timer.h"
+#include "cs344/reuse/utils.h"
 #include <string>
 #include <stdio.h>
 
 // Third party
 #include <gtest/gtest.h>
 
-#include "reference_calc.h"
-#include "compare.h"
+#include "cs344/summary/reference_calc.h"
+#include "cs344/reuse/compare.h"
 
 //include the definitions of the above functions for this homework
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
-#include "utils.h"
+#include "cs344/reuse/utils.h"
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <string>

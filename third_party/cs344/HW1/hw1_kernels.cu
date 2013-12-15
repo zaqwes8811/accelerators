@@ -32,7 +32,7 @@
 //so that the entire image is processed.
 
 //#include "reference_calc.cpp"
-#include "utils.h"
+#include "cs344/reuse/utils.h"
 #include <stdio.h>
 
 __global__

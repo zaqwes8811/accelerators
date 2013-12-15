@@ -578,6 +578,7 @@
 			/>
 			<Tool
 				Name="Cudart Build Rule"
+				Include="D:\home\lugansky-igor\parallel-computing\third_party\gmock-1.6.0\fused-src;D:\home\lugansky-igor\parallel-computing\third_party"
 				TargetMachinePlatform="1"
 			/>
 			<Tool
@@ -653,7 +654,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\src\hw1\hw1_test.cc"
+				RelativePath="..\..\src\hw1_test.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\hw2_test.cc"
 				>
 			</File>
 		</Filter>
@@ -681,10 +686,6 @@
 					RelativePath="..\..\..\third_party\cs344\HW2\hw2_kernels.cu"
 					>
 				</File>
-				<File
-					RelativePath="..\..\..\third_party\cs344\HW2\hw2_test.cc"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="summary"
@@ -702,11 +703,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\third_party\cs344\reuse\compare_.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\third_party\cs344\reuse\utils.cc"
+					RelativePath="..\..\..\third_party\cs344\reuse\utils.h"
 					>
 				</File>
 			</Filter>
