@@ -19,10 +19,13 @@ void referenceCalculation(const uchar4* const rgbaImage,
 }
 
 
+int makeRollIdx(const int r, const int c, const int rowSize) {
+  return r * rowSize + c;
+}
 
 
 ///@HW2
-static void channelConvolution(
+static void channelConvolutionRefa(
     const unsigned char* const channel,
     unsigned char* const channelBlurred,
     const size_t kImgCountRows, const size_t kImgCountColumns,
@@ -52,20 +55,22 @@ static void channelConvolution(
           int takedPixelIdxUnroll = takedPixelRowIdx * kImgCountColumns + takedPixelColumnIdx;
           
           float pixelValue = static_cast<float>(channel[takedPixelIdxUnroll]);
-          float filterValue = filter[(filterRowIdx + kHalfFilterSize) * filterWidth + filterColumnIdx + kHalfFilterSize];
+          
+          int takedFilterIdx = makeRollIdx((filterRowIdx + kHalfFilterSize), (filterColumnIdx + kHalfFilterSize), filterWidth);
+          float filterValue = filter[takedFilterIdx];
 
           result += pixelValue * filterValue;
           
         }
       }
       ///
-
-      channelBlurred[imgRowIdx * kImgCountColumns + imgColumnIdx] = result;
+      int resultIdx = makeRollIdx(imgRowIdx, imgColumnIdx, kImgCountColumns);
+      channelBlurred[resultIdx] = result;
     }
   }
 }
 
-static void channelConvolutionRefa(const unsigned char* const channel,
+static void channelConvolution(const unsigned char* const channel,
                         unsigned char* const channelBlurred,
                         const size_t kImgCountRows, const size_t kImgCountColumns,
                         const float *filter, const int filterWidth)
