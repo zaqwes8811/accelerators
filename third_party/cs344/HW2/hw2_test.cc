@@ -6,6 +6,9 @@
 #include <string>
 #include <stdio.h>
 
+// Third party
+#include <gtest/gtest.h>
+
 #include "reference_calc.h"
 #include "compare.h"
 
@@ -29,13 +32,16 @@ void allocateMemoryAndCopyToGPU(const size_t numRowsImage, const size_t numColsI
 
 /*******  Begin main *********/
 
-int main(int argc, char **argv) {
+TEST(HW2, Ref) {
   uchar4 *h_inputImageRGBA,  *d_inputImageRGBA;
   uchar4 *h_outputImageRGBA, *d_outputImageRGBA;
   unsigned char *d_redBlurred, *d_greenBlurred, *d_blueBlurred;
 
   float *h_filter;
   int    filterWidth;
+
+  char **argv;
+  int argc = 4;
 
   std::string input_file;
   std::string output_file;
@@ -56,9 +62,9 @@ int main(int argc, char **argv) {
 	  reference_file = "HW2_reference.png";
 	  break;
 	case 4:
-	  input_file  = std::string(argv[1]);
-      output_file = std::string(argv[2]);
-	  reference_file = std::string(argv[3]);
+	  input_file  = std::string("../../third_party/cs344/hw2/cinque_terre_small.jpg");
+      output_file = std::string("../../third_party/cs344/hw2/o.jpg");
+	  reference_file = std::string("../../third_party/cs344/hw2/cinque_terre_ref.jpg");
 	  break;
 	case 6:
 	  useEpsCheck=true;
@@ -118,5 +124,5 @@ int main(int argc, char **argv) {
 
   cleanUp();
 
-  return 0;
+  //return 0;
 }
