@@ -21,14 +21,10 @@
 #include <cuda_runtime.h>
 
 // App
-#include "timer.h"
 #include "reference_calc.h"
 #include "compare.h"
 
-void your_rgba_to_greyscale(const uchar4 * const h_rgbaImage, 
-                            uchar4 * const d_rgbaImage,
-                            unsigned char* const d_greyImage, 
-                            size_t numRows, size_t numCols);
+
 
 //include the definitions of the above functions for this homework
 

@@ -594,7 +594,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="D:\home\third_party\opencv2.3.1\opencv\build\include;&quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include&quot;;&quot;D:\home\lugansky-igor\parallel-computing\third_party\gmock-1.6.0\fused-src&quot;"
+				AdditionalIncludeDirectories="D:\home\third_party\opencv2.3.1\opencv\build\include;&quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include&quot;;&quot;D:\home\lugansky-igor\parallel-computing\third_party\gmock-1.6.0\fused-src&quot;;&quot;D:\home\lugansky-igor\parallel-computing\third_party&quot;"
 				PreprocessorDefinitions="WIN64;NDEBUG;_CONSOLE"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"

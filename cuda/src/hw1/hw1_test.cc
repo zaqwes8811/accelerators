@@ -1,6 +1,14 @@
 
-// Other
+// Third party
 #include <gtest/gtest.h>
+#include "cs344/hw1/utils.h"
+#include "cs344/hw1/reference_calc.h"
+#include "cs344/hw1/compare.h"
+
+void your_rgba_to_greyscale(const uchar4 * const h_rgbaImage, 
+                            uchar4 * const d_rgbaImage,
+                            unsigned char* const d_greyImage, 
+                            size_t numRows, size_t numCols);
 
 TEST(HW1, Base) {
   uchar4        *h_rgbaImage, *d_rgbaImage;
