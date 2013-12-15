@@ -100,7 +100,7 @@
 
 //****************************************************************************
 
-#include "utils.h"
+#include "cs344/reuse/utils.h"
 
 __global__
 void gaussian_blur(const unsigned char* const inputChannel,
@@ -257,7 +257,7 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA, uchar4 * const d_
 
 //Free all the memory that we allocated
 //TODO: make sure you free any arrays that you allocated
-void cleanup() {
+static void cleanup() {
   checkCudaErrors(cudaFree(d_red));
   checkCudaErrors(cudaFree(d_green));
   checkCudaErrors(cudaFree(d_blue));

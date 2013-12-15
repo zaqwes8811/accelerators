@@ -670,31 +670,7 @@
 				Name="hw1"
 				>
 				<File
-					RelativePath="..\..\..\third_party\cs344\HW1\compare.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\third_party\cs344\HW1\compare.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\third_party\cs344\HW1\reference_calc.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\third_party\cs344\HW1\student_func.cu"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\third_party\cs344\HW1\timer.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\third_party\cs344\HW1\utils.cc"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\third_party\cs344\HW1\utils.h"
+					RelativePath="..\..\..\third_party\cs344\HW1\hw1_kernels.cu"
 					>
 				</File>
 			</Filter>
@@ -710,15 +686,11 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\third_party\cs344\HW2\hw2_kernels.cu"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\third_party\cs344\HW2\hw2_test.cc"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\third_party\cs344\HW2\reference_calc.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\third_party\cs344\HW2\student_func_.cu"
 					>
 				</File>
 				<File
@@ -727,6 +699,30 @@
 				</File>
 				<File
 					RelativePath="..\..\..\third_party\cs344\HW2\utils.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="summary"
+				>
+				<File
+					RelativePath="..\..\..\third_party\cs344\summary\reference_calc.cc"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="reuse"
+				>
+				<File
+					RelativePath="..\..\..\third_party\cs344\reuse\compare.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\third_party\cs344\reuse\compare_.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\third_party\cs344\reuse\utils.cc"
 					>
 				</File>
 			</Filter>
