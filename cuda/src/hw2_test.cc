@@ -243,16 +243,22 @@ TEST(HW2, Ref) {
 
   postProcess(output_file, h_outputImageRGBA);
 
+  // ref.
   referenceCalculation_(h_inputImageRGBA, h_outputImageRGBA,
                        numRows(), numCols(),
                        h_filter, filterWidth);
-
   postProcess(reference_file, h_outputImageRGBA);
+
+  // to refactoring
+  referenceCalculationRefactoring(h_inputImageRGBA, h_outputImageRGBA,
+                       numRows(), numCols(),
+                       h_filter, filterWidth);
+  postProcess(reference_file+".jpg", h_outputImageRGBA);
 
     //  Cheater easy way with OpenCV
     //generateReferenceImage(input_file, reference_file, filterWidth);
 
-  compareImages(reference_file, output_file, useEpsCheck, perPixelError, globalError);
+  compareImages(reference_file, reference_file+".jpg", useEpsCheck, perPixelError, globalError);
 
   checkCudaErrors(cudaFree(d_redBlurred));
   checkCudaErrors(cudaFree(d_greenBlurred));
