@@ -29,11 +29,11 @@ static void channelConvolutionRefa(
     const unsigned char* const channel,
     unsigned char* const channelBlurred,
     const size_t kImgCountRows, const size_t kImgCountColumns,
-    const float *filter, const int filterWidth)
+    const float *filter, const int kFilterWidth)
   {
-  //Dealing with an even width filter is trickier
-  assert(filterWidth % 2 == 1);
-  int const kHalfFilterSize = filterWidth/2;
+  //Dealing with an even width !!filter is trickier
+  assert(kFilterWidth % 2 == 1);
+  int const kHalfFilterSize = kFilterWidth/2;
   using std::min;
   using std::max;
 
@@ -49,15 +49,21 @@ static void channelConvolutionRefa(
         
           //Find the global image position for this filter position
           //clamp to boundary of the image
-		      int takedPixelRowIdx = min(max(imgRowIdx + filterRowIdx, 0), static_cast<int>(kImgCountRows - 1));
-          int takedPixelColumnIdx = min(max(imgColumnIdx + filterColumnIdx, 0), static_cast<int>(kImgCountColumns - 1));
+		      int currentPixelRowIdx = min(max(imgRowIdx + filterRowIdx, 0), static_cast<int>(kImgCountRows - 1));
+          int currentPixelColumnIdx = min(max(imgColumnIdx + filterColumnIdx, 0), static_cast<int>(kImgCountColumns - 1));
 
-          int takedPixelIdxUnroll = takedPixelRowIdx * kImgCountColumns + takedPixelColumnIdx;
+          int currentPixelIdx = makeRollIdx(
+              currentPixelRowIdx, currentPixelColumnIdx, 
+              kImgCountColumns);
           
-          float pixelValue = static_cast<float>(channel[takedPixelIdxUnroll]);
+          float pixelValue = static_cast<float>(channel[currentPixelIdx]);
           
-          int takedFilterIdx = makeRollIdx((filterRowIdx + kHalfFilterSize), (filterColumnIdx + kHalfFilterSize), filterWidth);
-          float filterValue = filter[takedFilterIdx];
+          // Filter Value
+          int currentFilterIdx = makeRollIdx(
+              (filterRowIdx + kHalfFilterSize), (filterColumnIdx + kHalfFilterSize), 
+              kFilterWidth);
+              
+          float filterValue = filter[currentFilterIdx];
 
           result += pixelValue * filterValue;
           
@@ -73,25 +79,25 @@ static void channelConvolutionRefa(
 static void channelConvolution(const unsigned char* const channel,
                         unsigned char* const channelBlurred,
                         const size_t kImgCountRows, const size_t kImgCountColumns,
-                        const float *filter, const int filterWidth)
+                        const float *filter, const int kFilterWidth)
 {
   //Dealing with an even width filter is trickier
-  assert(filterWidth % 2 == 1);
+  assert(kFilterWidth % 2 == 1);
 
   //For every pixel in the image
   for (int r = 0; r < (int)kImgCountRows; ++r) {
     for (int c = 0; c < (int)kImgCountColumns; ++c) {
       float result = 0.f;
       //For every value in the filter around the pixel (c, r)
-      for (int filterRowIdx = -filterWidth/2; filterRowIdx <= filterWidth/2; ++filterRowIdx) {
-        for (int filterColumnIdx = -filterWidth/2; filterColumnIdx <= filterWidth/2; ++filterColumnIdx) {
+      for (int filterRowIdx = -kFilterWidth/2; filterRowIdx <= kFilterWidth/2; ++filterRowIdx) {
+        for (int filterColumnIdx = -kFilterWidth/2; filterColumnIdx <= kFilterWidth/2; ++filterColumnIdx) {
           //Find the global image position for this filter position
           //clamp to boundary of the image
-		      int takedPixelRowIdx = std::min(std::max(r + filterRowIdx, 0), static_cast<int>(kImgCountRows - 1));
-          int takedPixelColumnIdx = std::min(std::max(c + filterColumnIdx, 0), static_cast<int>(kImgCountColumns - 1));
+		      int currentPixelRowIdx = std::min(std::max(r + filterRowIdx, 0), static_cast<int>(kImgCountRows - 1));
+          int currentPixelColumnIdx = std::min(std::max(c + filterColumnIdx, 0), static_cast<int>(kImgCountColumns - 1));
 
-          float pixelValue = static_cast<float>(channel[takedPixelRowIdx * kImgCountColumns + takedPixelColumnIdx]);
-          float filterValue = filter[(filterRowIdx + filterWidth/2) * filterWidth + filterColumnIdx + filterWidth/2];
+          float pixelValue = static_cast<float>(channel[currentPixelRowIdx * kImgCountColumns + currentPixelColumnIdx]);
+          float filterValue = filter[(filterRowIdx + kFilterWidth/2) * kFilterWidth + filterColumnIdx + kFilterWidth/2];
 
           result += pixelValue * filterValue;
         }
@@ -104,7 +110,7 @@ static void channelConvolution(const unsigned char* const channel,
 
 void referenceCalculation_(const uchar4* const rgbaImage, uchar4 *const outputImage,
                           size_t kImgCountRows, size_t kImgCountColumns,
-                          const float* const filter, const int filterWidth)
+                          const float* const filter, const int kFilterWidth)
 {
   unsigned char *red   = new unsigned char[kImgCountRows * kImgCountColumns];
   unsigned char *blue  = new unsigned char[kImgCountRows * kImgCountColumns];
@@ -124,9 +130,9 @@ void referenceCalculation_(const uchar4* const rgbaImage, uchar4 *const outputIm
   }
 
   //Now we can do the convolution for each of the color channels
-  channelConvolution(red, redBlurred, kImgCountRows, kImgCountColumns, filter, filterWidth);
-  channelConvolution(green, greenBlurred, kImgCountRows, kImgCountColumns, filter, filterWidth);
-  channelConvolution(blue, blueBlurred, kImgCountRows, kImgCountColumns, filter, filterWidth);
+  channelConvolution(red, redBlurred, kImgCountRows, kImgCountColumns, filter, kFilterWidth);
+  channelConvolution(green, greenBlurred, kImgCountRows, kImgCountColumns, filter, kFilterWidth);
+  channelConvolution(blue, blueBlurred, kImgCountRows, kImgCountColumns, filter, kFilterWidth);
 
   //now recombine into the output image - Alpha is 255 for no transparency
   for (size_t i = 0; i < kImgCountRows * kImgCountColumns; ++i) {
@@ -145,7 +151,7 @@ void referenceCalculation_(const uchar4* const rgbaImage, uchar4 *const outputIm
 
 void referenceCalculationRefactoring(const uchar4* const rgbaImage, uchar4 *const outputImage,
                           size_t kImgCountRows, size_t kImgCountColumns,
-                          const float* const filter, const int filterWidth)
+                          const float* const filter, const int kFilterWidth)
 {
   unsigned char *red   = new unsigned char[kImgCountRows * kImgCountColumns];
   unsigned char *blue  = new unsigned char[kImgCountRows * kImgCountColumns];
@@ -165,9 +171,9 @@ void referenceCalculationRefactoring(const uchar4* const rgbaImage, uchar4 *cons
   }
 
   //Now we can do the convolution for each of the color channels
-  channelConvolutionRefa(red, redBlurred, kImgCountRows, kImgCountColumns, filter, filterWidth);
-  channelConvolutionRefa(green, greenBlurred, kImgCountRows, kImgCountColumns, filter, filterWidth);
-  channelConvolutionRefa(blue, blueBlurred, kImgCountRows, kImgCountColumns, filter, filterWidth);
+  channelConvolutionRefa(red, redBlurred, kImgCountRows, kImgCountColumns, filter, kFilterWidth);
+  channelConvolutionRefa(green, greenBlurred, kImgCountRows, kImgCountColumns, filter, kFilterWidth);
+  channelConvolutionRefa(blue, blueBlurred, kImgCountRows, kImgCountColumns, filter, kFilterWidth);
 
   //now recombine into the output image - Alpha is 255 for no transparency
   for (size_t i = 0; i < kImgCountRows * kImgCountColumns; ++i) {
