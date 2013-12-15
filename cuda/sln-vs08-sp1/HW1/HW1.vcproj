@@ -678,27 +678,11 @@
 				Name="hw2"
 				>
 				<File
-					RelativePath="..\..\..\third_party\cs344\HW2\compare.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\third_party\cs344\HW2\compare.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\third_party\cs344\HW2\hw2_kernels.cu"
 					>
 				</File>
 				<File
 					RelativePath="..\..\..\third_party\cs344\HW2\hw2_test.cc"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\third_party\cs344\HW2\timer.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\third_party\cs344\HW2\utils.h"
 					>
 				</File>
 			</Filter>
