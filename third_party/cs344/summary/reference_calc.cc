@@ -45,6 +45,7 @@ void channelConvolutionRefa(
   //For every pixel in the image
   for (int imgRowIdx = 0; imgRowIdx < (int)kImgCountRows; ++imgRowIdx) {
     for (int imgColumnIdx = 0; imgColumnIdx < (int)kImgCountColumns; ++imgColumnIdx) {
+
       float result = 0.f;
       
       ///
@@ -74,9 +75,9 @@ void channelConvolutionRefa(
           
         }
       }
-      ///
       int resultIdx = makeRollIdx(imgRowIdx, imgColumnIdx, kImgCountColumns);
       channelBlurred[resultIdx] = result;
+
     }
   }
 }
