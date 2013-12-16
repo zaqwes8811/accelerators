@@ -1,5 +1,10 @@
+#include "cs344/summary/reference_calc.h"
+
+// C++
 #include <algorithm>
 #include <cassert>
+
+// Third party
 // for uchar4 struct
 #include <cuda_runtime.h>
 
@@ -25,7 +30,7 @@ int makeRollIdx(const int r, const int c, const int rowSize) {
 
 
 ///@HW2
-static void channelConvolutionRefa(
+void channelConvolutionRefa(
     const unsigned char* const channel,
     unsigned char* const channelBlurred,
     const size_t kImgCountRows, const size_t kImgCountColumns,
