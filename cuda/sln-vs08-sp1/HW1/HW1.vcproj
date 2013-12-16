@@ -661,6 +661,10 @@
 				RelativePath="..\..\src\hw2_test.cc"
 				>
 			</File>
+			<File
+				RelativePath="..\..\src\xD_test.cc"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="third_party"
