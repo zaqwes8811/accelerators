@@ -29,49 +29,34 @@ int makeRollIdx(const int r, const int c, const int rowSize) {
 }
 
 void kernel_proto(
-    const unsigned char* const channel,
-    unsigned char* const channelBlurred,
-    int kImgCountRows, int kImgCountColumns,
+    const unsigned char* const IN,
+    unsigned char* const out,
+    int WIDTH_IMG, int HIGHT_IMG,
     const float* const filter, const int kFilterWidth,
-    int imgRowIdx, int imgColumnIdx) 
+    int gx, int gy) 
   {
-
-  int const kHalfFilterSize = kFilterWidth/2;
   using std::min;
   using std::max;
   float result = 0.f;
+  int resultIdx = gx * HIGHT_IMG + gy;
     
-  ///
-  //For every value in the filter around the pixel (imgColumnIdx, imgRowIdx)
-  for (int filterRowIdx = -kHalfFilterSize; filterRowIdx <= kHalfFilterSize; ++filterRowIdx) {
-    for (int filterColumnIdx = -kHalfFilterSize; filterColumnIdx <= kHalfFilterSize; ++filterColumnIdx) {
-    
-      //Find the global image position for this filter position
-      //clamp to boundary of the image
-      int currentPixelRowIdx = min(max(imgRowIdx + filterRowIdx, 0), 
-          static_cast<int>(kImgCountRows - 1));
-      int currentPixelColumnIdx = min(max(imgColumnIdx + filterColumnIdx, 0), 
-          static_cast<int>(kImgCountColumns - 1));
-
-      int currentPixelIdx = makeRollIdx(
-          currentPixelRowIdx, currentPixelColumnIdx, 
-          kImgCountColumns);
+  //For every value in the filter around the pixel (gy, gx)
+  for (int fx = -kFilterWidth/2; fx <= kFilterWidth/2; ++fx) {
+    for (int fy = -kFilterWidth/2; fy <= kFilterWidth/2; ++fy) {
+      int pixelX = min(max(gx + fx, 0), static_cast<int>(WIDTH_IMG - 1));
+      int pixelY = min(max(gy + fy, 0), static_cast<int>(HIGHT_IMG - 1));
+      int pixelIdxToRead = pixelX * HIGHT_IMG + pixelY;
+      float pixelValue = static_cast<float>(IN[pixelIdxToRead]);
       
-      float pixelValue = static_cast<float>(channel[currentPixelIdx]);
-      
-      // Filter Value
-      int currentFilterIdx = makeRollIdx(
-          (filterRowIdx + kHalfFilterSize), (filterColumnIdx + kHalfFilterSize), 
-          kFilterWidth);
-          
-      float filterValue = filter[currentFilterIdx];
+      int filterX = (fx + kFilterWidth/2);
+      int filterY = (fy + kFilterWidth/2);
+      int filterIdxToRead = filterX * kFilterWidth + filterY;
+      float filterValue = filter[filterIdxToRead];
 
       result += pixelValue * filterValue;
-      
     }
   }
-  int resultIdx = makeRollIdx(imgRowIdx, imgColumnIdx, kImgCountColumns);
-  channelBlurred[resultIdx] = result;
+  out[resultIdx] = result;
 }
 
 
