@@ -1,8 +1,8 @@
-
-
 // Third party
 #include <gtest/gtest.h>
 #include "cs344/summary/reference_calc.h"
+
+#include "cs344/HW2/hw2_kernels_cu.h"
 
 typedef unsigned char uint8_t;
 
@@ -46,5 +46,8 @@ TEST(xD, Base) {
     ROWS, COLUMNS,
     filter1D, FILTER_WIDTH);
 
-  // 
+  // CUDA
+  run_test_blur(
+      h_InImage1D, h_Outimage1D, ROWS, COLUMNS,
+      filter1D, FILTER_WIDTH);
 }

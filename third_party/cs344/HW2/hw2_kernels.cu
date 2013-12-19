@@ -100,7 +100,13 @@
 
 //****************************************************************************
 
+// Own
+#include "hw2_kernels_cu.h"
+
+// Third party
 #include "cs344/reuse/utils.h"
+
+
 
 __global__
 void gaussian_blur(const unsigned char* const inputChannel,
@@ -129,6 +135,23 @@ void gaussian_blur(const unsigned char* const inputChannel,
   // the value is out of bounds), you should explicitly clamp the neighbor values you read
   // to be within the bounds of the image. If this is not clear to you, then please refer
   // to sequential reference solution for the exact clamping semantics you should follow.
+}
+
+void run_test_blur(
+    const unsigned char* const inputChannel,
+    unsigned char* const outputChannel,
+    int numRows, int numCols,
+    const float* const filter, const int filterWidth) 
+  {
+  //You must fill in the correct sizes for the blockSize and gridSize
+  //currently only one block with one thread is being launched
+  const dim3 blockSize(1, numRows, 1);  //TODO
+  const dim3 gridSize( numCols, 1, 1);  //TODO
+  printf("%s = %i\n", "numCols", numCols);
+  printf("%s = %i\n", "numRows", numRows);
+  //rgba_to_greyscale<<<gridSize, blockSize>>>(d_rgbaImage, d_greyImage, numRows, numCols);
+  
+  cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
 }
 
 //This kernel takes in an image represented as a uchar4 and splits

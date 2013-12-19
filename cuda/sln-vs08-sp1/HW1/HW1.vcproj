@@ -690,6 +690,10 @@
 					RelativePath="..\..\..\third_party\cs344\HW2\hw2_kernels.cu"
 					>
 				</File>
+				<File
+					RelativePath="..\..\src\hw2_kernels_cu.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="summary"

@@ -12,7 +12,6 @@
 #include "cs344/summary/reference_calc.h"
 #include "cs344/reuse/compare.h"
 
-//include the definitions of the above functions for this homework
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
@@ -20,6 +19,9 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <string>
+
+//
+#include "cs344/HW2/hw2_kernels_cu.h"
 
 cv::Mat imageInputRGBA;
 cv::Mat imageOutputRGBA;
