@@ -115,6 +115,11 @@ void gaussian_blur(const unsigned char* const inputChannel,
                    const float* const filter, const int filterWidth)
 {
   // TODO
+  int x_pos = threadIdx.x;
+  int y_pos = threadIdx.y;
+
+  if (x_pos >= numRows || y_pos >= numCols) return;
+  outputChannel[y_pos * numCols + x_pos] = x_pos;
   
   // NOTE: Be sure to compute any intermediate results in floating point
   // before storing the final result as unsigned char.
@@ -135,6 +140,7 @@ void gaussian_blur(const unsigned char* const inputChannel,
   // the value is out of bounds), you should explicitly clamp the neighbor values you read
   // to be within the bounds of the image. If this is not clear to you, then please refer
   // to sequential reference solution for the exact clamping semantics you should follow.
+  //printf("%d = ", threadIdx.y);
 }
 
 void run_test_blur(
@@ -145,11 +151,14 @@ void run_test_blur(
   {
   //You must fill in the correct sizes for the blockSize and gridSize
   //currently only one block with one thread is being launched
-  const dim3 blockSize(1, numRows, 1);  //TODO
-  const dim3 gridSize( numCols, 1, 1);  //TODO
+  const dim3 blockSize(1, 1, 1);  //TODO
+  const dim3 gridSize( numRows, numCols, 1);  //TODO
   printf("%s = %i\n", "numCols", numCols);
   printf("%s = %i\n", "numRows", numRows);
-  //rgba_to_greyscale<<<gridSize, blockSize>>>(d_rgbaImage, d_greyImage, numRows, numCols);
+  gaussian_blur<<<gridSize, blockSize>>>(
+      inputChannel, outputChannel, 
+      numRows, numCols, 
+      filter, filterWidth);
   
   cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
 }
