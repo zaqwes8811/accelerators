@@ -119,7 +119,7 @@ void gaussian_blur(const unsigned char* const inputChannel,
   int y_pos = threadIdx.y;
 
   if (x_pos >= numRows || y_pos >= numCols) return;
-  outputChannel[y_pos * numCols + x_pos] = x_pos;
+  outputChannel[x_pos * numCols + y_pos] = x_pos;
   
   // NOTE: Be sure to compute any intermediate results in floating point
   // before storing the final result as unsigned char.
@@ -151,8 +151,10 @@ void run_test_blur(
   {
   //You must fill in the correct sizes for the blockSize and gridSize
   //currently only one block with one thread is being launched
-  const dim3 blockSize(1, 1, 1);  //TODO
-  const dim3 gridSize( numRows, numCols, 1);  //TODO
+  const dim3 gridSize(1, 1, 1);  //TODO
+
+  const dim3 blockSize(numRows, numCols, 1);  //TODO
+  
   printf("%s = %i\n", "numCols", numCols);
   printf("%s = %i\n", "numRows", numRows);
   gaussian_blur<<<gridSize, blockSize>>>(
@@ -160,7 +162,8 @@ void run_test_blur(
       numRows, numCols, 
       filter, filterWidth);
   
-  cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
+  cudaDeviceSynchronize(); 
+  checkCudaErrors(cudaGetLastError());
 }
 
 //This kernel takes in an image represented as a uchar4 and splits
