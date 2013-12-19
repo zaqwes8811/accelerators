@@ -12,47 +12,47 @@ TEST(xD, Base) {
   const size_t COLUMNS = 9;
   const size_t FILTER_WIDTH = 3;
   // Filter
-  float const filter2D[FILTER_WIDTH][FILTER_WIDTH] = {
+  float const FILTER_2D[FILTER_WIDTH][FILTER_WIDTH] = {
     {1, 1, 1},
     {1, 1, 1},
     {1, 1, 1}
   };
   float h_filter1D[FILTER_WIDTH * FILTER_WIDTH];
 
-  for (int r = 0; r < FILTER_WIDTH; r++) {
-    for (int c = 0; c < FILTER_WIDTH; c++) {
-      h_filter1D[r * FILTER_WIDTH + c] = 0.5f;
+  for (int x = 0; x < FILTER_WIDTH; x++) {
+    for (int y = 0; y < FILTER_WIDTH; y++) {
+      h_filter1D[x * FILTER_WIDTH + y] = FILTER_2D[x][y];
     }
   }
 
   // Image
-  uint8_t h_image2D[ROWS][COLUMNS];
+  uint8_t h_InImage2D[ROWS][COLUMNS];
   uint8_t h_OutImage2D[ROWS][COLUMNS];
-  uint8_t h_InImage1D[sizeof h_image2D];
+  uint8_t h_InImage1D[sizeof h_InImage2D];
 
-  uint8_t h_Outimage1D[sizeof h_image2D];
+  uint8_t h_OutImage1D[sizeof h_InImage2D];
 
   for (int r = 0; r < ROWS; r++) {
     for (int c = 0; c < COLUMNS; c++) {
-      h_image2D[r][c] = c;
+      h_InImage2D[r][c] = c;
       h_InImage1D[r * COLUMNS + c] = 1;
     }
   }
 
-  //EXPECT_EQ(h_image2D[4][3], h_InImage1D[4 * COLUMNS + 3]);
+  //EXPECT_EQ(h_InImage2D[4][3], h_InImage1D[4 * COLUMNS + 3]);
 
   /// /// ///
 
   // —читаем через ref-функцию
   channelConvolutionRefa(
     h_InImage1D,
-    h_Outimage1D,
+    h_OutImage1D,
     ROWS, COLUMNS,
     h_filter1D, FILTER_WIDTH);
 
   for (int r = 0; r < ROWS; r++) {
     for (int c = 0; c < COLUMNS; c++) {
-      unsigned int value = h_Outimage1D[r * COLUMNS + c];
+      unsigned int value = h_OutImage1D[r * COLUMNS + c];
       printf("%u ", value);
     }
     printf("\n");
@@ -83,11 +83,11 @@ TEST(xD, Base) {
       d_filter1D, FILTER_WIDTH);
 
   checkCudaErrors(
-    cudaMemcpy(h_Outimage1D, d_OutImage1D, sizeof(unsigned char) * numPixels, cudaMemcpyDeviceToHost));
+    cudaMemcpy(h_OutImage1D, d_OutImage1D, sizeof(unsigned char) * numPixels, cudaMemcpyDeviceToHost));
 
   for (int r = 0; r < ROWS; r++) {
     for (int c = 0; c < COLUMNS; c++) {
-      h_OutImage2D[r][c] = h_Outimage1D[r * COLUMNS + c];
+      h_OutImage2D[r][c] = h_OutImage1D[r * COLUMNS + c];
       printf("%d ", h_OutImage2D[r][c]);
     }
     printf("\n");
