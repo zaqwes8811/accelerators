@@ -27,6 +27,7 @@ TEST(xD, Base) {
 
   // Image
   uint8_t h_image2D[ROWS][COLUMNS];
+  uint8_t h_OutImage2D[ROWS][COLUMNS];
   uint8_t h_InImage1D[sizeof h_image2D];
 
   uint8_t h_Outimage1D[sizeof h_image2D];
@@ -76,6 +77,11 @@ TEST(xD, Base) {
   checkCudaErrors(
     cudaMemcpy(h_Outimage1D, d_OutImage1D, sizeof(unsigned char) * numPixels, cudaMemcpyDeviceToHost));
 
+  for (int r = 0; r < ROWS; r++) {
+    for (int c = 0; c < COLUMNS; c++) {
+      h_OutImage2D[r][c] = h_Outimage1D[r * COLUMNS + c];
+    }
+  }
 
 
   checkCudaErrors(cudaFree(d_filter1D));

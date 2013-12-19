@@ -112,6 +112,7 @@
 			/>
 			<Tool
 				Name="Cudart Build Rule"
+				Include="..\..\..\third_party"
 				GPUDebugInfo="true"
 				TargetMachinePlatform="1"
 			/>
@@ -128,10 +129,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="D:\home\third_party\opencv2.3.1\opencv\build\include;&quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include&quot;;&quot;D:\home\lugansky-igor\parallel-computing\third_party\gmock-1.6.0\fused-src&quot;;&quot;D:\home\lugansky-igor\parallel-computing\third_party&quot;"
 				PreprocessorDefinitions="WIN64;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -578,7 +580,7 @@
 			/>
 			<Tool
 				Name="Cudart Build Rule"
-				Include="D:\home\lugansky-igor\parallel-computing\third_party\gmock-1.6.0\fused-src;D:\home\lugansky-igor\parallel-computing\third_party"
+				Include="..\..\..\third_party"
 				TargetMachinePlatform="1"
 			/>
 			<Tool
