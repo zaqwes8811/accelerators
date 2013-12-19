@@ -153,7 +153,7 @@ void run_test_blur(
   //currently only one block with one thread is being launched
   const dim3 gridSize(1, 1, 1);  //TODO
 
-  const dim3 blockSize(numRows, numCols, 1);  //TODO
+  const dim3 blockSize(numRows*2, numCols, 1);  //TODO
   
   printf("%s = %i\n", "numCols", numCols);
   printf("%s = %i\n", "numRows", numRows);
