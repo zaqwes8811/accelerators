@@ -80,7 +80,9 @@ TEST(xD, Base) {
   for (int r = 0; r < ROWS; r++) {
     for (int c = 0; c < COLUMNS; c++) {
       h_OutImage2D[r][c] = h_Outimage1D[r * COLUMNS + c];
+      printf("%d ", h_OutImage2D[r][c]);
     }
+    printf("\n");
   }
 
 
