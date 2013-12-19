@@ -20,4 +20,9 @@ void channelConvolutionRefa(
     const size_t kImgCountRows, const size_t kImgCountColumns,
     const float *filter, const int kFilterWidth);
 
+void channelConvolution(const unsigned char* const channel,
+                        unsigned char* const channelBlurred,
+                        const size_t kImgCountRows, const size_t kImgCountColumns,
+                        const float *filter, const int kFilterWidth);
+
 #endif
