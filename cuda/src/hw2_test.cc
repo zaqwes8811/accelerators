@@ -156,7 +156,7 @@ void generateReferenceImage(std::string input_file, std::string reference_file, 
 
 /*******  DEFINED IN student_func.cu *********/
 
-void your_gaussian_blur(const uchar4 * const h_inputImageRGBA, uchar4 * const d_inputImageRGBA,
+void cuinYourGaussianBlur(const uchar4 * const h_inputImageRGBA, uchar4 * const d_inputImageRGBA,
                         uchar4* const d_outputImageRGBA,
                         const size_t numRows, const size_t numCols,
                         unsigned char *d_redBlurred,
@@ -216,35 +216,42 @@ TEST(HW2, Ref) {
       std::cerr << "Usage: ./HW2 input_file [output_filename] [reference_filename] [perPixelError] [globalError]" << std::endl;
       exit(1);
   }
-  //load the image and give us our input and output pointers
-  preProcess(&h_inputImageRGBA, &h_outputImageRGBA, &d_inputImageRGBA, &d_outputImageRGBA,
-             &d_redBlurred, &d_greenBlurred, &d_blueBlurred,
-             &h_filter, &filterWidth, input_file);
 
-  allocateMemoryAndCopyToGPU(numRows(), numCols(), h_filter, filterWidth);
-  GpuTimer timer;
-  timer.Start();
-  //call the students' code
-  your_gaussian_blur(h_inputImageRGBA, d_inputImageRGBA, d_outputImageRGBA, numRows(), numCols(),
-                     d_redBlurred, d_greenBlurred, d_blueBlurred, filterWidth);
-  timer.Stop();
-  cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
-  int err = printf("Your code ran in: %f msecs.\n", timer.Elapsed());
+  {
+    //load the image and give us our input and output pointers
+    preProcess(&h_inputImageRGBA, &h_outputImageRGBA, &d_inputImageRGBA, &d_outputImageRGBA,
+               &d_redBlurred, &d_greenBlurred, &d_blueBlurred,
+               &h_filter, &filterWidth, input_file);
 
-  if (err < 0) {
-    //Couldn't print! Probably the student closed stdout - bad news
-    std::cerr << "Couldn't print timing information! STDOUT Closed!" << std::endl;
-    exit(1);
+  
+    ///@Step0
+    allocateMemoryAndCopyToGPU(numRows(), numCols(), h_filter, filterWidth);
+    GpuTimer timer;
+    timer.Start();
+    //call the students' code
+    cuinYourGaussianBlur(h_inputImageRGBA, d_inputImageRGBA, d_outputImageRGBA, numRows(), numCols(),
+                       d_redBlurred, d_greenBlurred, d_blueBlurred, filterWidth);
+    timer.Stop();
+    cudaDeviceSynchronize(); 
+    checkCudaErrors(cudaGetLastError());
+    int err = printf("Your code ran in: %f msecs.\n", timer.Elapsed());
+
+    if (err < 0) {
+      //Couldn't print! Probably the student closed stdout - bad news
+      std::cerr << "Couldn't print timing information! STDOUT Closed!" << std::endl;
+      exit(1);
+    }
+
+    //check results and output the blurred image
+
+    size_t numPixels = numRows()*numCols();
+    //copy the output back to the host
+    checkCudaErrors(cudaMemcpy(h_outputImageRGBA, d_outputImageRGBA__, sizeof(uchar4) * numPixels, cudaMemcpyDeviceToHost));
+
+    postProcess(output_file, h_outputImageRGBA);
   }
 
-  //check results and output the blurred image
-
-  size_t numPixels = numRows()*numCols();
-  //copy the output back to the host
-  checkCudaErrors(cudaMemcpy(h_outputImageRGBA, d_outputImageRGBA__, sizeof(uchar4) * numPixels, cudaMemcpyDeviceToHost));
-
-  postProcess(output_file, h_outputImageRGBA);
-
+  ///@SerialPart
   // ref.
   referenceCalculation_(h_inputImageRGBA, h_outputImageRGBA,
                        numRows(), numCols(),

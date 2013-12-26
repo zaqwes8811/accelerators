@@ -78,7 +78,7 @@ TEST(xD, Base) {
     cudaMemcpy(d_filter1D, h_filter1D, sizeof(unsigned char) * FILTER_WIDTH, cudaMemcpyHostToDevice));
 
 
-  run_test_blur(
+  cuinRunOnlyBlurTest(
       d_InImage1D, d_OutImage1D, ROWS, COLUMNS,
       d_filter1D, FILTER_WIDTH);
 
