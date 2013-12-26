@@ -278,49 +278,74 @@ TEST(HW2, Ref) {
   //return 0;
 }
 
+
 TEST(HW2, OptimalSplit) {
-  const int COLS = 311;
-  const int ROWS = 234;
-  const int CELL_SIZE = 1024;
+  const int kColumns = 311;
+  const int kRows = 234;
+  const int kCellSize = 1024;
 
-  const float K = (1.0f * COLS) / ROWS;
-  printf("%0.2f\n", K);
+  const float kRowToColumns = (1.0f * kRows) / kColumns;
+  printf("%0.2f\n", kRowToColumns);
 
-  float yRaw = sqrt(1.0f * CELL_SIZE / K);
-  float xRaw = K*yRaw;
+  float yRaw = sqrt(1.0f * kCellSize / kRowToColumns);
+  float xRaw = kRowToColumns * yRaw;
   printf("%0.2f %0.2f\n", xRaw, yRaw);
 
   int y = (int)floor(yRaw);
   int x = (int)floor(xRaw);
   printf("%d %d space = %d\n", x, y, x*y);
 
-  EXPECT_GE(CELL_SIZE, x*y);
+  EXPECT_GE(kCellSize, x*y);
 }
 
 #include <vector_types.h>
 
-//void cureGetOptParams(
+typedef struct layout2d_s {
+  const dim3 block;
+  const dim3 grid;
+} layout2d_t;
 
-TEST(HW2, OptimalSplitRelease) {
-  const int COLS = 311;
-  const int ROWS = 234;
-  const int CELL_SIZE = 1024;
-
-  const float K = (1.0f * COLS) / ROWS;
-  float yRaw = sqrt(1.0f * CELL_SIZE / K);
-  float xRaw = K*yRaw;
+layout2d_t cureGetOpt2DParams(
+    const size_t kRows, 
+    const size_t kColumns, 
+    const size_t kCellSize) 
+  {
+  const float kRowToColumns = (1.0f * kRows) / kColumns;
+  float yRaw = sqrt(1.0f * kCellSize / kRowToColumns);
+  float xRaw = kRowToColumns*yRaw;
   int y = (int)floor(yRaw);
   int x = (int)floor(xRaw);
 
-  const dim3 blockSize;
+  dim3 blockSize;
   blockSize.x = x;
   blockSize.y = y;
+  blockSize.z = 0;
 
   // »щем размерность сетки
-  //TODO:
-  //Compute correct grid size (i.e., number of blocks per kernel launch)
-  //from the image size and and block size.
-  const dim3 gridSize;
+  float xGRowsRaw = (1.0f * kRows) / x;
+  float yGRowsRaw = (1.0f * kColumns) / y;
 
-  EXPECT_GE(CELL_SIZE, x*y);
+  dim3 gridSize;
+  gridSize.x = (int)ceil(xGRowsRaw);
+  gridSize.y = (int)ceil(yGRowsRaw);
+  gridSize.z = 0;
+  layout2d_t layout = {blockSize, gridSize};
+  printf("%0.2f %0.2f\n", xRaw, yRaw);
+  return layout;
+}
+
+
+
+TEST(HW2, OptimalSplitRelease) {
+  const size_t kColumns = 311;
+  const size_t kRows = 234;
+  const size_t kCellSize = 256;
+  const layout2d_t layout = cureGetOpt2DParams(kRows, kColumns, kCellSize);
+
+  EXPECT_GE(kCellSize, layout.block.x * layout.block.y);
+  EXPECT_LE(kRows, layout.grid.x * layout.block.x);
+  EXPECT_GE(kRows * kColumns, 
+    layout.grid.x * layout.block.x
+    * layout.grid.y * layout.block.y);
+  printf("GX = %d GY = %d\n", layout.grid.x, layout.grid.y); 
 }
