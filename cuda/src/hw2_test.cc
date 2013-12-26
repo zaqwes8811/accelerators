@@ -297,20 +297,30 @@ TEST(HW2, OptimalSplit) {
   EXPECT_GE(CELL_SIZE, x*y);
 }
 
+#include <vector_types.h>
 
+//void cureGetOptParams(
 
 TEST(HW2, OptimalSplitRelease) {
   const int COLS = 311;
   const int ROWS = 234;
+  const int CELL_SIZE = 1024;
 
-  {
-    const int CELL_SIZE = 1024;
-    const float K = (1.0f * COLS) / ROWS;
-    float yRaw = sqrt(1.0f * CELL_SIZE / K);
-    float xRaw = K*yRaw;
-    int y = (int)floor(yRaw);
-    int x = (int)floor(xRaw);
-  }
+  const float K = (1.0f * COLS) / ROWS;
+  float yRaw = sqrt(1.0f * CELL_SIZE / K);
+  float xRaw = K*yRaw;
+  int y = (int)floor(yRaw);
+  int x = (int)floor(xRaw);
+
+  const dim3 blockSize;
+  blockSize.x = x;
+  blockSize.y = y;
+
+  // »щем размерность сетки
+  //TODO:
+  //Compute correct grid size (i.e., number of blocks per kernel launch)
+  //from the image size and and block size.
+  const dim3 gridSize;
 
   EXPECT_GE(CELL_SIZE, x*y);
 }
