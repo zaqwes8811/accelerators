@@ -277,3 +277,40 @@ TEST(HW2, Ref) {
 
   //return 0;
 }
+
+TEST(HW2, OptimalSplit) {
+  const int COLS = 311;
+  const int ROWS = 234;
+  const int CELL_SIZE = 1024;
+
+  const float K = (1.0f * COLS) / ROWS;
+  printf("%0.2f\n", K);
+
+  float yRaw = sqrt(1.0f * CELL_SIZE / K);
+  float xRaw = K*yRaw;
+  printf("%0.2f %0.2f\n", xRaw, yRaw);
+
+  int y = (int)floor(yRaw);
+  int x = (int)floor(xRaw);
+  printf("%d %d space = %d\n", x, y, x*y);
+
+  EXPECT_GE(CELL_SIZE, x*y);
+}
+
+
+
+TEST(HW2, OptimalSplitRelease) {
+  const int COLS = 311;
+  const int ROWS = 234;
+
+  {
+    const int CELL_SIZE = 1024;
+    const float K = (1.0f * COLS) / ROWS;
+    float yRaw = sqrt(1.0f * CELL_SIZE / K);
+    float xRaw = K*yRaw;
+    int y = (int)floor(yRaw);
+    int x = (int)floor(xRaw);
+  }
+
+  EXPECT_GE(CELL_SIZE, x*y);
+}

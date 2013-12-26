@@ -713,6 +713,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\src\reuse.cu"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\third_party\cs344\reuse\utils.h"
 					>
 				</File>
