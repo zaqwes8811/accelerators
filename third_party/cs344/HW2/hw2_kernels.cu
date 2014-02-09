@@ -106,6 +106,9 @@
 // Third party
 #include "cs344/reuse/utils.h"
 
+unsigned char *d_red, *d_green, *d_blue;
+float         *d_filter;
+
 
 
 __global__
@@ -220,8 +223,7 @@ void recombineChannels(const unsigned char* const redChannel,
   outputImageRGBA[thread_1D_pos] = outputPixel;
 }
 
-unsigned char *d_red, *d_green, *d_blue;
-float         *d_filter;
+
 
 void allocateMemoryAndCopyToGPU(const size_t numRowsImage, const size_t numColsImage,
                                 const float* const h_filter, const size_t filterWidth)

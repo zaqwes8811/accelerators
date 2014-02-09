@@ -146,9 +146,9 @@ TEST(HW1, Base) {
 	  reference_file = "HW1_reference.png";
 	  break;
 	case 4:
-	  input_file  = std::string("../../third_party/cs344/hw1/cinque_terre_small.jpg");
-      output_file = std::string("../../third_party/cs344/hw1/o.jpg");
-	  reference_file = std::string("../../third_party/cs344/hw1/cinque_terre_ref.jpg");
+	  input_file  = std::string("../third_party/cs344/hw1/cinque_terre_small.jpg");
+      output_file = std::string("../third_party/cs344/hw1/o.jpg");
+	  reference_file = std::string("../third_party/cs344/hw1/cinque_terre_ref.jpg");
 	  break;
 	case 6:
 	  useEpsCheck=true;

@@ -168,9 +168,7 @@ void allocateMemoryAndCopyToGPU(const size_t numRowsImage, const size_t numColsI
                                 const float* const h_filter, const size_t filterWidth);
 
 
-/*******  Begin main *********/
-
-TEST(HW2, Ref) {
+TEST(Bluring, Ref) {
   uchar4 *h_inputImageRGBA,  *d_inputImageRGBA;
   uchar4 *h_outputImageRGBA, *d_outputImageRGBA;
   unsigned char *d_redBlurred, *d_greenBlurred, *d_blueBlurred;
@@ -178,53 +176,24 @@ TEST(HW2, Ref) {
   float *h_filter;
   int    filterWidth;
 
-  char **argv;
-  int argc = 4;
-
   std::string input_file;
   std::string output_file;
   std::string reference_file;
   double perPixelError = 0.0;
   double globalError   = 0.0;
   bool useEpsCheck = false;
-  switch (argc)
-  {
-	case 2:
-	  input_file = std::string(argv[1]);
-	  output_file = "HW2_output.png";
-	  reference_file = "HW2_reference.png";
-	  break;
-	case 3:
-	  input_file  = std::string(argv[1]);
-      output_file = std::string(argv[2]);
-	  reference_file = "HW2_reference.png";
-	  break;
-	case 4:
-	  input_file  = std::string("../../third_party/cs344/hw2/cinque_terre_small.jpg");
-      output_file = std::string("../../third_party/cs344/hw2/o.jpg");
-	  reference_file = std::string("../../third_party/cs344/hw2/cinque_terre_ref.jpg");
-	  break;
-	case 6:
-	  useEpsCheck=true;
-	  input_file  = std::string(argv[1]);
-	  output_file = std::string(argv[2]);
-	  reference_file = std::string(argv[3]);
-	  perPixelError = atof(argv[4]);
-      globalError   = atof(argv[5]);
-	  break;
-	default:
-      std::cerr << "Usage: ./HW2 input_file [output_filename] [reference_filename] [perPixelError] [globalError]" << std::endl;
-      exit(1);
-  }
+  input_file  = std::string("../third_party/cs344/hw2/cinque_terre_small.jpg");
+  output_file = std::string("../third_party/cs344/hw2/o.jpg");
+  reference_file = std::string("../third_party/cs344/hw2/cinque_terre_ref.jpg");
 
   {
-    //load the image and give us our input and output pointers
+    // load the image and give us our input and output pointers
     preProcess(&h_inputImageRGBA, &h_outputImageRGBA, &d_inputImageRGBA, &d_outputImageRGBA,
                &d_redBlurred, &d_greenBlurred, &d_blueBlurred,
                &h_filter, &filterWidth, input_file);
 
   
-    ///@Step0
+    /// Parallel
     allocateMemoryAndCopyToGPU(numRows(), numCols(), h_filter, filterWidth);
     GpuTimer timer;
     timer.Start();
@@ -233,6 +202,8 @@ TEST(HW2, Ref) {
                        d_redBlurred, d_greenBlurred, d_blueBlurred, filterWidth);
     timer.Stop();
     cudaDeviceSynchronize(); 
+    /// Parallel
+
     checkCudaErrors(cudaGetLastError());
     int err = printf("Your code ran in: %f msecs.\n", timer.Elapsed());
 
@@ -264,8 +235,8 @@ TEST(HW2, Ref) {
                        h_filter, filterWidth);
   postProcess(reference_file+".jpg", h_outputImageRGBA);
 
-    //  Cheater easy way with OpenCV
-    //generateReferenceImage(input_file, reference_file, filterWidth);
+	//  Cheater easy way with OpenCV
+	//generateReferenceImage(input_file, reference_file, filterWidth);
 
   compareImages(reference_file, reference_file+".jpg", useEpsCheck, perPixelError, globalError);
 
@@ -279,76 +250,3 @@ TEST(HW2, Ref) {
 }
 
 
-TEST(HW2, OptimalSplit) {
-  const int kColumns = 311;
-  const int kRows = 234;
-  const int kCellSize = 1024;
-
-  const float kRowToColumns = (1.0f * kRows) / kColumns;
-  printf("%0.2f\n", kRowToColumns);
-
-  float yRaw = sqrt(1.0f * kCellSize / kRowToColumns);
-  float xRaw = kRowToColumns * yRaw;
-  printf("%0.2f %0.2f\n", xRaw, yRaw);
-
-  int y = (int)floor(yRaw);
-  int x = (int)floor(xRaw);
-  printf("%d %d space = %d\n", x, y, x*y);
-
-  EXPECT_GE(kCellSize, x*y);
-}
-
-#include <vector_types.h>
-
-typedef struct layout2d_s {
-  const dim3 block;
-  const dim3 grid;
-} layout2d_t;
-
-layout2d_t cureGetOpt2DParams(
-    const size_t kRows, 
-    const size_t kColumns, 
-    const size_t kCellSize) 
-  {
-  const float kRowToColumns = (1.0f * kRows) / kColumns;
-  float yRaw = sqrt(1.0f * kCellSize / kRowToColumns);
-  float xRaw = kRowToColumns*yRaw;
-  int y = (int)floor(yRaw);
-  int x = (int)floor(xRaw);
-
-  dim3 blockSize;
-  blockSize.x = x;
-  blockSize.y = y;
-  blockSize.z = 1;
-
-  // »щем размерность сетки
-  float xGRowsRaw = (1.0f * kRows) / x;
-  float yGRowsRaw = (1.0f * kColumns) / y;
-
-  dim3 gridSize;
-  gridSize.x = (int)ceil(xGRowsRaw);
-  gridSize.y = (int)ceil(yGRowsRaw);
-  gridSize.z = 1;
-  layout2d_t layout = {blockSize, gridSize};
-  printf("%0.2f %0.2f\n", xRaw, yRaw);
-  return layout;
-}
-
-
-
-TEST(HW2, OptimalSplitRelease) {
-  // ACuda_ij = AMatrix_ij^T;
-  // cuda_x -> j - колонка
-  // cuda_y -> i - р€д
-  const size_t kColumns = 311;
-  const size_t kRows = 234;
-  const size_t kCellSize = 1024;
-  const layout2d_t layout = cureGetOpt2DParams(kRows, kColumns, kCellSize);
-
-  EXPECT_GE(kCellSize, layout.block.x * layout.block.y);
-  EXPECT_LE(kRows, layout.grid.x * layout.block.x);
-  EXPECT_GE(kRows * kColumns, 
-    layout.grid.x * layout.block.x
-    * layout.grid.y * layout.block.y);
-  printf("GX = %d GY = %d\n", layout.grid.x, layout.grid.y); 
-}

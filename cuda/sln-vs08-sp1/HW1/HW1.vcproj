@@ -129,7 +129,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="D:\home\third_party\opencv2.3.1\opencv\build\include;&quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include&quot;;&quot;D:\home\lugansky-igor\parallel-computing\third_party\gmock-1.6.0\fused-src&quot;;&quot;D:\home\lugansky-igor\parallel-computing\third_party&quot;"
+				AdditionalIncludeDirectories="D:\home\third_party\opencv2.3.1\opencv\build\include;&quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include&quot;;&quot;..\..\..\third_party\gmock-1.6.0\fused-src&quot;;..\..\..\third_party"
 				PreprocessorDefinitions="WIN64;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -597,7 +597,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="D:\home\third_party\opencv2.3.1\opencv\build\include;&quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include&quot;;&quot;D:\home\lugansky-igor\parallel-computing\third_party\gmock-1.6.0\fused-src&quot;;&quot;D:\home\lugansky-igor\parallel-computing\third_party&quot;"
+				AdditionalIncludeDirectories="D:\home\third_party\opencv2.3.1\opencv\build\include;&quot;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include&quot;;&quot;..\..\..\third_party\gmock-1.6.0\fused-src&quot;;..\..\..\third_party"
 				PreprocessorDefinitions="WIN64;NDEBUG;_CONSOLE"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -664,7 +664,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\xD_test.cc"
+				RelativePath="..\..\src\splitting_test.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\xd_test.cc"
 				>
 			</File>
 		</Filter>
