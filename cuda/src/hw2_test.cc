@@ -82,7 +82,9 @@ static void preProcess(uchar4 **h_inputImageRGBA, uchar4 **h_outputImageRGBA,
   checkCudaErrors(cudaMemset(*d_outputImageRGBA, 0, numPixels * sizeof(uchar4))); //make sure no memory is left laying around
 
   //copy input array to the GPU
-  checkCudaErrors(cudaMemcpy(*d_inputImageRGBA, *h_inputImageRGBA, sizeof(uchar4) * numPixels, cudaMemcpyHostToDevice));
+  checkCudaErrors(
+    cudaMemcpy(*d_inputImageRGBA, *h_inputImageRGBA, 
+      sizeof(uchar4) * numPixels, cudaMemcpyHostToDevice));
 
   d_inputImageRGBA__  = *d_inputImageRGBA;
   d_outputImageRGBA__ = *d_outputImageRGBA;
@@ -156,7 +158,7 @@ void generateReferenceImage(std::string input_file, std::string reference_file, 
 
 /*******  DEFINED IN student_func.cu *********/
 
-void cuinYourGaussianBlur(const uchar4 * const h_inputImageRGBA, uchar4 * const d_inputImageRGBA,
+void your_gaussian_blur(const uchar4 * const h_inputImageRGBA, uchar4 * const d_inputImageRGBA,
                         uchar4* const d_outputImageRGBA,
                         const size_t numRows, const size_t numCols,
                         unsigned char *d_redBlurred,
@@ -200,12 +202,14 @@ TEST(Bluring, Release) {
     GpuTimer timer;
     timer.Start();
     //call the students' code
-    cuinYourGaussianBlur(
+    your_gaussian_blur(
         h_inputImageRGBA, 
         d_inputImageRGBA, 
-        d_outputImageRGBA, numRows(), numCols(),
+        d_outputImageRGBA, 
+        numRows(), numCols(),
         d_redBlurred, d_greenBlurred, d_blueBlurred, 
         filterWidth);
+
     timer.Stop();
     cudaDeviceSynchronize(); 
     /// Parallel

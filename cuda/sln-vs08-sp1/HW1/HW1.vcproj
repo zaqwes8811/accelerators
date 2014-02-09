@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="HW1"
+	Name="homework2"
 	ProjectGUID="{F949AC01-2509-4AF5-900A-5968977E5B55}"
 	RootNamespace="HW1"
 	TargetFrameworkVersion="196613"
@@ -665,6 +665,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\splitting_test.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\xd.cu"
 				>
 			</File>
 			<File
