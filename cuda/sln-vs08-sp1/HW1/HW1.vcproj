@@ -133,7 +133,7 @@
 				PreprocessorDefinitions="WIN64;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -148,8 +148,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cudart.lib"
+				AdditionalDependencies="cudart.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_features2d231.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_highgui231.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_core231.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_imgproc231.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_ml231.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_objdetect231.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_video231.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_contrib231.lib D:\home\third_party\opencv2.3.1\opencv\build\x64\vc9\lib\opencv_calib3d231.lib"
 				AdditionalLibraryDirectories="&quot;$(CUDA_PATH_V5_5)\lib\$(PlatformName)&quot;"
+				IgnoreDefaultLibraryNames="MSVCRT.lib"
 				GenerateDebugInformation="true"
 				TargetMachine="17"
 			/>
@@ -664,7 +665,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\splitting_test.cc"
+				RelativePath="..\..\src\splitters.cc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\splitters.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\splitters_test.cc"
 				>
 			</File>
 			<File
