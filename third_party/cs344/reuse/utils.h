@@ -1,10 +1,13 @@
 #ifndef UTILS_H__
 #define UTILS_H__
 
+// C++
 #include <cassert>
 #include <cmath>
 #include <iostream>
 #include <iomanip>
+
+// Third party
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <cuda_runtime_api.h>

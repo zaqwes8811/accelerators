@@ -168,7 +168,7 @@ void allocateMemoryAndCopyToGPU(const size_t numRowsImage, const size_t numColsI
                                 const float* const h_filter, const size_t filterWidth);
 
 
-TEST(Bluring, Ref) {
+TEST(Bluring, Release) {
   uchar4 *h_inputImageRGBA,  *d_inputImageRGBA;
   uchar4 *h_outputImageRGBA, *d_outputImageRGBA;
   unsigned char *d_redBlurred, *d_greenBlurred, *d_blueBlurred;
