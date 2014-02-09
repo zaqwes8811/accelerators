@@ -188,6 +188,8 @@ TEST(Bluring, Ref) {
 
   {
     // load the image and give us our input and output pointers
+    //
+    // Create filter.
     preProcess(&h_inputImageRGBA, &h_outputImageRGBA, &d_inputImageRGBA, &d_outputImageRGBA,
                &d_redBlurred, &d_greenBlurred, &d_blueBlurred,
                &h_filter, &filterWidth, input_file);
@@ -198,8 +200,12 @@ TEST(Bluring, Ref) {
     GpuTimer timer;
     timer.Start();
     //call the students' code
-    cuinYourGaussianBlur(h_inputImageRGBA, d_inputImageRGBA, d_outputImageRGBA, numRows(), numCols(),
-                       d_redBlurred, d_greenBlurred, d_blueBlurred, filterWidth);
+    cuinYourGaussianBlur(
+        h_inputImageRGBA, 
+        d_inputImageRGBA, 
+        d_outputImageRGBA, numRows(), numCols(),
+        d_redBlurred, d_greenBlurred, d_blueBlurred, 
+        filterWidth);
     timer.Stop();
     cudaDeviceSynchronize(); 
     /// Parallel
@@ -217,10 +223,54 @@ TEST(Bluring, Ref) {
 
     size_t numPixels = numRows()*numCols();
     //copy the output back to the host
-    checkCudaErrors(cudaMemcpy(h_outputImageRGBA, d_outputImageRGBA__, sizeof(uchar4) * numPixels, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaMemcpy(h_outputImageRGBA, d_outputImageRGBA__, 
+      sizeof(uchar4) * numPixels, cudaMemcpyDeviceToHost));
 
     postProcess(output_file, h_outputImageRGBA);
   }
+
+  ///@SerialPart
+  // ref.
+  referenceCalculation_(h_inputImageRGBA, h_outputImageRGBA,
+                       numRows(), numCols(),
+                       h_filter, filterWidth);
+  postProcess(reference_file, h_outputImageRGBA);
+
+	//  Cheater easy way with OpenCV
+	//generateReferenceImage(input_file, reference_file, filterWidth);
+
+  //compareImages(reference_file, reference_file+".jpg", useEpsCheck, perPixelError, globalError);
+
+  checkCudaErrors(cudaFree(d_redBlurred));
+  checkCudaErrors(cudaFree(d_greenBlurred));
+  checkCudaErrors(cudaFree(d_blueBlurred));
+
+  cleanUp();
+}
+
+
+TEST(Bluring, PureRef) {
+  uchar4 *h_inputImageRGBA,  *d_inputImageRGBA;
+  uchar4 *h_outputImageRGBA, *d_outputImageRGBA;
+  unsigned char *d_redBlurred, *d_greenBlurred, *d_blueBlurred;
+
+  float *h_filter;
+  int    filterWidth;
+
+  std::string input_file;
+  std::string output_file;
+  std::string reference_file;
+  double perPixelError = 0.0;
+  double globalError   = 0.0;
+  bool useEpsCheck = false;
+  input_file  = std::string("../third_party/cs344/hw2/cinque_terre_small.jpg");
+  output_file = std::string("../third_party/cs344/hw2/o.jpg");
+  reference_file = std::string("../third_party/cs344/hw2/cinque_terre_ref.jpg");
+
+  // load the image and give us our input and output pointers
+  preProcess(&h_inputImageRGBA, &h_outputImageRGBA, &d_inputImageRGBA, &d_outputImageRGBA,
+             &d_redBlurred, &d_greenBlurred, &d_blueBlurred,
+             &h_filter, &filterWidth, input_file);
 
   ///@SerialPart
   // ref.
@@ -239,14 +289,6 @@ TEST(Bluring, Ref) {
 	//generateReferenceImage(input_file, reference_file, filterWidth);
 
   compareImages(reference_file, reference_file+".jpg", useEpsCheck, perPixelError, globalError);
-
-  checkCudaErrors(cudaFree(d_redBlurred));
-  checkCudaErrors(cudaFree(d_greenBlurred));
-  checkCudaErrors(cudaFree(d_blueBlurred));
-
-  cleanUp();
-
-  //return 0;
 }
 
 
