@@ -192,9 +192,13 @@ TEST(Bluring, Release) {
     // load the image and give us our input and output pointers
     //
     // Create filter.
-    preProcess(&h_inputImageRGBA, &h_outputImageRGBA, &d_inputImageRGBA, &d_outputImageRGBA,
-               &d_redBlurred, &d_greenBlurred, &d_blueBlurred,
-               &h_filter, &filterWidth, input_file);
+    preProcess(&h_inputImageRGBA, &h_outputImageRGBA, 
+        &d_inputImageRGBA, 
+        &d_outputImageRGBA,
+        &d_redBlurred, 
+        &d_greenBlurred, 
+        &d_blueBlurred,
+        &h_filter, &filterWidth, input_file);
 
   
     /// Parallel

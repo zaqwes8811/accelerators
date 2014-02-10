@@ -259,7 +259,8 @@ void allocateMemoryAndCopyToGPU(const size_t numRowsImage, const size_t numColsI
 
 }
 
-void your_gaussian_blur(const uchar4 * const h_inputImageRGBA, uchar4 * const d_inputImageRGBA,
+void your_gaussian_blur(const uchar4 * const h_inputImageRGBA, 
+                        uchar4 * const d_inputImageRGBA,
                         uchar4* const d_outputImageRGBA, 
                         const size_t numRows, const size_t numCols,
                         unsigned char *d_redBlurred, 
@@ -277,6 +278,14 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA, uchar4 * const d_
   const dim3 gridSize = metro.grid;
 
   //TODO: Launch a kernel for separating the RGBA image into different color channels
+  separateChannels<<<gridSize, blockSize>>>(
+      d_inputImageRGBA,
+      numRows,
+      numCols,
+      d_redBlurred,
+      d_greenBlurred,
+      d_blueBlurred
+      );
 
   // Call cudaDeviceSynchronize(), then call checkCudaErrors() immediately after
   // launching your kernel to make sure that you didn't make any mistakes.
