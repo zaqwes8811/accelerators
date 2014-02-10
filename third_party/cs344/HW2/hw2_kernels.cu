@@ -270,14 +270,17 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA,
 {
   //TODO: Set reasonable block size (i.e., number of threads per block)
   layout2d_t metro = spliGetOpt2DParams(numRows, numCols, 512);
-  const dim3 blockSize = metro.block;
+  dim3 blockDim(32, 16, 1);
+  dim3 gridDim( (numCols - 1) / blockDim.x + 1, (numRows - 1) / blockDim.y + 1, 1);
+
+  const dim3 blockSize = blockDim;//metro.block;
 
   printf("rows = %d, columns = %d\n", numRows, numCols);
 
   //TODO:
   //Compute correct grid size (i.e., number of blocks per kernel launch)
   //from the image size and and block size.
-  const dim3 gridSize = metro.grid;
+  const dim3 gridSize = gridDim;//metro.grid;
 
   //TODO: Launch a kernel for separating the RGBA image into different color channels
   separateChannels<<<gridSize, blockSize>>>(

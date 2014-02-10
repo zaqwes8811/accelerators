@@ -15,6 +15,8 @@
 
 // http://www.gputechconf.com/gtcnew/on-demand-gtc.php
 
+// For global answers http://docs.nvidia.com/cuda/cuda-c-programming-guide/
+
 #pragma once
 #include <vector_types.h>
 
