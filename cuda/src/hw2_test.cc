@@ -185,7 +185,7 @@ TEST(Bluring, Release) {
   double globalError   = 0.0;
   bool useEpsCheck = false;
   input_file  = std::string("../third_party/cs344/hw2/cinque_terre_small.jpg");
-  output_file = std::string("../third_party/cs344/hw2/o.jpg");
+  output_file = std::string("o.jpg");
   reference_file = std::string("../third_party/cs344/hw2/cinque_terre_ref.jpg");
 
   {
@@ -268,7 +268,7 @@ TEST(Bluring, PureRef) {
   double globalError   = 0.0;
   bool useEpsCheck = false;
   input_file  = std::string("../third_party/cs344/hw2/cinque_terre_small.jpg");
-  output_file = std::string("../third_party/cs344/hw2/o.jpg");
+  output_file = std::string("o.jpg");
   reference_file = std::string("../third_party/cs344/hw2/cinque_terre_ref.jpg");
 
   // load the image and give us our input and output pointers

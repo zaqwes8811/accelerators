@@ -581,7 +581,7 @@
 			/>
 			<Tool
 				Name="Cudart Build Rule"
-				Include="..\..\..\third_party"
+				Include="..\..\..\third_party;..\..\..\cuda\src"
 				TargetMachinePlatform="1"
 			/>
 			<Tool

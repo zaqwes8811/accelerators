@@ -106,6 +106,9 @@
 // Third party
 #include "cs344/reuse/utils.h"
 
+// Inner reuse
+#include "splitters.h"
+
 // Раз объявлено здесь значить это в памяти GPU?
 unsigned char *d_red, *d_green, *d_blue;
 float         *d_filter;
@@ -179,6 +182,20 @@ void separateChannels(const uchar4* const inputImageRGBA,
   // {
   //     return;
   // }
+
+  const int2 thread_2D_pos = make_int2( blockIdx.x * blockDim.x + threadIdx.x,
+                                        blockIdx.y * blockDim.y + threadIdx.y);
+
+  const int thread_1D_pos = thread_2D_pos.y * numCols + thread_2D_pos.x;
+
+  //make sure we don't try and access memory outside the image
+  //by having any threads mapped there return early
+  if (thread_2D_pos.x >= numCols || thread_2D_pos.y >= numRows)
+    return;
+
+  redChannel[thread_1D_pos] = inputImageRGBA[thread_1D_pos].x;
+  greenChannel[thread_1D_pos] = inputImageRGBA[thread_1D_pos].y;
+  blueChannel[thread_1D_pos] = inputImageRGBA[thread_1D_pos].z;
 }
 
 //This kernel takes in three color channels and recombines them
@@ -251,12 +268,13 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA, uchar4 * const d_
                         const int filterWidth)
 {
   //TODO: Set reasonable block size (i.e., number of threads per block)
-  const dim3 blockSize;
+  layout2d_t metro = spliGetOpt2DParams(numRows, numCols, 1024);
+  const dim3 blockSize = metro.block;
 
   //TODO:
   //Compute correct grid size (i.e., number of blocks per kernel launch)
   //from the image size and and block size.
-  const dim3 gridSize;
+  const dim3 gridSize = metro.grid;
 
   //TODO: Launch a kernel for separating the RGBA image into different color channels
 
