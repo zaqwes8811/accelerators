@@ -17,6 +17,8 @@
 
 // For global answers http://docs.nvidia.com/cuda/cuda-c-programming-guide/
 
+// Кажется размер блока лучше брать кратных варпу
+
 #pragma once
 #include <vector_types.h>
 
