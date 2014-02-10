@@ -18,9 +18,9 @@ layout2d_t spliGetOpt2DParams(
   int x = (int)floor(xRaw);
 
   // Попытка поточнее развести блок
-  int rest = kCellSize - x*y;
-  int dx = rest/x;
-  int dy = rest/y;
+  //int rest = kCellSize - x*y;
+  //int dx = rest/x;
+  //int dy = rest/y;
   //printf("rest = %d dx = %d dy = %d\n", rest, dx, dy);
   // TODO: может вытянуться в одном направлении, и это исказить сетку
   /*if (dy > dx) {
@@ -40,8 +40,8 @@ layout2d_t spliGetOpt2DParams(
   //printf("BX = %d BY = %d\n", x, y); 
 
   dim3 blockSize;
-  blockSize.x = x;
-  blockSize.y = y;
+  blockSize.x = y;
+  blockSize.y = x;
   blockSize.z = 1;
 
   // Ищем размерность сетки
@@ -49,8 +49,8 @@ layout2d_t spliGetOpt2DParams(
   float yGRowsRaw = (1.0f * kColumns) / y;
 
   dim3 gridSize;
-  gridSize.x = (int)ceil(xGRowsRaw);
-  gridSize.y = (int)ceil(yGRowsRaw);
+  gridSize.y = (int)ceil(xGRowsRaw);
+  gridSize.x = (int)ceil(yGRowsRaw);
   gridSize.z = 1;
   const layout2d_t layout = {blockSize, gridSize};
   return layout;

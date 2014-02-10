@@ -185,7 +185,7 @@ TEST(Bluring, Release) {
   double globalError   = 0.0;
   bool useEpsCheck = false;
   input_file  = std::string("../third_party/cs344/hw2/cinque_terre_small.jpg");
-  output_file = std::string("o.jpg");
+  output_file = std::string("o.png");
   reference_file = std::string("../third_party/cs344/hw2/cinque_terre_ref.jpg");
 
   {
@@ -210,8 +210,11 @@ TEST(Bluring, Release) {
         h_inputImageRGBA, 
         d_inputImageRGBA, 
         d_outputImageRGBA, 
-        numRows(), numCols(),
-        d_redBlurred, d_greenBlurred, d_blueBlurred, 
+        numRows(), 
+        numCols(),
+        d_redBlurred, 
+        d_greenBlurred, 
+        d_blueBlurred, 
         filterWidth);
 
     timer.Stop();

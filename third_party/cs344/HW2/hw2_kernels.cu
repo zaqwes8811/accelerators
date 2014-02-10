@@ -269,8 +269,10 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA,
                         const int filterWidth)
 {
   //TODO: Set reasonable block size (i.e., number of threads per block)
-  layout2d_t metro = spliGetOpt2DParams(numRows, numCols, 1024);
+  layout2d_t metro = spliGetOpt2DParams(numRows, numCols, 512);
   const dim3 blockSize = metro.block;
+
+  printf("rows = %d, columns = %d\n", numRows, numCols);
 
   //TODO:
   //Compute correct grid size (i.e., number of blocks per kernel launch)
