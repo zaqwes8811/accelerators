@@ -129,14 +129,17 @@ void gaussian_blur(const unsigned char* const inputChannel,
                    unsigned char* const outputChannel,
                    int numRows, int numCols,
                    const float* const filter, const int filterWidth)
-{
-  // TODO
-  int x_pos = threadIdx.x;
-  int y_pos = threadIdx.y;
+{ 
+  const int2 thread_2D_pos = make_int2( blockIdx.x * blockDim.x + threadIdx.x,
+                                        blockIdx.y * blockDim.y + threadIdx.y);
 
-  if (x_pos >= numRows || y_pos >= numCols) return;
-  outputChannel[x_pos * numCols + y_pos] = x_pos;
-  
+  const int thread_1D_pos = thread_2D_pos.y * numCols + thread_2D_pos.x;
+
+  //make sure we don't try and access memory outside the image
+  //by having any threads mapped there return early
+  if (thread_2D_pos.x >= numCols || thread_2D_pos.y >= numRows)
+    return;
+
   // NOTE: Be sure to compute any intermediate results in floating point
   // before storing the final result as unsigned char.
 
@@ -156,7 +159,6 @@ void gaussian_blur(const unsigned char* const inputChannel,
   // the value is out of bounds), you should explicitly clamp the neighbor values you read
   // to be within the bounds of the image. If this is not clear to you, then please refer
   // to sequential reference solution for the exact clamping semantics you should follow.
-  //printf("%d = ", threadIdx.y);
 }
 
 
@@ -269,22 +271,18 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA,
                         const int filterWidth)
 {
   //TODO: Set reasonable block size (i.e., number of threads per block)
-  layout2d_t metro = spliGetOpt2DParams(numRows, numCols, 512);
+  //layout2d_t metro = spliGetOpt2DParams(numRows, numCols, 512);
   dim3 blockDim(32, 16, 1);
   dim3 gridDim( (numCols - 1) / blockDim.x + 1, (numRows - 1) / blockDim.y + 1, 1);
 
-  const dim3 blockSize = 
-    //blockDim;
-    metro.block;
+  const dim3 blockSize = blockDim;
 
   printf("rows = %d, columns = %d\n", numRows, numCols);
 
   //TODO:
   //Compute correct grid size (i.e., number of blocks per kernel launch)
   //from the image size and and block size.
-  const dim3 gridSize = 
-    //gridDim;
-    metro.grid;
+  const dim3 gridSize = gridDim;
 
   //TODO: Launch a kernel for separating the RGBA image into different color channels
   separateChannels<<<gridSize, blockSize>>>(
@@ -293,8 +291,7 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA,
       numCols,
       d_redBlurred,
       d_greenBlurred,
-      d_blueBlurred
-      );
+      d_blueBlurred);
 
   // Call cudaDeviceSynchronize(), then call checkCudaErrors() immediately after
   // launching your kernel to make sure that you didn't make any mistakes.
@@ -302,7 +299,7 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA,
   checkCudaErrors(cudaGetLastError());
 
   //TODO: Call your convolution kernel here 3 times, once for each color channel.
-  // CORE!!
+  gaussian_blur<<<gridSize, blockSize>>>();
 
   // Again, call cudaDeviceSynchronize(), then call checkCudaErrors() 
   // immediately after

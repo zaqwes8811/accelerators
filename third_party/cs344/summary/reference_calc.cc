@@ -93,23 +93,35 @@ void channelConvolution(const unsigned char* const channel,
   //For every pixel in the image
   for (int r = 0; r < (int)kImgCountRows; ++r) {
     for (int c = 0; c < (int)kImgCountColumns; ++c) {
+
+      // Обработка одного пикселя
       float result = 0.f;
       //For every value in the filter around the pixel (c, r)
-      for (int filterRowIdx = -kFilterWidth/2; filterRowIdx <= kFilterWidth/2; ++filterRowIdx) {
-        for (int filterColumnIdx = -kFilterWidth/2; filterColumnIdx <= kFilterWidth/2; ++filterColumnIdx) {
+      for (int filterRowIdx = -kFilterWidth/2; 
+          filterRowIdx <= kFilterWidth/2; ++filterRowIdx) 
+        {
+        for (int filterColumnIdx = -kFilterWidth/2; 
+            filterColumnIdx <= kFilterWidth/2; ++filterColumnIdx) 
+          {
           //Find the global image position for this filter position
           //clamp to boundary of the image
-		      int currentPixelRowIdx = std::min(std::max(r + filterRowIdx, 0), static_cast<int>(kImgCountRows - 1));
-          int currentPixelColumnIdx = std::min(std::max(c + filterColumnIdx, 0), static_cast<int>(kImgCountColumns - 1));
+		      int currentPixelRowIdx = 
+              std::min(std::max(r + filterRowIdx, 0), static_cast<int>(kImgCountRows - 1));
+          int currentPixelColumnIdx = 
+              std::min(std::max(c + filterColumnIdx, 0), static_cast<int>(kImgCountColumns - 1));
 
-          float pixelValue = static_cast<float>(channel[currentPixelRowIdx * kImgCountColumns + currentPixelColumnIdx]);
-          float filterValue = filter[(filterRowIdx + kFilterWidth/2) * kFilterWidth + filterColumnIdx + kFilterWidth/2];
+          float pixelValue = 
+              static_cast<float>(channel[currentPixelRowIdx * kImgCountColumns + currentPixelColumnIdx]);
+          float filterValue = 
+              filter[(filterRowIdx + kFilterWidth/2) * kFilterWidth + filterColumnIdx + kFilterWidth/2];
 
           result += pixelValue * filterValue;
         }
       }
 
       channelBlurred[r * kImgCountColumns + c] = result;
+      ///
+
     }
   }
 }
