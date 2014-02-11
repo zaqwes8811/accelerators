@@ -141,10 +141,14 @@ void gaussian_blur(const unsigned char* const inputChannel,
     return;
 
   // Fake
-  outputChannel[thread_1D_pos] = inputChannel[thread_1D_pos];
+  //outputChannel[thread_1D_pos] = inputChannel[thread_1D_pos];
+  // Обработка одного пикселя
+  float result = 0.f;
 
   // NOTE: Be sure to compute any intermediate results in floating point
   // before storing the final result as unsigned char.
+
+  outputChannel[thread_1D_pos] = result;
 
   // NOTE: Be careful not to try to access memory that is outside the bounds of
   // the image. You'll want code that performs the following check before accessing
