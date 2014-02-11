@@ -140,6 +140,9 @@ void gaussian_blur(const unsigned char* const inputChannel,
   if (thread_2D_pos.x >= numCols || thread_2D_pos.y >= numRows)
     return;
 
+  // Fake
+  outputChannel[thread_1D_pos] = inputChannel[thread_1D_pos];
+
   // NOTE: Be sure to compute any intermediate results in floating point
   // before storing the final result as unsigned char.
 
@@ -289,9 +292,9 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA,
       d_inputImageRGBA,
       numRows,
       numCols,
-      d_redBlurred,
-      d_greenBlurred,
-      d_blueBlurred);
+      d_red,
+      d_green,
+      d_blue);
 
   // Call cudaDeviceSynchronize(), then call checkCudaErrors() immediately after
   // launching your kernel to make sure that you didn't make any mistakes.
@@ -299,7 +302,9 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA,
   checkCudaErrors(cudaGetLastError());
 
   //TODO: Call your convolution kernel here 3 times, once for each color channel.
-  gaussian_blur<<<gridSize, blockSize>>>();
+  gaussian_blur<<<gridSize, blockSize>>>(d_red, d_redBlurred, numRows, numCols, d_filter, filterWidth);
+  gaussian_blur<<<gridSize, blockSize>>>(d_green, d_greenBlurred, numRows, numCols, d_filter, filterWidth);
+  gaussian_blur<<<gridSize, blockSize>>>(d_blue, d_blueBlurred, numRows, numCols, d_filter, filterWidth);
 
   // Again, call cudaDeviceSynchronize(), then call checkCudaErrors() 
   // immediately after
