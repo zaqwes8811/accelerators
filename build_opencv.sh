@@ -34,4 +34,6 @@ apt-get install libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev libvor
 #apt-get install libjpeg62-dev 
 #apt-get install libfaac-dev
 
-cmake -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_V4L=OFF -D INSTALL_C_EXAMPLES=ON -D INSTALL_PYTHON_EXAMPLES=ON -D BUILD_EXAMPLES=ON -D WITH_CUDA=NO ..
+cmake -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_V4L=OFF -D INSTALL_C_EXAMPLES=ON -D INSTALL_PYTHON_EXAMPLES=ON -D BUILD_EXAMPLES=ON -D WITH_CUDA=NO CMAKE_INSTALL_PREFIX=/home/zaqwes/work/opencv_2.3.1 ..
+
+cmake -D WITH_TBB=ON -D WITH_V4L=OFF -D WITH_CUDA=NO CMAKE_INSTALL_PREFIX=/home/zaqwes/work/opencv_2.3.1 .

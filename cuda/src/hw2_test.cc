@@ -1,4 +1,5 @@
 //Udacity HW2 Driver
+// http://stackoverflow.com/questions/9779617/compiling-opencv-2-3-1-programs-with-mingw-gcc-g-on-windows-7-64bit
 
 #include <iostream>
 #include "cs344/reuse/timer.h"

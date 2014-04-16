@@ -30,12 +30,22 @@
 								<option id="nvcc.compiler.include.paths.697746553" name="Include paths (-I)" superClass="nvcc.compiler.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/home/zaqwes/work/parallelize/third_party/gmock-1.6.0/fused-src"/>
 									<listOptionValue builtIn="false" value="/home/zaqwes/work/parallelize/third_party"/>
+									<listOptionValue builtIn="false" value="/home/zaqwes/work/opencv_2.3.1/include"/>
+									<listOptionValue builtIn="false" value="/home/zaqwes/work/parallelize/cuda/src"/>
 								</option>
 								<inputType id="nvcc.compiler.input.cu.65541530" superClass="nvcc.compiler.input.cu"/>
 								<inputType id="nvcc.compiler.input.cpp.1246186864" superClass="nvcc.compiler.input.cpp"/>
 								<inputType id="nvcc.compiler.input.c.1114993476" superClass="nvcc.compiler.input.c"/>
 							</tool>
 							<tool id="nvcc.linker.base.1563308705" name="NVCC Linker" superClass="nvcc.linker.base">
+								<option id="nvcc.linker.option.paths.1111530118" name="Library search path (-L)" superClass="nvcc.linker.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="/home/zaqwes/work/opencv_2.3.1/lib"/>
+								</option>
+								<option id="nvcc.linker.option.libs.1226338913" name="Libraries (-l)" superClass="nvcc.linker.option.libs" valueType="libs">
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="opencv_core"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="opencv_highgui"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="opencv_imgproc"/>
+								</option>
 								<inputType id="nvcc.linker.input.891767476" superClass="nvcc.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>

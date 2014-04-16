@@ -1,5 +1,8 @@
 // Own
-#include "cs344\HW2/hw2_kernels_cu.h"
+#include "cs344/HW2/hw2_kernels_cu.h"
+
+// C
+#include <stdio.h>
 
 // Third party
 #include "cs344/reuse/utils.h"

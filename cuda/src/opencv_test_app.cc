@@ -2,29 +2,32 @@
 #include <opencv/highgui.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <gtest/gtest.h>
 
 IplImage* image = 0;
 IplImage* src = 0;
 
-int main(int argc, char* argv[])
-{
-  // имя картинки задаётся первым параметром
-  char* filename = argc == 2 ? argv[1] : "vlcsnap-2013-06-13-13h44m56s31.png";
-  // получаем картинку
+//int main(int argc, char* argv[])
+TEST(OpenCV, Hello) {
+  // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  const char* filename =
+		  //argc == 2 ? argv[1] :
+		  "vlcsnap-2013-06-13-13h44m56s31.png";
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   image = cvLoadImage(filename,1);
-  // клонируем картинку 
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
   src = cvCloneImage(image);
 
   printf("[i] image: %s\n", filename);
   assert( src != 0 );
 
-  // окно для отображения картинки
+  // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   cvNamedWindow("original",CV_WINDOW_AUTOSIZE);
 
-  // показываем картинку
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   cvShowImage("original",image);
 
-  // выводим в консоль информацию о картинке
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   printf( "[i] channels:  %d\n",        image->nChannels );
   printf( "[i] pixel depth: %d bits\n",   image->depth );
   printf( "[i] width:       %d pixels\n", image->width );
@@ -32,13 +35,13 @@ int main(int argc, char* argv[])
   printf( "[i] image size:  %d bytes\n",  image->imageSize );
   printf( "[i] width step:  %d bytes\n",  image->widthStep );
 
-  // ждём нажатия клавиши
+  // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   cvWaitKey(0);
 
-  // освобождаем ресурсы
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   cvReleaseImage(& image);
   cvReleaseImage(&src);
-  // удаляем окно
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
   cvDestroyWindow("original");
-  return 0;
+  //return 0;
 }

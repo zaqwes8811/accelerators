@@ -9,6 +9,11 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include subdir.mk
+-include third_party/summary/subdir.mk
+-include third_party/subdir.mk
+-include reuse/subdir.mk
+-include HW2/subdir.mk
+-include HW1/subdir.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -46,7 +51,7 @@ all: nsight_test secondary-outputs
 nsight_test: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: NVCC Linker'
-	/usr/local/cuda-5.5/bin/nvcc --cudart static -link -o  "nsight_test" $(OBJS) $(USER_OBJS) $(LIBS)
+	/usr/local/cuda-5.5/bin/nvcc --cudart static -L/home/zaqwes/work/opencv_2.3.1/lib -link -o  "nsight_test" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

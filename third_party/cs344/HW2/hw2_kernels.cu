@@ -103,13 +103,16 @@
 // Own
 #include "hw2_kernels_cu.h"
 
+// C
+#include <stdio.h>
+
 // Third party
 #include "cs344/reuse/utils.h"
 
 // Inner reuse
 #include "splitters.h"
 
-// Раз объявлено здесь значить это в памяти GPU?
+// пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ GPU?
 unsigned char *d_red, *d_green, *d_blue;
 float         *d_filter;
 
@@ -142,7 +145,7 @@ void gaussian_blur(const unsigned char* const inputChannel,
 
   // Fake
   //outputChannel[thread_1D_pos] = inputChannel[thread_1D_pos];
-  // Обработка одного пикселя
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   float result = 0.f;
 
   // NOTE: Be sure to compute any intermediate results in floating point
@@ -329,7 +332,7 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA,
   cudaDeviceSynchronize(); 
   checkCudaErrors(cudaGetLastError());
 
-  // Возможно не здесь
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
   cleanup();
 }
 
