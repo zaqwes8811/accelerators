@@ -1,7 +1,9 @@
+# Erlang
 *.beam
 *.cache
 *.dep
 *.dll
+
 *.exe
 *.exe.*
 *.idb
@@ -11,6 +13,7 @@
 *.manifest
 *.ncb
 *.o
+*.d
 *.o.d
 *.obj
 *.opensdf
@@ -23,5 +26,4 @@
 *.suo
 *BuildLog.htm
 *~
-/deployer/dist/*
 *.ipch
