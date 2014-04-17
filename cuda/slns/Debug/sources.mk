@@ -26,7 +26,9 @@ C_UPPER_DEPS :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 third_party \
-src/work/hided \
+src \
+src/cuda \
 src/cs344/summary \
 src/cs344/reuse \
+src/cc \
 

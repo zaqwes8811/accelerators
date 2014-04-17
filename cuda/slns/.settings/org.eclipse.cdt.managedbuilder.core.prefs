@@ -1,0 +1,7 @@
+eclipse.preferences.version=1
+environment/buildEnvironmentInclude/com.nvidia.cuda.ide.configuration.debug.71703607/CPATH/delimiter=\:
+environment/buildEnvironmentInclude/com.nvidia.cuda.ide.configuration.debug.71703607/CPATH/operation=remove
+environment/buildEnvironmentInclude/com.nvidia.cuda.ide.configuration.debug.71703607/CPLUS_INCLUDE_PATH/delimiter=\:
+environment/buildEnvironmentInclude/com.nvidia.cuda.ide.configuration.debug.71703607/CPLUS_INCLUDE_PATH/operation=remove
+environment/buildEnvironmentInclude/com.nvidia.cuda.ide.configuration.debug.71703607/append=true
+environment/buildEnvironmentInclude/com.nvidia.cuda.ide.configuration.debug.71703607/appendContributed=true
