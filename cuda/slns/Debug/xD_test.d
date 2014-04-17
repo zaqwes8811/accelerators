@@ -160,7 +160,7 @@
     /usr/include/c++/4.7/iterator \
     /usr/include/c++/4.7/bits/stream_iterator.h \
     /usr/include/assert.h \
-    /home/zaqwes/work/parallelize/third_party/cs344/summary/reference_calc.h \
+    /home/zaqwes/work/parallelize/cuda/src/cs344/summary/reference_calc.h \
     /usr/local/cuda-5.5/bin/..//include/cuda_runtime.h \
     /usr/local/cuda-5.5/bin/..//include/host_config.h \
     /usr/local/cuda-5.5/bin/..//include/builtin_types.h \
@@ -183,8 +183,8 @@
     /usr/local/cuda-5.5/bin/..//include/cuda_device_runtime_api.h \
     /usr/local/cuda-5.5/bin/..//include/driver_functions.h \
     /usr/local/cuda-5.5/bin/..//include/vector_functions.h \
-    /home/zaqwes/work/parallelize/third_party/cs344/HW2/hw2_kernels_cu.h \
-    /home/zaqwes/work/parallelize/third_party/cs344/reuse/utils.h \
+    /home/zaqwes/work/parallelize/cuda/src/hw2_kernels_cu.h \
+    /home/zaqwes/work/parallelize/cuda/src/cs344/reuse/utils.h \
     /usr/include/c++/4.7/cassert \
     /usr/include/c++/4.7/cmath \
     /usr/include/math.h \

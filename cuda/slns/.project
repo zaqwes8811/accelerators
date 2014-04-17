@@ -26,114 +26,14 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>HW1</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>HW2</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>hw1_test.cc</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/src/hw1_test.cc</locationURI>
-		</link>
-		<link>
-			<name>hw2_test.cc</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/src/hw2_test.cc</locationURI>
-		</link>
-		<link>
-			<name>launcher.cc</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/src/launcher.cc</locationURI>
-		</link>
-		<link>
-			<name>opencv_test_app.cc</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/src/opencv_test_app.cc</locationURI>
-		</link>
-		<link>
-			<name>reuse</name>
-			<type>2</type>
-			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>reuse.cu</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/src/reuse.cu</locationURI>
-		</link>
-		<link>
-			<name>splitters.cc</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/src/splitters.cc</locationURI>
-		</link>
-		<link>
-			<name>splitters.h</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/src/splitters.h</locationURI>
-		</link>
-		<link>
-			<name>splitters_test.cc</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/src/splitters_test.cc</locationURI>
-		</link>
-		<link>
 			<name>third_party</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>xD_test.cc</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/src/xD_test.cc</locationURI>
-		</link>
-		<link>
-			<name>xd.cu</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/src/xd.cu</locationURI>
-		</link>
-		<link>
-			<name>HW1/hw1_kernels.cu</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/third_party/cs344/HW1/hw1_kernels.cu</locationURI>
-		</link>
-		<link>
-			<name>HW2/hw2_kernels.cu</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/third_party/cs344/HW2/hw2_kernels.cu</locationURI>
-		</link>
-		<link>
-			<name>HW2/hw2_kernels_cu.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/third_party/cs344/HW2/hw2_kernels_cu.h</locationURI>
-		</link>
-		<link>
-			<name>reuse/compare.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/third_party/cs344/reuse/compare.cpp</locationURI>
-		</link>
-		<link>
-			<name>reuse/compare.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/third_party/cs344/reuse/compare.h</locationURI>
-		</link>
-		<link>
-			<name>reuse/timer.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/third_party/cs344/reuse/timer.h</locationURI>
-		</link>
-		<link>
-			<name>reuse/utils.cc</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/third_party/cs344/reuse/utils.cc</locationURI>
-		</link>
-		<link>
-			<name>reuse/utils.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/third_party/cs344/reuse/utils.h</locationURI>
+			<name>src/cs344</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>third_party/gmock</name>
@@ -151,7 +51,27 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>third_party/summary</name>
+			<name>src/cs344/HW1</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/cs344/HW2</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/cs344/reuse</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/cs344/summary</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>src/work/hided</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
@@ -166,14 +86,129 @@
 			<locationURI>PARENT-2-PROJECT_LOC/third_party/gmock-1.6.0/fused-src/gtest/gtest.h</locationURI>
 		</link>
 		<link>
-			<name>third_party/summary/reference_calc.cc</name>
+			<name>src/cs344/HW1/CMakeLists.txt</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/third_party/cs344/summary/reference_calc.cc</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/src/cs344/HW1/CMakeLists.txt</locationURI>
 		</link>
 		<link>
-			<name>third_party/summary/reference_calc.h</name>
+			<name>src/cs344/HW1/Makefile</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/third_party/cs344/summary/reference_calc.h</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/src/cs344/HW1/Makefile</locationURI>
+		</link>
+		<link>
+			<name>src/cs344/HW1/Thumbs.db</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/cs344/HW1/Thumbs.db</locationURI>
+		</link>
+		<link>
+			<name>src/cs344/HW2/CMakeLists.txt</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/cs344/HW2/CMakeLists.txt</locationURI>
+		</link>
+		<link>
+			<name>src/cs344/HW2/Makefile</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/cs344/HW2/Makefile</locationURI>
+		</link>
+		<link>
+			<name>src/cs344/reuse/compare.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/cs344/reuse/compare.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/cs344/reuse/compare.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/cs344/reuse/compare.h</locationURI>
+		</link>
+		<link>
+			<name>src/cs344/reuse/timer.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/cs344/reuse/timer.h</locationURI>
+		</link>
+		<link>
+			<name>src/cs344/reuse/utils.cc</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/cs344/reuse/utils.cc</locationURI>
+		</link>
+		<link>
+			<name>src/cs344/reuse/utils.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/cs344/reuse/utils.h</locationURI>
+		</link>
+		<link>
+			<name>src/cs344/summary/reference_calc.cc</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/cs344/summary/reference_calc.cc</locationURI>
+		</link>
+		<link>
+			<name>src/cs344/summary/reference_calc.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/cs344/summary/reference_calc.h</locationURI>
+		</link>
+		<link>
+			<name>src/work/hided/hw1_kernels.cu</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/hided/hw1_kernels.cu</locationURI>
+		</link>
+		<link>
+			<name>src/work/hided/hw1_test.cc</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/hided/hw1_test.cc</locationURI>
+		</link>
+		<link>
+			<name>src/work/hided/hw2_kernels.cu</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/hided/hw2_kernels.cu</locationURI>
+		</link>
+		<link>
+			<name>src/work/hided/hw2_kernels_cu.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/hided/hw2_kernels_cu.h</locationURI>
+		</link>
+		<link>
+			<name>src/work/hided/hw2_test.cc</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/hided/hw2_test.cc</locationURI>
+		</link>
+		<link>
+			<name>src/work/hided/launcher.cc</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/hided/launcher.cc</locationURI>
+		</link>
+		<link>
+			<name>src/work/hided/opencv_test_app.cc</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/hided/opencv_test_app.cc</locationURI>
+		</link>
+		<link>
+			<name>src/work/hided/reuse.cu</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/hided/reuse.cu</locationURI>
+		</link>
+		<link>
+			<name>src/work/hided/splitters.cc</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/hided/splitters.cc</locationURI>
+		</link>
+		<link>
+			<name>src/work/hided/splitters.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/hided/splitters.h</locationURI>
+		</link>
+		<link>
+			<name>src/work/hided/splitters_test.cc</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/hided/splitters_test.cc</locationURI>
+		</link>
+		<link>
+			<name>src/work/hided/xD_test.cc</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/hided/xD_test.cc</locationURI>
+		</link>
+		<link>
+			<name>src/work/hided/xd.cu</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/src/hided/xd.cu</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

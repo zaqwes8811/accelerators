@@ -25,10 +25,8 @@ C_UPPER_DEPS :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
-. \
-third_party/summary \
 third_party \
-reuse \
-HW2 \
-HW1 \
+src/work/hided \
+src/cs344/summary \
+src/cs344/reuse \
 

@@ -160,7 +160,7 @@
     /usr/include/c++/4.7/iterator \
     /usr/include/c++/4.7/bits/stream_iterator.h \
     /usr/include/assert.h \
-    /home/zaqwes/work/parallelize/third_party/cs344/reuse/utils.h \
+    /home/zaqwes/work/parallelize/cuda/src/cs344/reuse/utils.h \
     /usr/include/c++/4.7/cassert \
     /usr/include/c++/4.7/cmath \
     /usr/include/math.h \
@@ -194,8 +194,8 @@
     /usr/local/cuda-5.5/bin/..//include/cuda_device_runtime_api.h \
     /usr/local/cuda-5.5/bin/..//include/driver_functions.h \
     /usr/local/cuda-5.5/bin/..//include/vector_functions.h \
-    /home/zaqwes/work/parallelize/third_party/cs344/summary/reference_calc.h \
-    /home/zaqwes/work/parallelize/third_party/cs344/reuse/compare.h \
+    /home/zaqwes/work/parallelize/cuda/src/cs344/summary/reference_calc.h \
+    /home/zaqwes/work/parallelize/cuda/src/cs344/reuse/compare.h \
     /home/zaqwes/work/opencv_2.3.1/include/opencv2/highgui/highgui.hpp \
     /home/zaqwes/work/opencv_2.3.1/include/opencv2/core/core.hpp \
     /home/zaqwes/work/opencv_2.3.1/include/opencv2/core/types_c.h \
@@ -247,4 +247,4 @@
     /usr/include/c++/4.7/bits/gslice_array.h \
     /usr/include/c++/4.7/bits/mask_array.h \
     /usr/include/c++/4.7/bits/indirect_array.h \
-    /home/zaqwes/work/parallelize/third_party/cs344/reuse/timer.h
+    /home/zaqwes/work/parallelize/cuda/src/cs344/reuse/timer.h

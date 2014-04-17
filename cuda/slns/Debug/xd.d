@@ -94,8 +94,8 @@
     /usr/local/cuda-5.5/bin/..//include/texture_indirect_functions.h \
     /usr/local/cuda-5.5/bin/..//include/surface_indirect_functions.h \
     /usr/local/cuda-5.5/bin/..//include/device_launch_parameters.h \
-    /home/zaqwes/work/parallelize/third_party/cs344/HW2/hw2_kernels_cu.h \
-    /home/zaqwes/work/parallelize/third_party/cs344/reuse/utils.h \
+    /home/zaqwes/work/parallelize/cuda/src/hw2_kernels_cu.h \
+    /home/zaqwes/work/parallelize/cuda/src/cs344/reuse/utils.h \
     /usr/include/c++/4.7/cassert \
     /usr/include/c++/4.7/iostream \
     /usr/include/c++/4.7/ostream \
