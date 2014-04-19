@@ -184,9 +184,9 @@ TEST(HW2, Bluring) {
   std::string input_file;
   std::string output_file;
   std::string reference_file;
-  double perPixelError = 0.0;
-  double globalError   = 0.0;
-  bool useEpsCheck = false;
+  double perPixelError = 40.0;
+  double globalError   = 1000.0;
+  bool useEpsCheck = true;//false;
   input_file  = std::string("in_hw2/cinque_terre_small.jpg");
   output_file = std::string("o.png");
   reference_file = std::string("refs_hw2/cinque_terre_ref_autogen.jpg");
@@ -254,7 +254,7 @@ TEST(HW2, Bluring) {
   //  Cheater easy way with OpenCV
   generateReferenceImage(input_file, reference_file, filterWidth);
 
-  //compareImages(reference_file, reference_file+".jpg", useEpsCheck, perPixelError, globalError);
+  compareImages(reference_file, output_file, useEpsCheck, perPixelError, globalError);
 
   checkCudaErrors(cudaFree(d_redBlurred));
   checkCudaErrors(cudaFree(d_greenBlurred));
