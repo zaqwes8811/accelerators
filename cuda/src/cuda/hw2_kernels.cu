@@ -323,9 +323,9 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA,
   //
   // NOTE: This kernel launch depends on the gridSize and blockSize variables,
   // which you must set yourself.
-  recombineChannels<<<gridSize, blockSize>>>(d_redBlurred,
-                                             d_greenBlurred,
-                                             d_blueBlurred,
+  recombineChannels<<<gridSize, blockSize>>>(d_red,//Blurred,
+                                             d_green,//Blurred,
+                                             d_blue,//Blurred,
                                              d_outputImageRGBA,
                                              numRows,
                                              numCols);
