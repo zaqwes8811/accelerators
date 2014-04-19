@@ -1,27 +1,29 @@
 //Udacity HW2 Driver
 // http://stackoverflow.com/questions/9779617/compiling-opencv-2-3-1-programs-with-mingw-gcc-g-on-windows-7-64bit
 
-#include <iostream>
-#include "cs344/reuse/timer.h"
-#include "cs344/reuse/utils.h"
+// C
 #include <string>
 #include <stdio.h>
 
+// C++
+#include <iostream>
+#include <string>
+
+
 // Third party
 #include <gtest/gtest.h>
-
-#include "cs344/summary/reference_calc.h"
-#include "cs344/reuse/compare.h"
-
+#include <cuda.h>
+#include <cuda_runtime.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
-#include "cs344/reuse/utils.h"
-#include <cuda.h>
-#include <cuda_runtime.h>
-#include <string>
 
-//
+// App
+#include "cs344/reuse/timer.h"
+#include "cs344/reuse/utils.h"
+#include "cs344/summary/reference_calc.h"
+#include "cs344/reuse/compare.h"
+#include "cs344/reuse/utils.h"
 #include "cuda/hw2_kernels_cu.h"
 
 static cv::Mat imageInputRGBA;
@@ -159,7 +161,7 @@ static void generateReferenceImage(std::string input_file, std::string reference
 
 /*******  DEFINED IN student_func.cu *********/
 
-void your_gaussian_blur_(const uchar4 * const h_inputImageRGBA, uchar4 * const d_inputImageRGBA,
+void your_gaussian_blur(const uchar4 * const h_inputImageRGBA, uchar4 * const d_inputImageRGBA,
                         uchar4* const d_outputImageRGBA,
                         const size_t numRows, const size_t numCols,
                         unsigned char *d_redBlurred,
@@ -171,7 +173,7 @@ void allocateMemoryAndCopyToGPU(const size_t numRowsImage, const size_t numColsI
                                 const float* const h_filter, const size_t filterWidth);
 
 
-TEST(Bluring, Release4) {
+TEST(HW2, Bluring) {
   uchar4 *h_inputImageRGBA,  *d_inputImageRGBA;
   uchar4 *h_outputImageRGBA, *d_outputImageRGBA;
   unsigned char *d_redBlurred, *d_greenBlurred, *d_blueBlurred;
@@ -185,15 +187,16 @@ TEST(Bluring, Release4) {
   double perPixelError = 0.0;
   double globalError   = 0.0;
   bool useEpsCheck = false;
-  input_file  = std::string("cinque_terre_small.jpg");
+  input_file  = std::string("in_hw2/cinque_terre_small.jpg");
   output_file = std::string("o.png");
-  reference_file = std::string("cinque_terre_ref.jpg");
+  reference_file = std::string("refs_hw2/cinque_terre_ref_autogen.jpg");
 
   {
     // load the image and give us our input and output pointers
     //
     // Create filter.
-    preProcess(&h_inputImageRGBA, &h_outputImageRGBA, 
+    preProcess(
+    	&h_inputImageRGBA, &h_outputImageRGBA,
         &d_inputImageRGBA, 
         &d_outputImageRGBA,
         &d_redBlurred, 
@@ -207,7 +210,7 @@ TEST(Bluring, Release4) {
     GpuTimer timer;
     timer.Start();
     //call the students' code
-    your_gaussian_blur_(
+    your_gaussian_blur(
         h_inputImageRGBA, 
         d_inputImageRGBA, 
         d_outputImageRGBA, 
@@ -248,8 +251,8 @@ TEST(Bluring, Release4) {
                        h_filter, filterWidth);
   postProcess(reference_file, h_outputImageRGBA);
 
-	//  Cheater easy way with OpenCV
-	//generateReferenceImage(input_file, reference_file, filterWidth);
+  //  Cheater easy way with OpenCV
+  generateReferenceImage(input_file, reference_file, filterWidth);
 
   //compareImages(reference_file, reference_file+".jpg", useEpsCheck, perPixelError, globalError);
 
