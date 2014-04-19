@@ -93,8 +93,6 @@ void channelConvolution(const unsigned char* const channel,
   //For every pixel in the image
   for (int r = 0; r < (int)kImgCountRows; ++r) {
     for (int c = 0; c < (int)kImgCountColumns; ++c) {
-
-      // Обработка одного пикселя
       float result = 0.f;
       //For every value in the filter around the pixel (c, r)
       for (int filterRowIdx = -kFilterWidth/2; 
