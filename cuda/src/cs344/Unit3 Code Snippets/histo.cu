@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <cuda_runtime.h>
+#include "device_functions.h"
 
 int log2(int i)
 {
