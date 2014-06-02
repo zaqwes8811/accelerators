@@ -2,6 +2,18 @@
 #include <stdlib.h>
 #include <cuda_runtime.h>
 
+// Scan: 
+// 1. Serial reguces - проблема в том, что если использовать reduce из лекции, то он портит исходный массив.
+//   а значить нужны локальные копии для каждого потока.
+//
+// 2.
+//
+// 3.
+//
+// http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
+
+
+// Работает прямо с массивом.
 __global__ void global_reduce_kernel(float * d_out, float * d_in)
 {
     int myId = threadIdx.x + blockDim.x * blockIdx.x;
