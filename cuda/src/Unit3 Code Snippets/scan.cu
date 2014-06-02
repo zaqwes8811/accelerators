@@ -1,5 +1,9 @@
- #include <stdio.h>
+// C
+#include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
+
+// 3rdparty
 #include <cuda_runtime.h>
 
 // Scan: 
@@ -29,7 +33,7 @@ const int maxThreadsPerBlock = 1024;
 // Hillis and Steele
 // parallel with one buffer:
 // TODO: не понял в чем проблема, но похоже она в синхронизации
-//   хотя нет, похоже дело в том что расчет in-place
+//   хотя нет, похоже дело в том что расчет in-place. Нет не в этом дело.
 for d = 1 to log2(n) do
   for all k in parallel do
     if k >= 2^d then
@@ -44,13 +48,35 @@ for d = 1 to log2(n) do
       x[out][k] = x[in][k]
 */
 
-__global__ void global_scan_kernel_one_block(float * d_out, float * d_in)
+__global__ void global_scan_kernel_one_block(float * d_out, float * d_in, int n)
 {
-//    int myId = threadIdx.x + blockDim.x * blockIdx.x;  // not one block!
-    int tid  = threadIdx.x;
+  //int myId = threadIdx.x + blockDim.x * blockIdx.x;  // not one block!
+  extern __shared__ float temp[];
+  int thid  = threadIdx.x;
+  //  for
+  int pout = 0;
+  int pin = 1;
+
+  // Load input into shared memory.  
+  // This is exclusive scan, so shift right by one  
+  // and set first element to 0  
+  temp[pout * n + thid] = (thid > 0) ? d_in[thid-1] : 0;  
+  __syncthreads();  
+
+  for (int offset = 1; offset < n; offset *= 2)  
+  {  
+    pout = 1 - pout; // swap double buffer indices  
+    pin = 1 - pout;  
+    if (thid >= offset)  
+      temp[pout*n+thid] += temp[pin*n+thid - offset];  
+    else  
+      temp[pout*n+thid] = temp[pin*n+thid];  
+    __syncthreads();  
+  }  
+  d_out[thid] = temp[pout*n+thid /*1*/]; // write output 
 }
 
-void scan(float * d_out, float * d_intermediate, float * d_in, int size) 
+void scan_hillis(float * d_out, float * d_intermediate, float * d_in, int size) 
 {
   // Precond:
   // assumes that size is not greater than maxThreadsPerBlock^2
@@ -58,8 +84,9 @@ void scan(float * d_out, float * d_intermediate, float * d_in, int size)
 
   int threads = maxThreadsPerBlock;
   int blocks = 1;//size / maxThreadsPerBlock;
-  printf("Count blocks: %d\n", blocks);
-  global_scan_kernel_one_block<<<blocks, threads>>>(d_intermediate, d_in);
+  assert(blocks == 1);  // TODO: пока чтобы не комбинировать результаты блоков
+
+  global_scan_kernel_one_block<<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_in, size);
 }
 
 int main(int argc, char **argv)
@@ -122,7 +149,7 @@ int main(int argc, char **argv)
         cudaEventRecord(start, 0);
         for (int i = 0; i < countTries; i++)
         {
-            scan(d_out, d_intermediate, d_in, ARRAY_SIZE);//, false);
+            scan_hillis(d_out, d_intermediate, d_in, ARRAY_SIZE);//, false);
         }
         cudaEventRecord(stop, 0);
         break;
@@ -131,7 +158,7 @@ int main(int argc, char **argv)
         cudaEventRecord(start, 0);
         for (int i = 0; i < countTries; i++)
         {
-            scan(d_out, d_intermediate, d_in, ARRAY_SIZE);//, true);
+            scan_hillis(d_out, d_intermediate, d_in, ARRAY_SIZE);//, true);
         }
         cudaEventRecord(stop, 0);
         break;
