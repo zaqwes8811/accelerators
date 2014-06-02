@@ -15,6 +15,7 @@
 
 const int maxThreadsPerBlock = 1024;
 
+/*
 // serial:
 // TODO: причем тут f(elem)?
 {
@@ -22,7 +23,10 @@ const int maxThreadsPerBlock = 1024;
   for j from 1 to n do
     out[j] = out[j-1] + f(in[j-1]);
 }
+*/
 
+/*
+// Hillis and Steele
 // parallel with one buffer:
 // TODO: не понял в чем проблема, но похоже она в синхронизации
 //   хотя нет, похоже дело в том что расчет in-place
@@ -31,14 +35,31 @@ for d = 1 to log2(n) do
     if k >= 2^d then
       x[k] = x[k - 2^(d-1)] + x[k]
 
-void scan(float * d_out, float * d_intermediate, float * d_in, int size)
+// parallel separated in and out buffers:
+for d = 1 to log2(n) do
+  for all k in parallel do
+    if k >= 2^d then
+      x[out][k] = x[in][k-2^(d-1)] + x[in][k]
+    else
+      x[out][k] = x[in][k]
+*/
+
+__global__ void global_scan_kernel_one_block(float * d_out, float * d_in)
 {
-    // assumes that size is not greater than maxThreadsPerBlock^2
-    // and that size is a multiple of maxThreadsPerBlock
-    
-    int threads = maxThreadsPerBlock;
-    int blocks = size / maxThreadsPerBlock;
-    //global_reduce_kernel<<<blocks, threads>>>(d_intermediate, d_in);
+//    int myId = threadIdx.x + blockDim.x * blockIdx.x;  // not one block!
+    int tid  = threadIdx.x;
+}
+
+void scan(float * d_out, float * d_intermediate, float * d_in, int size) 
+{
+  // Precond:
+  // assumes that size is not greater than maxThreadsPerBlock^2
+  // and that size is a multiple of maxThreadsPerBlock
+
+  int threads = maxThreadsPerBlock;
+  int blocks = 1;//size / maxThreadsPerBlock;
+  printf("Count blocks: %d\n", blocks);
+  global_scan_kernel_one_block<<<blocks, threads>>>(d_intermediate, d_in);
 }
 
 int main(int argc, char **argv)
@@ -94,11 +115,12 @@ int main(int argc, char **argv)
     cudaEventCreate(&start);
     cudaEventCreate(&stop);
     // launch the kernel
+  int countTries = 1;
     switch(whichKernel) {
     case 0:
         printf("Running global reduce\n");
         cudaEventRecord(start, 0);
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < countTries; i++)
         {
             scan(d_out, d_intermediate, d_in, ARRAY_SIZE);//, false);
         }
@@ -107,7 +129,7 @@ int main(int argc, char **argv)
     case 1:
         printf("Running reduce with shared mem\n");
         cudaEventRecord(start, 0);
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < countTries; i++)
         {
             scan(d_out, d_intermediate, d_in, ARRAY_SIZE);//, true);
         }

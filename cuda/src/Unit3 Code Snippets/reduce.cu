@@ -14,7 +14,7 @@
 // http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
 
 
-// Работает прямо с массивом.
+// Работает in-place
 __global__ void global_reduce_kernel(float * d_out, float * d_in)
 {
     int myId = threadIdx.x + blockDim.x * blockIdx.x;  // not one block!
@@ -88,6 +88,7 @@ void reduce(float * d_out, float * d_intermediate, float * d_in,
     }
 
     // Step 2:
+    // TODO: Комбинируем разультаты блоков и это ограничение на размер входных данных
     // now we're down to one block left, so reduce it
     threads = blocks; // launch one thread for each block in prev step
     blocks = 1;
