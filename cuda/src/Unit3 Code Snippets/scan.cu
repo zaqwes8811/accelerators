@@ -73,7 +73,42 @@ __device__ void cuSwap(int& a, int& b)
 
 // http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
 // TODO: In article finded bugs.
-__global__ void global_scan_kernel_one_block(float * d_out, const float * const d_in, int n)
+__global__ void global_scan_kernel_one_block_1buf(float * d_out, const float * const d_in, int n)
+{ 
+  // результаты работы потоков можем расшаривать через эту
+  // память или через глобальную
+  extern __shared__ float temp[];  
+  int localId  = threadIdx.x;
+  
+  if (localId >= n) 
+    return;
+  // Load input into shared memory.  
+  // This is exclusive scan, so shift right by one  
+  // and set first element to 0  
+  temp[localId] = (localId > 0) ? d_in[localId-1] : 0;  
+  __syncthreads();  
+
+  for (int offset = 1; offset < n; offset *= 2)  // 2^i
+  {  
+    if (localId >= offset) {
+      float temp_val0 = temp[localId];
+      float temp_val1 = temp[localId-offset]; 
+      // TODO: возможно быстрее прибавить тут, а может и нет
+      __syncthreads();
+      
+      temp[localId] = temp_val0 + temp_val1;  
+    }
+    
+    // буффера переписали
+    __syncthreads();  
+  }  
+  d_out[localId] = temp[localId]; // write output 
+}
+
+// http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
+// TODO: In article finded bugs.
+// TODO: расширить на несколько блоков
+__global__ void global_scan_kernel_one_block_2buf(float * d_out, const float * const d_in, int n)
 { 
   // результаты работы потоков можем расшаривать через эту
   // память или через глобальную
@@ -123,7 +158,8 @@ void scan_hillis(/*float * d_out,*/ float * d_intermediate, float * d_in, int si
   int blocks = 1;//size / maxThreadsPerBlock;
   assert(blocks == 1);  // TODO: пока чтобы не комбинировать результаты блоков
 
-  global_scan_kernel_one_block<<<blocks, threads, threads * sizeof(float) * 2>>>(d_intermediate, d_in, size);
+  //global_scan_kernel_one_block<<<blocks, threads, threads * sizeof(float) * 2>>>(d_intermediate, d_in, size);
+  global_scan_kernel_one_block_1buf<<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_in, size);
 }
 
 int main(int argc, char **argv)
