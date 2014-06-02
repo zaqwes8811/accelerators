@@ -93,7 +93,7 @@ __global__ void global_scan_kernel_one_block(float * d_out, const float * const 
   temp[p_sink * n + localId] = (localId > 0) ? d_in[localId-1] : 0;  
   __syncthreads();  
 
-  for (int offset = 1; offset < n; offset *= 2)  // 2^i
+  /*for (int offset = 1; offset < n; offset *= 2)  // 2^i
   {  
     cuSwap(p_sink, p_source);
     
@@ -104,7 +104,7 @@ __global__ void global_scan_kernel_one_block(float * d_out, const float * const 
     
     // буффера переписали
     __syncthreads();  
-  }  
+  }  */
 
   // p_sink == 0?
   // Пишем из текущего буффера
@@ -153,10 +153,10 @@ int main(int argc, char **argv)
   float h_in[ARRAY_SIZE];
   float sum = 0.0f;
   for(int i = 0; i < ARRAY_SIZE; i++) {
-      // generate random float in [-1.0f, 1.0f]
-      h_in[i] = 1.0f * i;// + (float)random()/((float)RAND_MAX/2.0f);
-      sum += h_in[i];
-      printf("%f, ", sum);
+    printf("%f, ", sum);  
+    // generate random float in [-1.0f, 1.0f]
+    h_in[i] = 1.0f * (i+1);// + (float)random()/((float)RAND_MAX/2.0f);
+    sum += h_in[i];  
   }
   printf("\n");//, sum);
   
