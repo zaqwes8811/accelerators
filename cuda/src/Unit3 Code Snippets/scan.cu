@@ -23,6 +23,14 @@ const int maxThreadsPerBlock = 1024;
     out[j] = out[j-1] + f(in[j-1]);
 }
 
+// parallel with one buffer:
+// TODO: не понял в чем проблема, но похоже она в синхронизации
+//   хотя нет, похоже дело в том что расчет in-place
+for d = 1 to log2(n) do
+  for all k in parallel do
+    if k >= 2^d then
+      x[k] = x[k - 2^(d-1)] + x[k]
+
 void scan(float * d_out, float * d_intermediate, float * d_in, int size)
 {
     // assumes that size is not greater than maxThreadsPerBlock^2
