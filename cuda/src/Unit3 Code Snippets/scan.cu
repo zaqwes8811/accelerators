@@ -93,18 +93,21 @@ __global__ void global_scan_kernel_one_block(float * d_out, const float * const 
   temp[p_sink * n + localId] = (localId > 0) ? d_in[localId-1] : 0;  
   __syncthreads();  
 
-  /*for (int offset = 1; offset < n; offset *= 2)  // 2^i
+  for (int offset = 1; offset < n; offset *= 2)  // 2^i
   {  
     cuSwap(p_sink, p_source);
     
-    if (localId >= offset)  
-      temp[p_sink * n+localId] += temp[p_source * n + localId - offset];  
-    else  
-      temp[p_sink * n+localId] = temp[p_source * n+localId];  
+    if (localId >= offset) {
+      float temp_val = temp[p_sink*n + localId] + temp[p_source*n + localId - offset];
+      temp[p_sink*n + localId] = temp_val;  
+    } else  
+      temp[p_sink*n+localId] = temp[p_source * n+localId];  
+    
+    break;
     
     // буффера переписали
     __syncthreads();  
-  }  */
+  }  
 
   // p_sink == 0?
   // Пишем из текущего буффера
