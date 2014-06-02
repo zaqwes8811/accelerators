@@ -4,7 +4,8 @@
 
 // Scan: 
 // 1. Serial reguces - проблема в том, что если использовать reduce из лекции, то он портит исходный массив.
-//   а значить нужны локальные копии для каждого потока.
+//   а значить нужны локальные копии для каждого потока. Work in place.
+//   http://stackoverflow.com/questions/2187189/creating-arrays-in-nvidia-cuda-kernel - может потребоватся огромная память.
 //
 // 2.
 //
@@ -16,7 +17,7 @@
 // Работает прямо с массивом.
 __global__ void global_reduce_kernel(float * d_out, float * d_in)
 {
-    int myId = threadIdx.x + blockDim.x * blockIdx.x;
+    int myId = threadIdx.x + blockDim.x * blockIdx.x;  // not one block!
     int tid  = threadIdx.x;
 
     // do reduction in global mem
@@ -73,6 +74,8 @@ void reduce(float * d_out, float * d_intermediate, float * d_in,
     const int maxThreadsPerBlock = 1024;
     int threads = maxThreadsPerBlock;
     int blocks = size / maxThreadsPerBlock;
+
+    // Step 1:
     if (usesSharedMemory)
     {
         shmem_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>
@@ -83,6 +86,8 @@ void reduce(float * d_out, float * d_intermediate, float * d_in,
         global_reduce_kernel<<<blocks, threads>>>
             (d_intermediate, d_in);
     }
+
+    // Step 2:
     // now we're down to one block left, so reduce it
     threads = blocks; // launch one thread for each block in prev step
     blocks = 1;
