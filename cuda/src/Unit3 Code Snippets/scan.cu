@@ -73,7 +73,8 @@ __device__ void cuSwap(int& a, int& b)
 
 // http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
 // TODO: In article finded bugs.
-__global__ void global_scan_kernel_one_block_1buf(float * d_out, const float * const d_in, int n)
+// DANGER: похоже слишком много синхронизации, возможно с двумя буфферами быстрее.
+__global__ void exclusive_scan_kernel_small_cache(float * d_out, const float * const d_in, int n)
 { 
   // результаты работы потоков можем расшаривать через эту
   // память или через глобальную
@@ -108,7 +109,7 @@ __global__ void global_scan_kernel_one_block_1buf(float * d_out, const float * c
 // http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
 // TODO: In article finded bugs.
 // TODO: расширить на несколько блоков
-__global__ void global_scan_kernel_one_block_2buf(float * d_out, const float * const d_in, int n)
+__global__ void exclusive_scan_kernel_doubled_cache(float * d_out, const float * const d_in, int n)
 { 
   // результаты работы потоков можем расшаривать через эту
   // память или через глобальную
@@ -148,18 +149,16 @@ __global__ void global_scan_kernel_one_block_2buf(float * d_out, const float * c
   d_out[localId] = temp[p_sink * n + localId /*1*/]; // write output 
 }
 
-void scan_hillis(/*float * d_out,*/ float * d_intermediate, float * d_in, int size) 
+void scan_hillis_1block(float * d_out, float * d_in, int size) 
 {
   // Precond:
   // assumes that size is not greater than maxThreadsPerBlock^2
   // and that size is a multiple of maxThreadsPerBlock
-
-  int threads = maxThreadsPerBlock;
-  int blocks = 1;//size / maxThreadsPerBlock;
+  int blocks = ceil((1.0f*size) / maxThreadsPerBlock);
   assert(blocks == 1);  // TODO: пока чтобы не комбинировать результаты блоков
 
-  //global_scan_kernel_one_block<<<blocks, threads, threads * sizeof(float) * 2>>>(d_intermediate, d_in, size);
-  global_scan_kernel_one_block_1buf<<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_in, size);
+  //exclusive_scan_kernel_doubled_cache<<<blocks, threads, threads * sizeof(float) * 2>>>(d_out, d_in, size);
+  exclusive_scan_kernel_small_cache<<<blocks, maxThreadsPerBlock, maxThreadsPerBlock * sizeof(float)>>>(d_out, d_in, size);
 }
 
 int main(int argc, char **argv)
@@ -189,23 +188,21 @@ int main(int argc, char **argv)
   // Serial:
   // generate the input array on the host
   float h_in[ARRAY_SIZE];
+  float h_scan_gold[ARRAY_SIZE];
   float sum = 0.0f;
   for(int i = 0; i < ARRAY_SIZE; i++) {
-    printf("%0.2f, ", sum);  
-    // generate random float in [-1.0f, 1.0f]
-    h_in[i] = 1.0f * (i+1);// + (float)random()/((float)RAND_MAX/2.0f);
+    h_scan_gold[i] = sum;
+    h_in[i] = 1.0f * (i+1);
     sum += h_in[i];  
   }
-  printf("\n");//, sum);
-  
 
   // Parallel
   // declare GPU memory pointers
-  float * d_in, * d_intermediate;//, * d_out;
+  float * d_in, * d_out;//, * d_out;
 
   // allocate GPU memory
   cudaMalloc((void **) &d_in, ARRAY_BYTES);
-  cudaMalloc((void **) &d_intermediate, ARRAY_BYTES); // overallocated
+  cudaMalloc((void **) &d_out, ARRAY_BYTES); // overallocated
   //cudaMalloc((void **) &d_out, sizeof(float));
 
   // transfer the input array to the GPU
@@ -225,7 +222,7 @@ int main(int argc, char **argv)
   case 0:
       printf("Running global reduce\n");
       cudaEventRecord(start, 0);
-      scan_hillis(/*d_out,*/ d_intermediate, d_in, ARRAY_SIZE);//, false);
+      scan_hillis_1block(/*d_out,*/ d_out, d_in, ARRAY_SIZE);//, false);
       checkCudaErrors(cudaGetLastError());
       cudaEventRecord(stop, 0);
       break;
@@ -240,20 +237,20 @@ int main(int argc, char **argv)
 
   // copy back the sum from GPU
   float h_out[ARRAY_SIZE]; // ARRAY_BYTES
-  checkCudaErrors(cudaMemcpy(h_out, d_intermediate, ARRAY_BYTES, cudaMemcpyDeviceToHost));
+  checkCudaErrors(cudaMemcpy(h_out, d_out, ARRAY_BYTES, cudaMemcpyDeviceToHost));
+  
+  // TODO: сравнить бы с моделью
+  // DANGER: http://stackoverflow.com/questions/17333/most-effective-way-for-float-and-double-comparison
   for (int i = 0; i < ARRAY_SIZE; ++i) {
-    printf("%0.2f, ", h_out[i]);
+    //printf("%0.2f, ", h_out[i]);
   }
-  printf("\n");//, sum);
-
-  //printf("Parallel sum: %f\n", h_out);
+  //printf("\n");
 
   printf("average time elapsed: %f\n", elapsedTime);
 
   // free GPU memory allocation
   cudaFree(d_in);
-  cudaFree(d_intermediate);
-  //cudaFree(d_out);
-      
+  cudaFree(d_out);
+     
   return 0;
 }
