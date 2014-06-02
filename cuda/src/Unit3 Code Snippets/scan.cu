@@ -71,10 +71,10 @@ __device__ void cuSwap(int& a, int& b)
   int c(a); a=b; b=c;
 }
 
+// http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
+// TODO: In article finded bugs.
 __global__ void global_scan_kernel_one_block(float * d_out, const float * const d_in, int n)
-{
-  //int myId = threadIdx.x + blockDim.x * blockIdx.x;  // not one block!
-  
+{ 
   // результаты работы потоков можем расшаривать через эту
   // память или через глобальную
   extern __shared__ float temp[];  
@@ -98,12 +98,11 @@ __global__ void global_scan_kernel_one_block(float * d_out, const float * const 
     cuSwap(p_sink, p_source);
     
     if (localId >= offset) {
-      float temp_val = temp[p_sink*n + localId] + temp[p_source*n + localId - offset];
+      float temp_val = temp[p_source*n + localId] + temp[p_source*n + localId - offset];
       temp[p_sink*n + localId] = temp_val;  
-    } else  
+    } else {
       temp[p_sink*n+localId] = temp[p_source * n+localId];  
-    
-    break;
+    }
     
     // буффера переписали
     __syncthreads();  
@@ -148,7 +147,7 @@ int main(int argc, char **argv)
              (int)devProps.clockRate);
   }
 
-  const int ARRAY_SIZE = 8;//maxThreadsPerBlock;//1 << 20;
+  const int ARRAY_SIZE = 10;//maxThreadsPerBlock;//1 << 20;
   const int ARRAY_BYTES = ARRAY_SIZE * sizeof(float);
 
   // Serial:
@@ -156,7 +155,7 @@ int main(int argc, char **argv)
   float h_in[ARRAY_SIZE];
   float sum = 0.0f;
   for(int i = 0; i < ARRAY_SIZE; i++) {
-    printf("%f, ", sum);  
+    printf("%0.2f, ", sum);  
     // generate random float in [-1.0f, 1.0f]
     h_in[i] = 1.0f * (i+1);// + (float)random()/((float)RAND_MAX/2.0f);
     sum += h_in[i];  
@@ -207,7 +206,7 @@ int main(int argc, char **argv)
   float h_out[ARRAY_SIZE]; // ARRAY_BYTES
   checkCudaErrors(cudaMemcpy(h_out, d_intermediate, ARRAY_BYTES, cudaMemcpyDeviceToHost));
   for (int i = 0; i < ARRAY_SIZE; ++i) {
-    printf("%f, ", h_out[i]);
+    printf("%0.2f, ", h_out[i]);
   }
   printf("\n");//, sum);
 
