@@ -93,6 +93,9 @@ void your_histogram_and_prefixsum(const float* const d_logLuminance,
   /*Here are the steps you need to implement
     1) find the minimum and maximum value in the input logLuminance channel
        store in min_logLum and max_logLum
+       
+       массив с данными должен быть не изменным, поэтому нужно хранить копию в shared
+       
     2) subtract them to find the range
     3) generate a histogram of all the values in the logLuminance channel using
        the formula: bin = (lum[i] - lumMin) / lumRange * numBins

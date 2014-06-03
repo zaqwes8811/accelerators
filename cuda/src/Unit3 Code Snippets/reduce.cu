@@ -1,5 +1,10 @@
+// TODO: сделать min and max reduce not in place
+
+// C
 #include <stdio.h>
 #include <stdlib.h>
+
+// 3rdparty
 #include <cuda_runtime.h>
 
 // Scan: 

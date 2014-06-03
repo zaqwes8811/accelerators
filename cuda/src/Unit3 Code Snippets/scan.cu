@@ -1,3 +1,6 @@
+// TODO: расширить на несколько блоков
+
+
 // C
 #include <stdio.h>
 #include <stdlib.h>
@@ -108,7 +111,6 @@ __global__ void exclusive_scan_kernel_small_cache(float * d_out, const float * c
 
 // http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
 // TODO: In article finded bugs.
-// TODO: расширить на несколько блоков
 __global__ void exclusive_scan_kernel_doubled_cache(float * d_out, const float * const d_in, int n)
 { 
   // результаты работы потоков можем расшаривать через эту
