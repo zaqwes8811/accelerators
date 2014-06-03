@@ -5,11 +5,15 @@
 # <email>   quantm@unist.ac.kr  kast.jo@googlemail.com msarahan@gmail.com</email>
 ############################################################################
 
+# http://stackoverflow.com/questions/13073717/building-cuda-object-files-using-cmake
+
 # required cmake version                                                                                                                                                                                   
 cmake_minimum_required(VERSION 2.8)
 
 # packages                                                                                                                                                                                                 
 find_package(CUDA)
+
+include_directories(/home/zaqwes/work/opencv_2.3.1/include)
 
 # nvcc flags                                                                                                                                                                                               
 set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_20,code=sm_20)
