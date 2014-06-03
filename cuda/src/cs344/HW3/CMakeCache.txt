@@ -116,7 +116,7 @@ CMAKE_OBJCOPY:FILEPATH=/usr/bin/objcopy
 CMAKE_OBJDUMP:FILEPATH=/usr/bin/objdump
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=Project
+CMAKE_PROJECT_NAME:STATIC=projA
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
@@ -240,6 +240,18 @@ Project_BINARY_DIR:STATIC=/home/zaqwes/work/parallelize/cuda/src/cs344/HW3
 
 //Value Computed by CMake
 Project_SOURCE_DIR:STATIC=/home/zaqwes/work/parallelize/cuda/src/cs344/HW3
+
+//The directory containing a CMake configuration file for opencv_core.
+opencv_core_DIR:PATH=opencv_core_DIR-NOTFOUND
+
+//Dependencies for target
+opencv_core_LIB_DEPENDS:STATIC=
+
+//Value Computed by CMake
+projA_BINARY_DIR:STATIC=/home/zaqwes/work/parallelize/cuda/src/cs344/HW3
+
+//Value Computed by CMake
+projA_SOURCE_DIR:STATIC=/home/zaqwes/work/parallelize/cuda/src/cs344/HW3
 
 
 ########################
