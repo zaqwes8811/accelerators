@@ -116,7 +116,7 @@ CMAKE_OBJCOPY:FILEPATH=/usr/bin/objcopy
 CMAKE_OBJDUMP:FILEPATH=/usr/bin/objdump
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=projA
+CMAKE_PROJECT_NAME:STATIC=Project
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
@@ -234,6 +234,9 @@ CUDA_cusparse_LIBRARY:FILEPATH=/usr/local/cuda-5.5/lib/libcusparse.so
 
 //"npp" library
 CUDA_npp_LIBRARY:FILEPATH=CUDA_npp_LIBRARY-NOTFOUND
+
+//Path to a library.
+FOO_LIBRARY:FILEPATH=FOO_LIBRARY-NOTFOUND
 
 //Value Computed by CMake
 Project_BINARY_DIR:STATIC=/home/zaqwes/work/parallelize/cuda/src/cs344/HW3

@@ -11,25 +11,21 @@
 # required cmake version                                                                                                                                                                                   
 cmake_minimum_required(VERSION 2.8)
 
-project (projA)
-
 # packages                                                                                                                                                                                                 
 find_package(CUDA)
 
-include_directories(/home/zaqwes/work/opencv_2.3.1/include)
+set(OpenCV "/home/zaqwes/work/opencv_2.3.1")
 
-# TODO: http://www.cmake.org/Wiki/CMake:How_To_Find_Libraries
-# http://stackoverflow.com/questions/19478088/cmake-link-library-target-link-error
+include_directories(${OpenCV}/include)
+
 # set the path to the library folder
-link_directories(/home/zaqwes/work/opencv_2.3.1/lib)
+link_directories(${OpenCV}/lib)
 
 # link the libraries to the executable
-#target_link_libraries(projA opencv_core opencv_highgui opencv_imgproc)
-#find_package(opencv_core REQUIRED)
+LINK_LIBRARIES(opencv_core opencv_highgui opencv_imgproc)
 
 # nvcc flags                                                                                                                                                                                               
 set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_20,code=sm_20)
-
 
 SET (compare_files compare.cpp)
 
@@ -38,3 +34,4 @@ file( GLOB  cu  *.cu)
 SET (HW3_files main.cpp loadSaveImage.cpp reference_calc.cpp compare.cpp)
     
 CUDA_ADD_EXECUTABLE(HW3 ${HW3_files} ${hdr} ${cu})
+
