@@ -81,6 +81,8 @@
 
 #include "utils.h"
 
+// TODO: нужны временные буфферы
+
 void your_histogram_and_prefixsum(const float* const d_logLuminance,
                                   unsigned int* const d_cdf,
                                   float &min_logLum,
@@ -97,6 +99,9 @@ void your_histogram_and_prefixsum(const float* const d_logLuminance,
        массив с данными должен быть не изменным, поэтому нужно хранить копию в shared
        
     2) subtract them to find the range
+    
+    // Похоже гистограмма как таковая не нужна
+    // TODO: Можно ли использовать cdf? кажется можно
     3) generate a histogram of all the values in the logLuminance channel using
        the formula: bin = (lum[i] - lumMin) / lumRange * numBins
     4) Perform an exclusive scan (prefix sum) on the histogram to get
