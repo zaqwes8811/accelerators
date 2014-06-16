@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <float.h>
 
 // C++
 #include <vector>
@@ -36,7 +37,7 @@ const int maxThreadsPerBlock = 1024;
 inline bool isEqual(float x, float y)
 {
   const float epsilon = 1e-2;/* some small number such as 1e-5 */;
-  //printf("Delta = %f\n", x -y);
+  printf("Delta = %f\n", x -y);
   return std::abs(x - y) <= epsilon * std::abs(x);
   // see Knuth section 4.2.2 pages 217-218
 }
@@ -67,7 +68,7 @@ using std::vector;
 __global__ void shmem_max_reduce_kernel(
     float * d_out, 
     const float * d_in /*для задания важна константность*/,
-    int size)
+    const int size)
 {
     // sdata is allocated in the kernel call: 3rd arg to <<<b, t, shmem>>>
     extern __shared__ float sdata[];
@@ -76,10 +77,12 @@ __global__ void shmem_max_reduce_kernel(
     int tid  = threadIdx.x;
 
     // load shared mem from global mem
-    //if // данные укладываются
-    sdata[tid] = d_in[myId];
-    //else  // заполняем нейтральными элементами
-    // -FLT_MAX
+    if (myId < size)
+      sdata[tid] = d_in[myId];
+    else {
+      // заполняем нейтральными элементами
+      sdata[tid] = -FLT_MAX;
+    }
     
     __syncthreads();            // make sure entire block is loaded!
     
@@ -114,7 +117,13 @@ __global__ void shmem_min_reduce_kernel(
     int tid  = threadIdx.x;
 
     // load shared mem from global mem
-    sdata[tid] = d_in[myId];
+    if (myId < size)
+      sdata[tid] = d_in[myId];
+    else {
+      // заполняем нейтральными элементами
+      sdata[tid] = +FLT_MAX;
+    }
+    
     __syncthreads();            // make sure entire block is loaded!
 
     // do reduction in shared mem
@@ -152,7 +161,7 @@ void reduce_shared_min(
   // assumes that size is not greater than maxThreadsPerBlock^2
   // and that size is a multiple of maxThreadsPerBlock
   assert(size <= threads * threads);  // для двушаговой редукции, чтобы уложиться
-  assert(blocks * threads == size);  // нужно будет ослабить
+  //assert(blocks * threads == size);  // нужно будет ослабить - shared-mem дозаполним внутри ядер
   assert(isPow2(threads));  // должно делиться на 2 до конца
 
   if (isMin)
@@ -195,7 +204,7 @@ int main(int argc, char **argv)
 	      (int)devProps.clockRate);
   }
 
-  const int ARRAY_SIZE = (1 << 20);// - 1;  //TODO: важно правильно выбрать
+  const int ARRAY_SIZE = (1 << 20) - 2;  //TODO: важно правильно выбрать
   const int ARRAY_BYTES = ARRAY_SIZE * sizeof(float);
 
   // generate the input array on the host
@@ -204,6 +213,7 @@ int main(int argc, char **argv)
       // generate random float in [-1.0f, 1.0f]
       h_in[i] = -1.0f + (float)random()/((float)RAND_MAX/2.0f);
   }
+  h_in[ARRAY_SIZE-1] = 1000.0;
   
   // Ищем минимум
   // http://stackoverflow.com/questions/259297/how-do-you-copy-the-contents-of-an-array-to-a-stdvector-in-c-without-looping
