@@ -204,7 +204,7 @@ int main(int argc, char **argv)
 	      (int)devProps.clockRate);
   }
 
-  const int ARRAY_SIZE = (1 << 19) - 1;  //TODO: важно правильно выбрать
+  const int ARRAY_SIZE = (1 << 19) - 5;  //TODO: важно правильно выбрать
   const int ARRAY_BYTES = ARRAY_SIZE * sizeof(float);
 
   // generate the input array on the host
