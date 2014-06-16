@@ -7,6 +7,7 @@
 
 // C++
 #include <vector>
+#include <algorithm>
 
 // 3rdparty
 #include <cuda_runtime.h>
@@ -38,30 +39,6 @@ inline bool isEqual(float x, float y)
 }
 
 using std::vector;
-
-
-// Работает in-place
-__global__ void global_reduce_kernel(float * d_out, float * d_in)
-{
-    int myId = threadIdx.x + blockDim.x * blockIdx.x;  // not one block!
-    int tid  = threadIdx.x;
-
-    // do reduction in global mem
-    for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1)
-    {
-        if (tid < s)
-        {
-            d_in[myId] += d_in[myId + s];  // модиф. вх. массив!
-        }
-        __syncthreads();        // make sure all adds at one stage are done!
-    }
-
-    // only thread 0 writes result for this block back to global mem
-    if (tid == 0)
-    {
-        d_out[blockIdx.x] = d_in[myId];
-    }
-}
 
 __global__ void shmem_reduce_kernel(
     float * d_out, 
@@ -97,10 +74,9 @@ __global__ void shmem_reduce_kernel(
 
 void reduce_shared_min(
     float * d_out, 
-    float * d_intermediate, 
-    float * d_in, 
+    float * d_intermediate, float * d_in, 
     int size) 
-  {
+{
   // assumes that size is not greater than maxThreadsPerBlock^2
   // and that size is a multiple of maxThreadsPerBlock
   const int maxThreadsPerBlock = 1024;
@@ -144,11 +120,9 @@ int main(int argc, char **argv)
 
     // generate the input array on the host
     float h_in[ARRAY_SIZE];
-    float sum = 0.0f;
     for(int i = 0; i < ARRAY_SIZE; i++) {
         // generate random float in [-1.0f, 1.0f]
         h_in[i] = -1.0f + (float)random()/((float)RAND_MAX/2.0f);
-        sum += h_in[i];
     }
     
     // Ищем минимум
@@ -159,7 +133,11 @@ int main(int argc, char **argv)
     hIn.insert(hIn.end(), &h_in[0], &h_in[dataArraySize]);
     assert(hIn.size() == ARRAY_SIZE);
     
-    
+    // Используем стандартную функцию
+    // http://stackoverflow.com/questions/8340569/stdvector-and-stdmin-behavior 
+    // Похоже можно искать сразу в векторе
+    float serialMin = *std::min_element(hIn.begin(),hIn.end());
+
 
     // declare GPU memory pointers
     float * d_in;
@@ -206,7 +184,7 @@ int main(int argc, char **argv)
     float h_out;
     cudaMemcpy(&h_out, d_out, sizeof(float), cudaMemcpyDeviceToHost);
     
-    assert(isEqual(h_out, sum));
+    assert(isEqual(h_out, serialMin));
 
     printf("average time elapsed: %f\n", elapsedTime);
 
