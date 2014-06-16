@@ -52,9 +52,6 @@ inline int isPow2(int a) {
 }
 
 // http://valera.asf.ru/cpp/book/c10.html
-//#define max_cuda( a, b ) ( ((a) > (b)) ? (a) : (b) )
-//#define min_cuda( a, b ) ( ((a) < (b)) ? (a) : (b) )
-
 // Нейтральные элементы
 // http://stackoverflow.com/questions/2684603/how-do-i-initialize-a-float-to-its-max-min-value
 
@@ -160,12 +157,12 @@ void reduce_shared_min(
     ) 
 {
   int threads = maxThreadsPerBlock;
-  int blocks = size / threads;  // отбрасываем дробную часть
+  int blocks = ceil((1.0f*size) / maxThreadsPerBlock);
   
   // assumes that size is not greater than maxThreadsPerBlock^2
   // and that size is a multiple of maxThreadsPerBlock
   assert(size <= threads * threads);  // для двушаговой редукции, чтобы уложиться
-  //assert(blocks * threads == size);  // нужно будет ослабить - shared-mem дозаполним внутри ядер
+  assert(blocks * threads >= size);  // нужно будет ослабить - shared-mem дозаполним внутри ядер
   assert(isPow2(threads));  // должно делиться на 2 до конца
 
   // Step 1: Вычисляем результаты для каждого блока
@@ -207,7 +204,7 @@ int main(int argc, char **argv)
 	      (int)devProps.clockRate);
   }
 
-  const int ARRAY_SIZE = (1 << 19);  //TODO: важно правильно выбрать
+  const int ARRAY_SIZE = (1 << 19) - 1;  //TODO: важно правильно выбрать
   const int ARRAY_BYTES = ARRAY_SIZE * sizeof(float);
 
   // generate the input array on the host
