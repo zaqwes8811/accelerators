@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <assert.h>
 
+// C++
+#include <vector>
+
 // 3rdparty
 #include <cuda_runtime.h>
 
@@ -33,6 +36,8 @@ inline bool isEqual(float x, float y)
   return std::abs(x - y) <= epsilon * std::abs(x);
   // see Knuth section 4.2.2 pages 217-218
 }
+
+using std::vector;
 
 
 // Работает in-place
@@ -147,6 +152,14 @@ int main(int argc, char **argv)
     }
     
     // Ищем минимум
+    // http://stackoverflow.com/questions/259297/how-do-you-copy-the-contents-of-an-array-to-a-stdvector-in-c-without-looping
+    vector<float> hIn;
+    unsigned dataArraySize = sizeof(h_in) / sizeof(float);
+    assert(dataArraySize == ARRAY_SIZE);
+    hIn.insert(hIn.end(), &h_in[0], &h_in[dataArraySize]);
+    assert(hIn.size() == ARRAY_SIZE);
+    
+    
 
     // declare GPU memory pointers
     float * d_in;
