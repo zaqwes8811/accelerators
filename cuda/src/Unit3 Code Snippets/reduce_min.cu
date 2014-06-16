@@ -11,6 +11,9 @@
 
 // 3rdparty
 #include <cuda_runtime.h>
+const int maxThreadsPerBlock = 1024;
+
+// http://habrahabr.ru/post/146793/ !! трюки на С++
 
 // Scan: 
 // 1. Serial reguces - проблема в том, что если использовать reduce из лекции, то он портит исходный массив.
@@ -38,15 +41,24 @@ inline bool isEqual(float x, float y)
   // see Knuth section 4.2.2 pages 217-218
 }
 
+inline int isPow2(int a) {
+  return !(a&(a-1));
+}
+
 // http://valera.asf.ru/cpp/book/c10.html
 //#define max_cuda( a, b ) ( ((a) > (b)) ? (a) : (b) )
 //#define min_cuda( a, b ) ( ((a) < (b)) ? (a) : (b) )
 
+// Нейтральные элементы
+// http://stackoverflow.com/questions/2684603/how-do-i-initialize-a-float-to-its-max-min-value
+
 template <class Type> __device__ Type min_cuda( Type a, Type b ) {
+  // I - +inf
   return a < b ? a : b;
 }
 
 template <class Type> __device__ Type max_cuda( Type a, Type b ) {
+  // I - -inf
   return a > b ? a : b;
 }
 
@@ -54,7 +66,8 @@ using std::vector;
 
 __global__ void shmem_max_reduce_kernel(
     float * d_out, 
-    const float * d_in /*для задания важна константность*/)
+    const float * d_in /*для задания важна константность*/,
+    int size)
 {
     // sdata is allocated in the kernel call: 3rd arg to <<<b, t, shmem>>>
     extern __shared__ float sdata[];
@@ -63,8 +76,14 @@ __global__ void shmem_max_reduce_kernel(
     int tid  = threadIdx.x;
 
     // load shared mem from global mem
+    //if // данные укладываются
     sdata[tid] = d_in[myId];
+    //else  // заполняем нейтральными элементами
+    // -FLT_MAX
+    
     __syncthreads();            // make sure entire block is loaded!
+    
+    //assert(isPow2(blockDim.x));  // нельзя
 
     // do reduction in shared mem
     for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1)
@@ -86,7 +105,7 @@ __global__ void shmem_max_reduce_kernel(
 
 __global__ void shmem_min_reduce_kernel(
     float * d_out, 
-    const float * d_in /*для задания важна константность*/)
+    const float * d_in /*для задания важна константность*/, int size)
 {
     // sdata is allocated in the kernel call: 3rd arg to <<<b, t, shmem>>>
     extern __shared__ float sdata[];
@@ -99,6 +118,7 @@ __global__ void shmem_min_reduce_kernel(
     __syncthreads();            // make sure entire block is loaded!
 
     // do reduction in shared mem
+    //TODO: blockDim должна быть степенью 2
     for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1)
     {
         if (tid < s)
@@ -126,17 +146,20 @@ void reduce_shared_min(
     ) 
 {
   // TODO: предусловия не подходять для HW3!
+  int threads = maxThreadsPerBlock;
+  int blocks = size / threads;  // отбрасываем дробную часть
+  
   // assumes that size is not greater than maxThreadsPerBlock^2
   // and that size is a multiple of maxThreadsPerBlock
-  const int maxThreadsPerBlock = 1024;
-  int threads = maxThreadsPerBlock;
-  int blocks = size / maxThreadsPerBlock;
+  assert(size <= threads * threads);  // для двушаговой редукции, чтобы уложиться
+  assert(blocks * threads == size);  // нужно будет ослабить
+  assert(isPow2(threads));  // должно делиться на 2 до конца
 
   if (isMin)
     // Step 1:
-    shmem_min_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_in);
+    shmem_min_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_in, size);
   else {
-    shmem_max_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_in);
+    shmem_max_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_in, size);
   }
 
   // Step 2:
@@ -145,9 +168,9 @@ void reduce_shared_min(
   threads = blocks; // launch one thread for each block in prev step
   blocks = 1;
   if (isMin)
-    shmem_min_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_out, d_intermediate);
+    shmem_min_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_out, d_intermediate, size);
   else {
-    shmem_max_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_out, d_intermediate);
+    shmem_max_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_out, d_intermediate, size);
   }
 }
 
@@ -172,7 +195,7 @@ int main(int argc, char **argv)
 	      (int)devProps.clockRate);
   }
 
-  const int ARRAY_SIZE = 1 << 20;
+  const int ARRAY_SIZE = (1 << 20);// - 1;  //TODO: важно правильно выбрать
   const int ARRAY_BYTES = ARRAY_SIZE * sizeof(float);
 
   // generate the input array on the host
