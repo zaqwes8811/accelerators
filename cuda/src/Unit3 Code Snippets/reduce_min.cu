@@ -1,3 +1,6 @@
+// Copy: Udacity "Intro in parallel computing"
+//
+//
 // TODO: сделать min and max reduce not in place
 
 // C
