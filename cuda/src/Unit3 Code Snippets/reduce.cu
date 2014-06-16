@@ -30,7 +30,7 @@ __global__ void global_reduce_kernel(float * d_out, float * d_in)
     {
         if (tid < s)
         {
-            d_in[myId] += d_in[myId + s];
+            d_in[myId] += d_in[myId + s];  // модиф. вх. массив!
         }
         __syncthreads();        // make sure all adds at one stage are done!
     }
@@ -42,7 +42,9 @@ __global__ void global_reduce_kernel(float * d_out, float * d_in)
     }
 }
 
-__global__ void shmem_reduce_kernel(float * d_out, const float * d_in)
+__global__ void shmem_reduce_kernel(
+    float * d_out, 
+    const float * d_in /*для задания важна константность*/)
 {
     // sdata is allocated in the kernel call: 3rd arg to <<<b, t, shmem>>>
     extern __shared__ float sdata[];
@@ -59,7 +61,8 @@ __global__ void shmem_reduce_kernel(float * d_out, const float * d_in)
     {
         if (tid < s)
         {
-            sdata[tid] += sdata[tid + s];
+          float tmp =  sdata[tid] + sdata[tid + s]; 
+	  sdata[tid] = tmp;
         }
         __syncthreads();        // make sure all adds at one stage are done!
     }
@@ -69,6 +72,29 @@ __global__ void shmem_reduce_kernel(float * d_out, const float * d_in)
     {
         d_out[blockIdx.x] = sdata[0];
     }
+}
+
+void reduce_shared_min(
+    float * d_out, 
+    float * d_intermediate, 
+    float * d_in, 
+    int size) 
+  {
+  // assumes that size is not greater than maxThreadsPerBlock^2
+  // and that size is a multiple of maxThreadsPerBlock
+  const int maxThreadsPerBlock = 1024;
+  int threads = maxThreadsPerBlock;
+  int blocks = size / maxThreadsPerBlock;
+
+  // Step 1:
+  shmem_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_in);
+
+  // Step 2:
+  // TODO: Комбинируем разультаты блоков и это ограничение на размер входных данных
+  // now we're down to one block left, so reduce it
+  threads = blocks; // launch one thread for each block in prev step
+  blocks = 1;
+  shmem_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_out, d_intermediate);
 }
 
 void reduce(float * d_out, float * d_intermediate, float * d_in, 
@@ -143,12 +169,14 @@ int main(int argc, char **argv)
     }
 
     // declare GPU memory pointers
-    float * d_in, * d_intermediate, * d_out;
+    float * d_in;
+    float * d_intermediate;  // stage 1 result
+    float * d_out;
 
     // allocate GPU memory
     cudaMalloc((void **) &d_in, ARRAY_BYTES);
     cudaMalloc((void **) &d_intermediate, ARRAY_BYTES); // overallocated
-    cudaMalloc((void **) &d_out, sizeof(float));
+    cudaMalloc((void **) &d_out, sizeof(float));  // 1 значение
 
     // transfer the input array to the GPU
     cudaMemcpy(d_in, h_in, ARRAY_BYTES, cudaMemcpyHostToDevice); 
