@@ -3,6 +3,7 @@
 // C
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 // 3rdparty
 #include <cuda_runtime.h>
@@ -17,6 +18,21 @@
 // 3.
 //
 // http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
+
+// Float comparison http://floating-point-gui.de/errors/comparison/ - Java sample
+// http://www.parashift.com/c++-faq/floating-point-arith.html
+// http://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html - матчасть
+#include <cmath>  /* for std::abs(double) */
+
+// не коммутативное
+// isEqual(x,y) != isEqual(y,x)
+inline bool isEqual(float x, float y)
+{
+  const float epsilon = 1e-5;/* some small number such as 1e-5 */;
+  printf("Delta = %f\n", x -y);
+  return std::abs(x - y) <= epsilon * std::abs(x);
+  // see Knuth section 4.2.2 pages 217-218
+}
 
 
 // Работает in-place
@@ -194,19 +210,28 @@ int main(int argc, char **argv)
     case 0:
         printf("Running global reduce\n");
         cudaEventRecord(start, 0);
-        for (int i = 0; i < 100; i++)
-        {
+        //for (int i = 0; i < 100; i++)
+        //{
             reduce(d_out, d_intermediate, d_in, ARRAY_SIZE, false);
-        }
+        //}
         cudaEventRecord(stop, 0);
         break;
     case 1:
         printf("Running reduce with shared mem\n");
         cudaEventRecord(start, 0);
-        for (int i = 0; i < 100; i++)
-        {
+        //for (int i = 0; i < 100; i++)
+        //{
             reduce(d_out, d_intermediate, d_in, ARRAY_SIZE, true);
-        }
+        //}
+        cudaEventRecord(stop, 0);
+        break;
+  case 2:
+        printf("Running min reduce with shared mem\n");
+        cudaEventRecord(start, 0);
+        //for (int i = 0; i < 100; i++)
+        //{
+            reduce_shared_min(d_out, d_intermediate, d_in, ARRAY_SIZE);
+        //}
         cudaEventRecord(stop, 0);
         break;
     default:
@@ -221,6 +246,8 @@ int main(int argc, char **argv)
     // copy back the sum from GPU
     float h_out;
     cudaMemcpy(&h_out, d_out, sizeof(float), cudaMemcpyDeviceToHost);
+    
+    assert(isEqual(h_out, sum));
 
     printf("average time elapsed: %f\n", elapsedTime);
 
@@ -228,6 +255,5 @@ int main(int argc, char **argv)
     cudaFree(d_in);
     cudaFree(d_intermediate);
     cudaFree(d_out);
-        
     return 0;
 }
