@@ -17,6 +17,9 @@
 #include <cuda_runtime.h>
 const int maxThreadsPerBlock = 1024;
 
+// App
+#include "float_ops.h"
+
 // http://habrahabr.ru/post/146793/ !! трюки на С++
 
 // Scan: 
@@ -29,27 +32,6 @@ const int maxThreadsPerBlock = 1024;
 // 3.
 //
 // http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
-
-// Float comparison http://floating-point-gui.de/errors/comparison/ - Java sample
-// http://www.parashift.com/c++-faq/floating-point-arith.html
-// http://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html - матчасть
-#include <cmath>  /* for std::abs(double) */
-
-// не коммутативное
-// isEqual(x,y) != isEqual(y,x)
-inline bool isEqual(float x, float y)
-{
-  const float epsilon = 1e-2;/* some small number such as 1e-5 */;
-  //printf("Delta = %f\n", x -y);
-  //printf("x = %f\n", x);
-  //printf("y = %f\n", y);
-  return std::abs(x - y) <= epsilon * std::abs(x);
-  // see Knuth section 4.2.2 pages 217-218
-}
-
-inline int isPow2(int a) {
-  return !(a&(a-1));
-}
 
 // http://valera.asf.ru/cpp/book/c10.html
 // Нейтральные элементы

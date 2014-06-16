@@ -1,5 +1,6 @@
 // TODO: расширить на несколько блоков
-
+// Scan: 
+// http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
 
 // C
 #include <stdio.h>
@@ -8,9 +9,14 @@
 
 // C++
 #include <iostream>
+#include <vector>
+#include <algorithm>
 
 // 3rdparty
 #include <cuda_runtime.h>
+
+// App
+#include "float_ops.h"
 
 #define checkCudaErrors(val) check( (val), #val, __FILE__, __LINE__)
 
@@ -24,20 +30,10 @@ void check(T err, const char* const func, const char* const file, const int line
   }
 }
 
-
-// Scan: 
-// 1. Serial reguces - проблема в том, что если использовать reduce из лекции, то он портит исходный массив.
-//   а значить нужны локальные копии для каждого потока. Work in place.
-//   http://stackoverflow.com/questions/2187189/creating-arrays-in-nvidia-cuda-kernel - может потребоватся огромная память.
-//
-// 2.
-//
-// 3.
-//
-// http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
-
 const int maxThreadsPerBlock = 1024;
 
+using std::vector;
+using std::equal;
 /*
 // serial:
 // TODO: причем тут f(elem)?
@@ -151,16 +147,21 @@ __global__ void exclusive_scan_kernel_doubled_cache(float * d_out, const float *
   d_out[localId] = temp[p_sink * n + localId /*1*/]; // write output 
 }
 
-void scan_hillis_1block(float * d_out, float * d_in, int size) 
+void scan_hillis_single_block(float * d_out, float * d_in, int size) 
 {
-  // Precond:
+  
+  int threads = maxThreadsPerBlock;
+  int blocks = ceil((1.0f*size) / maxThreadsPerBlock);
+  
   // assumes that size is not greater than maxThreadsPerBlock^2
   // and that size is a multiple of maxThreadsPerBlock
-  int blocks = ceil((1.0f*size) / maxThreadsPerBlock);
-  assert(blocks == 1);  // TODO: пока чтобы не комбинировать результаты блоков
+  assert(size <= threads * threads);  // для двушаговой редукции, чтобы уложиться
+  assert(blocks * threads >= size);  // нужно будет ослабить - shared-mem дозаполним внутри ядер
+  assert(isPow2(threads));  // должно делиться на 2 до конца - А нужно ли?
+  assert(blocks == 1);  // пока чтобы не комбинировать результаты блоков
 
   //exclusive_scan_kernel_doubled_cache<<<blocks, threads, threads * sizeof(float) * 2>>>(d_out, d_in, size);
-  exclusive_scan_kernel_small_cache<<<blocks, maxThreadsPerBlock, maxThreadsPerBlock * sizeof(float)>>>(d_out, d_in, size);
+  exclusive_scan_kernel_small_cache<<<blocks, threads, threads * sizeof(float)>>>(d_out, d_in, size);
 }
 
 int main(int argc, char **argv)
@@ -184,7 +185,7 @@ int main(int argc, char **argv)
              (int)devProps.clockRate);
   }
 
-  const int ARRAY_SIZE = 10;//maxThreadsPerBlock;//1 << 20;
+  const int ARRAY_SIZE = maxThreadsPerBlock;
   const int ARRAY_BYTES = ARRAY_SIZE * sizeof(float);
 
   // Serial:
@@ -222,9 +223,9 @@ int main(int argc, char **argv)
   whichKernel = 0;
   switch(whichKernel) {
   case 0:
-      printf("Running global reduce\n");
+      printf("Running reduce hill exclusive\n");
       cudaEventRecord(start, 0);
-      scan_hillis_1block(/*d_out,*/ d_out, d_in, ARRAY_SIZE);//, false);
+      scan_hillis_single_block(/*d_out,*/ d_out, d_in, ARRAY_SIZE);//, false);
       checkCudaErrors(cudaGetLastError());
       cudaEventRecord(stop, 0);
       break;
@@ -241,18 +242,21 @@ int main(int argc, char **argv)
   float h_out[ARRAY_SIZE]; // ARRAY_BYTES
   checkCudaErrors(cudaMemcpy(h_out, d_out, ARRAY_BYTES, cudaMemcpyDeviceToHost));
   
-  // TODO: сравнить бы с моделью
-  // DANGER: http://stackoverflow.com/questions/17333/most-effective-way-for-float-and-double-comparison
-  for (int i = 0; i < ARRAY_SIZE; ++i) {
-    //printf("%0.2f, ", h_out[i]);
-  }
-  //printf("\n");
-
   printf("average time elapsed: %f\n", elapsedTime);
 
   // free GPU memory allocation
   cudaFree(d_in);
   cudaFree(d_out);
+  
+  // Check: сравнить бы с моделью
+  vector<float> hGold;
+  vector<float> hOut;
+  unsigned dataArraySize = sizeof(h_scan_gold) / sizeof(float);
+  assert(dataArraySize == ARRAY_SIZE);
+  hGold.insert(hGold.end(), &h_scan_gold[0], &h_scan_gold[dataArraySize]);
+  hOut.insert(hOut.end(), &h_out[0], &h_out[dataArraySize]);
+  assert(hOut.size() == hGold.size());
+  assert(equal(hGold.begin(), hGold.end(), hOut.begin(), AlmostEqualPredicate));
      
   return 0;
 }
