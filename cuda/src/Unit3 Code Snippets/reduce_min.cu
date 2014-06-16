@@ -116,11 +116,16 @@ __global__ void shmem_min_reduce_kernel(
     }
 }
 
+//TODO: не хотелось писать в сигнатуру, хотя удобство сомнительно
+template<bool isMin>  
 void reduce_shared_min(
     float * const d_out, 
     float * const d_intermediate, float const * const d_in, 
-    int size, bool isMin) 
+    int size
+    //, bool isMin
+    ) 
 {
+  // TODO: предусловия не подходять для HW3!
   // assumes that size is not greater than maxThreadsPerBlock^2
   // and that size is a multiple of maxThreadsPerBlock
   const int maxThreadsPerBlock = 1024;
@@ -221,7 +226,7 @@ int main(int argc, char **argv)
 	cudaEventRecord(start, 0);
 	//for (int i = 0; i < 100; i++)
 	//{
-	    reduce_shared_min(d_out, d_intermediate, d_in, ARRAY_SIZE, true);
+	    reduce_shared_min<true>(d_out, d_intermediate, d_in, ARRAY_SIZE);//, true);
 	//}
 	cudaEventRecord(stop, 0);
 	break;
@@ -254,7 +259,7 @@ int main(int argc, char **argv)
 	cudaEventRecord(start, 0);
 	//for (int i = 0; i < 100; i++)
 	//{
-	    reduce_shared_min(d_out, d_intermediate, d_in, ARRAY_SIZE, false);
+	    reduce_shared_min<false>(d_out, d_intermediate, d_in, ARRAY_SIZE);//, false);
 	//}
 	cudaEventRecord(stop, 0);
 	break;
