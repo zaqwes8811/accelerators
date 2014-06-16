@@ -28,8 +28,8 @@
 // isEqual(x,y) != isEqual(y,x)
 inline bool isEqual(float x, float y)
 {
-  const float epsilon = 1e-5;/* some small number such as 1e-5 */;
-  printf("Delta = %f\n", x -y);
+  const float epsilon = 1e-2;/* some small number such as 1e-5 */;
+  //printf("Delta = %f\n", x -y);
   return std::abs(x - y) <= epsilon * std::abs(x);
   // see Knuth section 4.2.2 pages 217-218
 }
@@ -113,44 +113,6 @@ void reduce_shared_min(
   shmem_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_out, d_intermediate);
 }
 
-void reduce(float * d_out, float * d_intermediate, float * d_in, 
-            int size, bool usesSharedMemory)
-{
-    // assumes that size is not greater than maxThreadsPerBlock^2
-    // and that size is a multiple of maxThreadsPerBlock
-    const int maxThreadsPerBlock = 1024;
-    int threads = maxThreadsPerBlock;
-    int blocks = size / maxThreadsPerBlock;
-
-    // Step 1:
-    if (usesSharedMemory)
-    {
-        shmem_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>
-            (d_intermediate, d_in);
-    }
-    else
-    {
-        global_reduce_kernel<<<blocks, threads>>>
-            (d_intermediate, d_in);
-    }
-
-    // Step 2:
-    // TODO: Комбинируем разультаты блоков и это ограничение на размер входных данных
-    // now we're down to one block left, so reduce it
-    threads = blocks; // launch one thread for each block in prev step
-    blocks = 1;
-    if (usesSharedMemory)
-    {
-        shmem_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>
-            (d_out, d_intermediate);
-    }
-    else
-    {
-        global_reduce_kernel<<<blocks, threads>>>
-            (d_out, d_intermediate);
-    }
-}
-
 int main(int argc, char **argv)
 {
     int deviceCount;
@@ -210,24 +172,6 @@ int main(int argc, char **argv)
     // launch the kernel
     switch(whichKernel) {
     case 0:
-        printf("Running global reduce\n");
-        cudaEventRecord(start, 0);
-        //for (int i = 0; i < 100; i++)
-        //{
-            reduce(d_out, d_intermediate, d_in, ARRAY_SIZE, false);
-        //}
-        cudaEventRecord(stop, 0);
-        break;
-    case 1:
-        printf("Running reduce with shared mem\n");
-        cudaEventRecord(start, 0);
-        //for (int i = 0; i < 100; i++)
-        //{
-            reduce(d_out, d_intermediate, d_in, ARRAY_SIZE, true);
-        //}
-        cudaEventRecord(stop, 0);
-        break;
-  case 2:
         printf("Running min reduce with shared mem\n");
         cudaEventRecord(start, 0);
         //for (int i = 0; i < 100; i++)
