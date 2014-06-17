@@ -187,13 +187,16 @@ void reduce_shared(float const * const d_in, float * const d_out, int size, cons
   cudaMalloc((void **) &d_intermediate, ARRAY_BYTES); // overallocated
 
   // Step 1: Вычисляем результаты для каждого блока
+  // TODO: Error!!! "Segfault"
   shmem_max_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_in, size, op);
+  cudaDeviceSynchronize(); 
+  checkCudaErrors(cudaGetLastError());
 
   // Step 2: Комбинируем разультаты блоков и это ограничение на размер входных данных
   // now we're down to one block left, so reduce it
   threads = blocks; // launch one thread for each block in prev step
   blocks = 1;
-  shmem_max_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_out, d_intermediate, threads, op);
+  //shmem_max_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_out, d_intermediate, threads, op);
   
   cudaFree(d_intermediate);
 }
@@ -225,7 +228,7 @@ void your_histogram_and_prefixsum(const float* const d_logLuminance,
   cudaMalloc((void **) &d_elem, sizeof(float));  // 1 значение
   
   ComparatorMax op;
-  //reduce_shared(d_logLuminance, d_elem, numRows * numCols, &op);
+  reduce_shared(d_logLuminance, d_elem, numRows * numCols, &op);
   
   cudaFree(d_elem);
   
