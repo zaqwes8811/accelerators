@@ -85,4 +85,8 @@ bool AlmostEqualPredicate(float i, float j) {
   return isEqual(i, j);
 }
 
+/*
+
+ */
+
 #endif  // FLOAT_OPS_H_

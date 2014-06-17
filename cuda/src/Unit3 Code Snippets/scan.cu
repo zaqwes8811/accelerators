@@ -139,6 +139,8 @@ __global__ void exclusive_scan_kernel_doubled_cache(float * d_out, const float *
   int localId  = threadIdx.x;
   int globalId = localId;
   
+  assert(blockIdx.x == 1);
+  
   //  for
   int p_sink = 0;  // int1 не работает
   int p_source = 1;

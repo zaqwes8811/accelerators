@@ -47,6 +47,26 @@ template <class Type> __device__ Type max_cuda( Type a, Type b ) {
   return a > b ? a : b;
 }
 
+ class ReduceOperation {
+public:
+  virtual ~ReduceOperation() {}
+  __device__ 
+  virtual float operator()(float a, float b) const = 0;
+};
+
+class ComparatorMax : public ReduceOperation {
+public:
+  __device__ 
+  virtual float operator()(float a, float b) const {
+    return max_cuda<float>(a, b);
+  }
+  
+  ComparatorMax() : limit_value(-FLT_MAX) {}
+  explicit ComparatorMax(float value) : limit_value(value) {}
+  
+  const float limit_value;
+};
+
 using std::vector;
 
 __global__ void shmem_max_reduce_kernel(
@@ -71,13 +91,17 @@ __global__ void shmem_max_reduce_kernel(
     __syncthreads();            // make sure entire block is loaded!
     
     //assert(isPow2(blockDim.x));  // нельзя
+    //ComparatorMax op;  // нужно передать извне
 
     // do reduction in shared mem
     for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1)
     {
         if (tid < s)
         {
-          float tmp =  max_cuda<float>(sdata[tid], sdata[tid + s]); 
+          float tmp =  
+          max_cuda<float>
+          //op
+          (sdata[tid], sdata[tid + s]); 
 	  sdata[tid] = tmp;
         }
         __syncthreads();        // make sure all adds at one stage are done!
