@@ -132,20 +132,20 @@ __global__ void shmem_min_reduce_kernel(
 //TODO: не хотелось писать в сигнатуру, хотя удобство сомнительно
 template<bool isMin>  
 void reduce_shared_min(
-    float * const d_out, 
-    float * const d_intermediate, float const * const d_in, 
-    int size
-    //, bool isMin
-    ) 
+    float * const d_out, float const * const d_in, int size) 
 {
   int threads = maxThreadsPerBlock;
   int blocks = ceil((1.0f*size) / maxThreadsPerBlock);
+  int ARRAY_BYTES = size * sizeof(float);
   
   // assumes that size is not greater than maxThreadsPerBlock^2
   // and that size is a multiple of maxThreadsPerBlock
   assert(size <= threads * threads);  // для двушаговой редукции, чтобы уложиться
   assert(blocks * threads >= size);  // нужно будет ослабить - shared-mem дозаполним внутри ядер
   assert(isPow2(threads));  // должно делиться на 2 до конца
+  
+  float * d_intermediate;  // stage 1 result
+  cudaMalloc((void **) &d_intermediate, ARRAY_BYTES); // overallocated
 
   // Step 1: Вычисляем результаты для каждого блока
   if (isMin)
@@ -163,6 +163,8 @@ void reduce_shared_min(
   else {
     shmem_max_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_out, d_intermediate, threads);
   }
+  
+  cudaFree(d_intermediate);
 }
 
 int main(int argc, char **argv)
@@ -215,12 +217,10 @@ int main(int argc, char **argv)
 
   // declare GPU memory pointers
   float * d_in;
-  float * d_intermediate;  // stage 1 result
   float * d_out;
 
   // allocate GPU memory
   cudaMalloc((void **) &d_in, ARRAY_BYTES);
-  cudaMalloc((void **) &d_intermediate, ARRAY_BYTES); // overallocated
   cudaMalloc((void **) &d_out, sizeof(float));  // 1 значение
 
   // transfer the input array to the GPU
@@ -242,7 +242,7 @@ int main(int argc, char **argv)
 	cudaEventRecord(start, 0);
 	for (int i = 0; i < 100; i++)
 	{
-	    reduce_shared_min<true>(d_out, d_intermediate, d_in, ARRAY_SIZE);//, true);
+	    reduce_shared_min<true>(d_out, d_in, ARRAY_SIZE);//, true);
 	}
 	cudaEventRecord(stop, 0);
 	break;
@@ -275,7 +275,7 @@ int main(int argc, char **argv)
 	cudaEventRecord(start, 0);
 	//for (int i = 0; i < 100; i++)
 	//{
-	    reduce_shared_min<false>(d_out, d_intermediate, d_in, ARRAY_SIZE);//, false);
+	    reduce_shared_min<false>(d_out, d_in, ARRAY_SIZE);//, false);
 	//}
 	cudaEventRecord(stop, 0);
 	break;
@@ -298,7 +298,6 @@ int main(int argc, char **argv)
 
   // free GPU memory allocation
   cudaFree(d_in);
-  cudaFree(d_intermediate);
   cudaFree(d_out);
   return 0;
 }
