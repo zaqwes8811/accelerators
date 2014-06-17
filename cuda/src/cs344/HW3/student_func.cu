@@ -81,6 +81,7 @@
 
 // C
 #include <float.h>
+#include <stdio.h>
 
 // reuse
 #include "utils.h"
@@ -132,10 +133,15 @@ private:
 __global__ void shmem_max_reduce_kernel(
     float * d_out, 
     const float * d_in /*для задания важна константность*/,
-    const int size, const ReduceOperation* const op)
+    const int size/*, const ReduceOperation* const op*/)
 {
     // sdata is allocated in the kernel call: 3rd arg to <<<b, t, shmem>>>
     extern __shared__ float sdata[];
+    
+    //op->I();  // no way
+    
+    //float I = 
+    
 
     int myId = threadIdx.x + blockDim.x * blockIdx.x;
     int tid  = threadIdx.x;
@@ -145,9 +151,10 @@ __global__ void shmem_max_reduce_kernel(
       sdata[tid] = d_in[myId];
     else {
       // заполняем нейтральными элементами
-      sdata[tid] = op->I();//-FLT_MAX;
+      sdata[tid] = 
+      //op->I();  // no way
+      -FLT_MAX;
     }
-    
     __syncthreads();            // make sure entire block is loaded!
     
     // do reduction in shared mem
@@ -156,9 +163,9 @@ __global__ void shmem_max_reduce_kernel(
         if (tid < s)
         {
           float tmp =  
-          //max_cuda<float>
-          (*op)
-          (sdata[tid], sdata[tid + s]); 
+	    max_cuda<float>
+	    //(*op)
+	    (sdata[tid], sdata[tid + s]); 
 	  sdata[tid] = tmp;
         }
         __syncthreads();        // make sure all adds at one stage are done!
@@ -188,7 +195,7 @@ void reduce_shared(float const * const d_in, float * const d_out, int size, cons
 
   // Step 1: Вычисляем результаты для каждого блока
   // TODO: Error!!! "Segfault"
-  shmem_max_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_in, size, op);
+  shmem_max_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_in, size/*, op*/);
   cudaDeviceSynchronize(); 
   checkCudaErrors(cudaGetLastError());
 
