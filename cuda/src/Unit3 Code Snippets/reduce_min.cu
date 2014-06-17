@@ -49,6 +49,10 @@ template <class Type> __device__ Type max_cuda( Type a, Type b ) {
   return a > b ? a : b;
 }
 
+//TODO: Injection operation - failed.
+// Don't work in homework. Strange but it is it! При разыменовании функтора все портится
+// Тут работает, там нет. Отличие в том, что указатель передается через несколько вызовов, хотя может это ничего не значит.
+// DANGER: does't work but here work.
  class ReduceOperation {
 public:
   virtual ~ReduceOperation() {}
@@ -76,9 +80,6 @@ private:
   const float I_val;
 };
 
-
-// Don't work in homework. Strange but it is it! При разыменовании функтора все портится
-// Тут работает, там нет. Отличие в том, что указатель передается через несколько вызовов, хотя может это ничего не значит.
 __global__ void shmem_max_reduce_kernel(
     float * d_out, 
     const float * d_in /*для задания важна константность*/,

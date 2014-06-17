@@ -103,57 +103,21 @@ inline int isPow2(int a) {
   return !(a&(a-1));
 }
 
-class ReduceOperation {
-public:
-  virtual ~ReduceOperation() {}
-  __device__ 
-  virtual float operator()(float a, float b) const = 0;
-  __device__
-  virtual float I() const = 0;
-};
-
-class ComparatorMax : public ReduceOperation {
-public:
-  __device__ 
-  virtual float operator()(float a, float b) const {
-    return max_cuda<float>(a, b);
-  }
-  
-  ComparatorMax() : I_val(-FLT_MAX) {}
-  //explicit ComparatorMax(float value) : I_val(value) {}
-  
-  __device__
-  virtual float I() const {
-    return I_val;
-  }
-private:
-  const float I_val;
-};
-
-__global__ void shmem_max_reduce_kernel(
-    float * d_out, 
-    const float * d_in /*для задания важна константность*/,
-    const int size/*, const ReduceOperation* const op*/)
+template<float (* const operation)(float, float)/*, float I_elem - not supported*/>
+__global__ void shmem_max_reduce_kernel(float * d_out, const float * d_in, const int size, const float I_elem)
 {
-    // sdata is allocated in the kernel call: 3rd arg to <<<b, t, shmem>>>
     extern __shared__ float sdata[];
     
-    //op->I();  // no way
-    
-    //float I = 
-    
-
+    // Reuse code
     int myId = threadIdx.x + blockDim.x * blockIdx.x;
     int tid  = threadIdx.x;
 
     // load shared mem from global mem
     if (myId < size)
       sdata[tid] = d_in[myId];
-    else {
-      // заполняем нейтральными элементами
-      sdata[tid] = 
-      //op->I();  // no way
-      -FLT_MAX;
+    else 
+    {
+      sdata[tid] = I_elem;
     }
     __syncthreads();            // make sure entire block is loaded!
     
@@ -162,10 +126,7 @@ __global__ void shmem_max_reduce_kernel(
     {
         if (tid < s)
         {
-          float tmp =  
-	    max_cuda<float>
-	    //(*op)
-	    (sdata[tid], sdata[tid + s]); 
+          float tmp = (*operation)(sdata[tid], sdata[tid + s]); 
 	  sdata[tid] = tmp;
         }
         __syncthreads();        // make sure all adds at one stage are done!
@@ -178,7 +139,7 @@ __global__ void shmem_max_reduce_kernel(
     }
 }
 
-void reduce_shared(float const * const d_in, float * const d_out, int size, const ReduceOperation* const op) 
+void reduce_shared(float const * const d_in, float * const d_out, int size)// const ReduceOperation* const op) 
 {
   int threads = maxThreadsPerBlock;
   int blocks = ceil((1.0f*size) / maxThreadsPerBlock);
@@ -195,7 +156,8 @@ void reduce_shared(float const * const d_in, float * const d_out, int size, cons
 
   // Step 1: Вычисляем результаты для каждого блока
   // TODO: Error!!! "Segfault"
-  shmem_max_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_in, size/*, op*/);
+  float I_elem = -FLT_MAX;
+  shmem_max_reduce_kernel<&max_cuda><<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_in, size, I_elem);
   cudaDeviceSynchronize(); 
   checkCudaErrors(cudaGetLastError());
 
@@ -203,7 +165,7 @@ void reduce_shared(float const * const d_in, float * const d_out, int size, cons
   // now we're down to one block left, so reduce it
   threads = blocks; // launch one thread for each block in prev step
   blocks = 1;
-  //shmem_max_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_out, d_intermediate, threads, op);
+  shmem_max_reduce_kernel<&max_cuda><<<blocks, threads, threads * sizeof(float)>>>(d_out, d_intermediate, threads, I_elem);
   
   cudaFree(d_intermediate);
 }
@@ -233,9 +195,7 @@ void your_histogram_and_prefixsum(const float* const d_logLuminance,
   float* d_elem;
   float h_elem;
   cudaMalloc((void **) &d_elem, sizeof(float));  // 1 значение
-  
-  ComparatorMax op;
-  reduce_shared(d_logLuminance, d_elem, numRows * numCols, &op);
+  reduce_shared(d_logLuminance, d_elem, numRows * numCols);
   
   cudaFree(d_elem);
   
