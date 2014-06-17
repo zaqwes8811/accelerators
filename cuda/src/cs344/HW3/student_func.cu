@@ -103,7 +103,7 @@ inline int isPow2(int a) {
   return !(a&(a-1));
 }
 
- class ReduceOperation {
+class ReduceOperation {
 public:
   virtual ~ReduceOperation() {}
   __device__ 

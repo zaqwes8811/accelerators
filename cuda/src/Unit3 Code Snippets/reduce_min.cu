@@ -77,7 +77,8 @@ private:
 };
 
 
-
+// Don't work in homework. Strange but it is it! При разыменовании функтора все портится
+// Тут работает, там нет. Отличие в том, что указатель передается через несколько вызовов, хотя может это ничего не значит.
 __global__ void shmem_max_reduce_kernel(
     float * d_out, 
     const float * d_in /*для задания важна константность*/,
