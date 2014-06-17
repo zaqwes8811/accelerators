@@ -94,6 +94,10 @@ template <class Type> __device__ Type min_cuda( Type a, Type b ) {
   return a < b ? a : b;
 }
 
+__device__ float get_neutral_max() {
+  return -FLT_MAX;  
+}
+
 template <class Type> __device__ Type max_cuda( Type a, Type b ) {
   // I - -inf
   return a > b ? a : b;
@@ -103,8 +107,19 @@ inline int isPow2(int a) {
   return !(a&(a-1));
 }
 
-template<float (* const operation)(float, float)/*, float I_elem - not supported*/>
-__global__ void shmem_max_reduce_kernel(const float * const d_in, float * const d_out, const int size, const float I_elem)
+/*
+class IElem {
+public:
+  explicit IElem(float value) : value_(value) {}
+  float get() const { return value_; }
+  
+private:
+  const float value_;
+};*/
+
+// /*, IElem elem - doesn't work*/ /*, float I_elem - not supported*/ - такие не типовые параметрые не компилируются
+template<float (* const operation)(float, float), float (* const neutral)()>
+__global__ void shmem_max_reduce_kernel(const float * const d_in, float * const d_out, const int size)
 {
     extern __shared__ float sdata[];
     
@@ -117,7 +132,7 @@ __global__ void shmem_max_reduce_kernel(const float * const d_in, float * const 
       sdata[tid] = d_in[myId];
     else 
     {
-      sdata[tid] = I_elem;
+      sdata[tid] = (*neutral)();
     }
     __syncthreads();            // make sure entire block is loaded!
     
@@ -155,8 +170,7 @@ void reduce_shared(float const * const d_in, float * const d_out, int size)// co
   cudaMalloc((void **) &d_intermediate, ARRAY_BYTES); // overallocated
 
   // Step 1: Вычисляем результаты для каждого блока
-  float I_elem = -FLT_MAX;
-  shmem_max_reduce_kernel<&max_cuda><<<blocks, threads, threads * sizeof(float)>>>(d_in, d_intermediate, size, I_elem);
+  shmem_max_reduce_kernel<max_cuda, get_neutral_max><<<blocks, threads, threads * sizeof(float)>>>(d_in, d_intermediate, size);
   cudaDeviceSynchronize(); 
   checkCudaErrors(cudaGetLastError());
 
@@ -164,7 +178,7 @@ void reduce_shared(float const * const d_in, float * const d_out, int size)// co
   // now we're down to one block left, so reduce it
   threads = blocks; // launch one thread for each block in prev step
   blocks = 1;
-  shmem_max_reduce_kernel<&max_cuda><<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_out, threads, I_elem);
+  shmem_max_reduce_kernel<max_cuda, get_neutral_max><<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_out, threads);
   cudaDeviceSynchronize(); 
   checkCudaErrors(cudaGetLastError());
   
