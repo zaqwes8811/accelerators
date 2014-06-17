@@ -34,6 +34,20 @@ const int maxThreadsPerBlock = 1024;
 
 using std::vector;
 using std::equal;
+using std::for_each;
+
+template <class InputIterator1, class InputIterator2, class BinaryPredicate>
+  bool equal_adapt( InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, BinaryPredicate pred )
+{
+  while (first1!=last1) {
+    //if (!(*first1 == *first2))   // or: if (!pred(*first1,*first2)), for version 2
+    //  return false;
+    pred(*first1, *first2);
+    ++first1; ++first2;
+  }
+  return true;
+}
+
 /*
 // serial:
 // TODO: причем тут f(elem)?
@@ -73,8 +87,9 @@ __device__ void cuSwap(int& a, int& b)
 // http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
 // TODO: In article finded bugs.
 // DANGER: похоже слишком много синхронизации, возможно с двумя буфферами быстрее.
-__global__ void exclusive_scan_kernel_small_cache(float * const d_out, const float * const d_in, 
-						  float * const d_sink, int n)
+// TODO: убрать sink. лучше сделать еще один map
+__global__ void exclusive_scan_kernel_small_cache(const float * const d_in, float * const d_out,    //float * const d_sink, 
+    int n)
 { 
   // результаты работы потоков можем расшаривать через эту
   // память или через глобальную
@@ -85,7 +100,14 @@ __global__ void exclusive_scan_kernel_small_cache(float * const d_out, const flo
   // Load input into shared memory.  
   // This is exclusive scan, so shift right by one  
   // and set first element to 0  
-  temp[localId] = (localId > 0) ? d_in[globalId-1] : 0;  
+  float tmpVal = 0;
+  if (localId > 0)
+    if (globalId < n)
+      tmpVal = d_in[globalId-1];
+    else 
+      tmpVal = 0;
+
+  temp[localId] = tmpVal;
   __syncthreads();  
 
   for (int offset = 1; offset < n; offset *= 2)  // 2^i
@@ -102,23 +124,25 @@ __global__ void exclusive_scan_kernel_small_cache(float * const d_out, const flo
     // буффера переписали
     __syncthreads();  
   }  
-  d_out[localId] = temp[localId]; // write output 
-  __syncthreads();
+  d_out[globalId] = temp[localId]; // write output 
+  //__syncthreads();
   
   // сохраняем оконечные элементы
+  //if (localId == 0)
+  //  d_sink[blockIdx.x] = temp[blockDim.x-1] + d_in[globalId];
 }
 
 // http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
 // TODO: In article finded bugs.
+// DANGER: Work only 1 block!
+// Asserts in cude kernel: http://choorucode.com/2011/03/02/cuda-assertion-in-kernel-code/
 __global__ void exclusive_scan_kernel_doubled_cache(float * d_out, const float * const d_in, int n)
 { 
   // результаты работы потоков можем расшаривать через эту
   // память или через глобальную
   extern __shared__ float temp[];  
   int localId  = threadIdx.x;
-  
-  if (localId >= n) 
-    return;
+  int globalId = localId;
   
   //  for
   int p_sink = 0;  // int1 не работает
@@ -126,8 +150,15 @@ __global__ void exclusive_scan_kernel_doubled_cache(float * d_out, const float *
 
   // Load input into shared memory.  
   // This is exclusive scan, so shift right by one  
-  // and set first element to 0  
-  temp[p_sink * n + localId] = (localId > 0) ? d_in[localId-1] : 0;  
+  // and set first element to 0 
+  float tmpVal = 0;
+  if (localId > 0)
+    if (globalId < n)
+      tmpVal = d_in[globalId-1];
+    else 
+      tmpVal = 0;
+
+  temp[p_sink * n + localId] = tmpVal;
   __syncthreads();  
 
   for (int offset = 1; offset < n; offset *= 2)  // 2^i
@@ -150,6 +181,19 @@ __global__ void exclusive_scan_kernel_doubled_cache(float * d_out, const float *
   d_out[localId] = temp[p_sink * n + localId /*1*/]; // write output 
 }
 
+__global__ void spread(const float* const d_tmp, float * const d_io, const int size) {
+  int globalIdx = threadIdx.x + blockDim.x * blockIdx.x;
+  if (globalIdx < size)
+    d_io[globalIdx] += d_tmp[blockIdx.x];
+}
+
+__global__ void yeild_tailes(const float* const d_source, const float* const d_first_stage, float * d_out, const int size) {
+  int globalIdx = threadIdx.x + blockDim.x * blockIdx.x;
+  int tail_idx = blockDim.x * (blockIdx.x+1) - 1;
+  if (globalIdx < size)
+    d_out[blockIdx.x] = d_source[tail_idx] + d_first_stage[tail_idx];
+}
+
 void scan_hillis_single_block(float * d_out, const float * const d_in, const int size) 
 {
   
@@ -161,19 +205,27 @@ void scan_hillis_single_block(float * d_out, const float * const d_in, const int
   assert(size <= threads * threads);  // для двушаговой редукции, чтобы уложиться
   assert(blocks * threads >= size);  // нужно будет ослабить - shared-mem дозаполним внутри ядер
   assert(isPow2(threads));  // должно делиться на 2 до конца - А нужно ли?
-  assert(blocks == 1);  // пока чтобы не комбинировать результаты блоков
+  //assert(blocks == 2);  // пока чтобы не комбинировать результаты блоков
   
   float * d_sink;
+  float * d_sink_out;
   checkCudaErrors(cudaMalloc((void **) &d_sink, blocks));
+  checkCudaErrors(cudaMalloc((void **) &d_sink_out, blocks));
 
-  //exclusive_scan_kernel_doubled_cache<<<blocks, threads, threads * sizeof(float) * 2>>>(d_out, d_in, size);
-  exclusive_scan_kernel_small_cache<<<blocks, threads, threads * sizeof(float)>>>(d_out, d_in, d_sink, size);
+  // Sectioned scan
+  exclusive_scan_kernel_small_cache<<<blocks, threads, threads * sizeof(float)>>>(d_in, d_out, size);
+  
+  // map
+  yeild_tailes<<< blocks, threads >>>(d_in, d_out, d_sink, size);
   
   // запускаем scan на временном массиве
+  exclusive_scan_kernel_small_cache<<<1, threads, threads * sizeof(float)>>>(d_sink, d_sink_out, threads);
   
   // делаем map на исходном массиве
+  spread<<<blocks, threads>>>(d_sink_out, d_out, size);
   
   cudaFree(d_sink);
+  cudaFree(d_sink_out);
 }
 
 int main(int argc, char **argv)
@@ -197,7 +249,7 @@ int main(int argc, char **argv)
              (int)devProps.clockRate);
   }
 
-  const int ARRAY_SIZE = maxThreadsPerBlock - 1;// * 2;
+  const int ARRAY_SIZE = maxThreadsPerBlock * 7 - 4;
   const int ARRAY_BYTES = ARRAY_SIZE * sizeof(float);
 
   // Serial:
@@ -237,7 +289,7 @@ int main(int argc, char **argv)
   case 0:
       printf("Running reduce hill exclusive\n");
       cudaEventRecord(start, 0);
-      scan_hillis_single_block(/*d_out,*/ d_out, d_in, ARRAY_SIZE);//, false);
+      scan_hillis_single_block(d_out, d_in, ARRAY_SIZE);
       checkCudaErrors(cudaGetLastError());
       cudaEventRecord(stop, 0);
       break;
@@ -268,7 +320,13 @@ int main(int argc, char **argv)
   hGold.insert(hGold.end(), &h_scan_gold[0], &h_scan_gold[dataArraySize]);
   hOut.insert(hOut.end(), &h_out[0], &h_out[dataArraySize]);
   assert(hOut.size() == hGold.size());
-  assert(equal(hGold.begin(), hGold.end(), hOut.begin(), AlmostEqualPredicate));
+  assert(
+  equal
+  //for_each
+    //equal_adapt
+    (hGold.begin(), hGold.end(), hOut.begin(), AlmostEqualPredicate)//;
+  );
+  
      
   return 0;
 }

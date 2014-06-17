@@ -14,7 +14,7 @@ inline bool isEqual(float x, float y)
 {
   const float epsilon = 1e-2;/* some small number such as 1e-5 */;
   //printf("Delta = %f\n", x -y);
-  //printf("x = %f\n", x);
+  //printf("x = %f ", x);
   //printf("y = %f\n", y);
   return std::abs(x - y) <= epsilon * std::abs(x);
   // see Knuth section 4.2.2 pages 217-218
