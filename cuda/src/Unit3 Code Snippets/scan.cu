@@ -73,19 +73,19 @@ __device__ void cuSwap(int& a, int& b)
 // http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
 // TODO: In article finded bugs.
 // DANGER: похоже слишком много синхронизации, возможно с двумя буфферами быстрее.
-__global__ void exclusive_scan_kernel_small_cache(float * d_out, const float * const d_in, int n)
+__global__ void exclusive_scan_kernel_small_cache(float * const d_out, const float * const d_in, 
+						  float * const d_sink, int n)
 { 
   // результаты работы потоков можем расшаривать через эту
   // память или через глобальную
-  extern __shared__ float temp[];  
+  extern __shared__ float temp[]; 
+  int globalId = threadIdx.x + blockDim.x * blockIdx.x;
   int localId  = threadIdx.x;
   
-  if (localId >= n) 
-    return;
   // Load input into shared memory.  
   // This is exclusive scan, so shift right by one  
   // and set first element to 0  
-  temp[localId] = (localId > 0) ? d_in[localId-1] : 0;  
+  temp[localId] = (localId > 0) ? d_in[globalId-1] : 0;  
   __syncthreads();  
 
   for (int offset = 1; offset < n; offset *= 2)  // 2^i
@@ -103,6 +103,9 @@ __global__ void exclusive_scan_kernel_small_cache(float * d_out, const float * c
     __syncthreads();  
   }  
   d_out[localId] = temp[localId]; // write output 
+  __syncthreads();
+  
+  // сохраняем оконечные элементы
 }
 
 // http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
@@ -147,7 +150,7 @@ __global__ void exclusive_scan_kernel_doubled_cache(float * d_out, const float *
   d_out[localId] = temp[p_sink * n + localId /*1*/]; // write output 
 }
 
-void scan_hillis_single_block(float * d_out, float * d_in, int size) 
+void scan_hillis_single_block(float * d_out, const float * const d_in, const int size) 
 {
   
   int threads = maxThreadsPerBlock;
@@ -159,9 +162,18 @@ void scan_hillis_single_block(float * d_out, float * d_in, int size)
   assert(blocks * threads >= size);  // нужно будет ослабить - shared-mem дозаполним внутри ядер
   assert(isPow2(threads));  // должно делиться на 2 до конца - А нужно ли?
   assert(blocks == 1);  // пока чтобы не комбинировать результаты блоков
+  
+  float * d_sink;
+  checkCudaErrors(cudaMalloc((void **) &d_sink, blocks));
 
   //exclusive_scan_kernel_doubled_cache<<<blocks, threads, threads * sizeof(float) * 2>>>(d_out, d_in, size);
-  exclusive_scan_kernel_small_cache<<<blocks, threads, threads * sizeof(float)>>>(d_out, d_in, size);
+  exclusive_scan_kernel_small_cache<<<blocks, threads, threads * sizeof(float)>>>(d_out, d_in, d_sink, size);
+  
+  // запускаем scan на временном массиве
+  
+  // делаем map на исходном массиве
+  
+  cudaFree(d_sink);
 }
 
 int main(int argc, char **argv)
@@ -185,7 +197,7 @@ int main(int argc, char **argv)
              (int)devProps.clockRate);
   }
 
-  const int ARRAY_SIZE = maxThreadsPerBlock;
+  const int ARRAY_SIZE = maxThreadsPerBlock - 1;// * 2;
   const int ARRAY_BYTES = ARRAY_SIZE * sizeof(float);
 
   // Serial:

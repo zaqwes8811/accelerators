@@ -3,7 +3,7 @@
 
 void referenceCalculation(const float* const h_logLuminance, unsigned int* const h_cdf,
                           const size_t numRows, const size_t numCols, const size_t numBins, 
-						  float &logLumMin, float &logLumMax)
+			  float &logLumMin, float &logLumMax)
 {
   logLumMin = h_logLuminance[0];
   logLumMax = h_logLuminance[0];
@@ -23,11 +23,14 @@ void referenceCalculation(const float* const h_logLuminance, unsigned int* const
   //a histogram of numBins bins
   unsigned int *histo = new unsigned int[numBins];
 
-  for (size_t i = 0; i < numBins; ++i) histo[i] = 0;
+  for (size_t i = 0; i < numBins; ++i) 
+    histo[i] = 0;
 
   for (size_t i = 0; i < numCols * numRows; ++i) {
-    unsigned int bin = std::min(static_cast<unsigned int>(numBins - 1),
-                           static_cast<unsigned int>((h_logLuminance[i] - logLumMin) / logLumRange * numBins));
+    unsigned int bin = std::min(
+      static_cast<unsigned int>(numBins - 1), 
+      static_cast<unsigned int>((h_logLuminance[i] - logLumMin) / logLumRange * numBins));
+    
     histo[bin]++;
   }
 
