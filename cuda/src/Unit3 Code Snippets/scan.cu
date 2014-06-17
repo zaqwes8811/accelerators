@@ -88,7 +88,7 @@ __device__ void cuSwap(int& a, int& b)
 // TODO: In article finded bugs.
 // DANGER: похоже слишком много синхронизации, возможно с двумя буфферами быстрее.
 // TODO: убрать sink. лучше сделать еще один map
-__global__ void exclusive_scan_kernel_small_cache(const float * const d_in, float * const d_out,    //float * const d_sink, 
+__global__ void kern_exclusive_scan_cache(const float * const d_in, float * const d_out,    //float * const d_sink, 
     int n)
 { 
   // результаты работы потоков можем расшаривать через эту
@@ -125,11 +125,6 @@ __global__ void exclusive_scan_kernel_small_cache(const float * const d_in, floa
     __syncthreads();  
   }  
   d_out[globalId] = temp[localId]; // write output 
-  //__syncthreads();
-  
-  // сохраняем оконечные элементы
-  //if (localId == 0)
-  //  d_sink[blockIdx.x] = temp[blockDim.x-1] + d_in[globalId];
 }
 
 // http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
@@ -213,16 +208,16 @@ void scan_hillis_single_block(float * d_out, const float * const d_in, const int
   checkCudaErrors(cudaMalloc((void **) &d_sink_out, blocks));
 
   // Sectioned scan
-  exclusive_scan_kernel_small_cache<<<blocks, threads, threads * sizeof(float)>>>(d_in, d_out, size);
+  kern_exclusive_scan_cache<<< blocks, threads, threads * sizeof(float) >>>(d_in, d_out, size);
   
   // map
   yeild_tailes<<< blocks, threads >>>(d_in, d_out, d_sink, size);
   
   // запускаем scan на временном массиве
-  exclusive_scan_kernel_small_cache<<<1, threads, threads * sizeof(float)>>>(d_sink, d_sink_out, threads);
+  kern_exclusive_scan_cache<<< 1, threads, threads * sizeof(float) >>>(d_sink, d_sink_out, threads);
   
   // делаем map на исходном массиве
-  spread<<<blocks, threads>>>(d_sink_out, d_out, size);
+  spread<<< blocks, threads >>>(d_sink_out, d_out, size);
   
   cudaFree(d_sink);
   cudaFree(d_sink_out);
