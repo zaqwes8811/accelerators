@@ -104,7 +104,7 @@ inline int isPow2(int a) {
 }
 
 template<float (* const operation)(float, float)/*, float I_elem - not supported*/>
-__global__ void shmem_max_reduce_kernel(float * d_out, const float * d_in, const int size, const float I_elem)
+__global__ void shmem_max_reduce_kernel(const float * const d_in, float * const d_out, const int size, const float I_elem)
 {
     extern __shared__ float sdata[];
     
@@ -155,9 +155,8 @@ void reduce_shared(float const * const d_in, float * const d_out, int size)// co
   cudaMalloc((void **) &d_intermediate, ARRAY_BYTES); // overallocated
 
   // Step 1: Вычисляем результаты для каждого блока
-  // TODO: Error!!! "Segfault"
   float I_elem = -FLT_MAX;
-  shmem_max_reduce_kernel<&max_cuda><<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_in, size, I_elem);
+  shmem_max_reduce_kernel<&max_cuda><<<blocks, threads, threads * sizeof(float)>>>(d_in, d_intermediate, size, I_elem);
   cudaDeviceSynchronize(); 
   checkCudaErrors(cudaGetLastError());
 
@@ -165,7 +164,9 @@ void reduce_shared(float const * const d_in, float * const d_out, int size)// co
   // now we're down to one block left, so reduce it
   threads = blocks; // launch one thread for each block in prev step
   blocks = 1;
-  shmem_max_reduce_kernel<&max_cuda><<<blocks, threads, threads * sizeof(float)>>>(d_out, d_intermediate, threads, I_elem);
+  shmem_max_reduce_kernel<&max_cuda><<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_out, threads, I_elem);
+  cudaDeviceSynchronize(); 
+  checkCudaErrors(cudaGetLastError());
   
   cudaFree(d_intermediate);
 }
