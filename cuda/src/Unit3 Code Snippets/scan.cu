@@ -79,7 +79,8 @@ for d = 1 to log2(n) do
 */
 
 // http://www.cplusplus.com/reference/algorithm/swap/
-__device__ void cuSwap(int& a, int& b) 
+template <class T>
+__device__ void cudaSwap(T& a, T& b) 
 {
   int c(a); a=b; b=c;
 }
@@ -88,6 +89,7 @@ __device__ void cuSwap(int& a, int& b)
 // TODO: In article finded bugs.
 // DANGER: похоже слишком много синхронизации, возможно с двумя буфферами быстрее.
 // TODO: убрать sink. лучше сделать еще один map
+//template <class U>
 __global__ void kern_exclusive_scan_cache(const float * const d_in, float * const d_out,    //float * const d_sink, 
     int n)
 { 
@@ -127,6 +129,19 @@ __global__ void kern_exclusive_scan_cache(const float * const d_in, float * cons
   d_out[globalId] = temp[localId]; // write output 
 }
 
+__global__ void spread(const float* const d_tmp, float * const d_io, const int size) {
+  int globalIdx = threadIdx.x + blockDim.x * blockIdx.x;
+  if (globalIdx < size)
+    d_io[globalIdx] += d_tmp[blockIdx.x];
+}
+
+__global__ void yeild_tailes(const float* const d_source, const float* const d_first_stage, float * d_out, const int size) {
+  int globalIdx = threadIdx.x + blockDim.x * blockIdx.x;
+  int tail_idx = blockDim.x * (blockIdx.x+1) - 1;
+  if (globalIdx < size)
+    d_out[blockIdx.x] = d_source[tail_idx] + d_first_stage[tail_idx];
+}
+
 // http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
 // TODO: In article finded bugs.
 // DANGER: Work only 1 block!
@@ -160,7 +175,7 @@ __global__ void exclusive_scan_kernel_doubled_cache(float * d_out, const float *
 
   for (int offset = 1; offset < n; offset *= 2)  // 2^i
   {  
-    cuSwap(p_sink, p_source);
+    cudaSwap(p_sink, p_source);
     
     if (localId >= offset) {
       float temp_val = temp[p_source*n + localId] + temp[p_source*n + localId - offset];
@@ -176,19 +191,6 @@ __global__ void exclusive_scan_kernel_doubled_cache(float * d_out, const float *
   // p_sink == 0?
   // Пишем из текущего буффера
   d_out[localId] = temp[p_sink * n + localId /*1*/]; // write output 
-}
-
-__global__ void spread(const float* const d_tmp, float * const d_io, const int size) {
-  int globalIdx = threadIdx.x + blockDim.x * blockIdx.x;
-  if (globalIdx < size)
-    d_io[globalIdx] += d_tmp[blockIdx.x];
-}
-
-__global__ void yeild_tailes(const float* const d_source, const float* const d_first_stage, float * d_out, const int size) {
-  int globalIdx = threadIdx.x + blockDim.x * blockIdx.x;
-  int tail_idx = blockDim.x * (blockIdx.x+1) - 1;
-  if (globalIdx < size)
-    d_out[blockIdx.x] = d_source[tail_idx] + d_first_stage[tail_idx];
 }
 
 void scan_hillis_single_block(float * d_out, const float * const d_in, const int size) 

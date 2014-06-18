@@ -88,18 +88,17 @@
 
 const int maxThreadsPerBlock = 1024;
 
-
-template <class Type> __device__ Type cuMin( Type a, Type b ) {
+template <class Type> __device__ __host__ Type cudaMin2( Type a, Type b ) {
   // I - +inf
   return a < b ? a : b;
 }
 
-template <class Type> __device__ Type cuMax( Type a, Type b ) {
+template <class Type> __device__ __host__ Type cudaMax2( Type a, Type b ) {
   // I - -inf
   return a > b ? a : b;
 }
 
-inline int isPow2(int a) {
+inline __device__ __host__ int isPow2(int a) {
   return !(a&(a-1));
 }
 
@@ -108,15 +107,17 @@ __global__ void min_max_reduce_kernel(
     const int key=0)
 {
   assert(key < 2);
+  assert(isPow2(blockDim.x || 0));  // должно делиться на 2 до конца
   
+  //
   extern __shared__ float sdata[];
 
   float I_elem = -FLT_MAX;
-  float (* op)(float, float)(cuMax);
+  float (* op)(float, float)(cudaMax2);
   if (1 == key) 
   {
     I_elem = +FLT_MAX;
-    op = cuMin;
+    op = cudaMin2;
   }
   
   // Reuse code
@@ -150,39 +151,147 @@ __global__ void min_max_reduce_kernel(
   }
 }
 
-void reduce_shared(float const * const d_in, float * const d_out, int size, const int key=0)// const ReduceOperation* const op) 
+void reduce_shared(
+    float const * const d_in, float * const d_out, int size, 
+    const int key=0)// const ReduceOperation* const op) 
 {
   int threads = maxThreadsPerBlock;
   int blocks = ceil((1.0f*size) / maxThreadsPerBlock);
-  int ARRAY_BYTES = size * sizeof(float);
-  
+
   // assumes that size is not greater than maxThreadsPerBlock^2
   // and that size is a multiple of maxThreadsPerBlock
   assert(size <= threads * threads);  // для двушаговой редукции, чтобы уложиться
-  assert(blocks * threads >= size);  // нужно будет ослабить - shared-mem дозаполним внутри ядер
+  assert(blocks * threads >= size);  // нужно будет ослабить - shared-mem дозаполним внутри блоков
   assert(isPow2(threads));  // должно делиться на 2 до конца
   
   float * d_intermediate;  // stage 1 result
+  int ARRAY_BYTES = size * sizeof(float);
   cudaMalloc((void **) &d_intermediate, ARRAY_BYTES); // overallocated
 
   // Step 1: Вычисляем результаты для каждого блока
   min_max_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_in, d_intermediate, size, key);
-  cudaDeviceSynchronize(); 
-  checkCudaErrors(cudaGetLastError());
 
   // Step 2: Комбинируем разультаты блоков и это ограничение на размер входных данных
   // now we're down to one block left, so reduce it
   threads = blocks; // launch one thread for each block in prev step
   blocks = 1;
   min_max_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_out, threads, key);
-  cudaDeviceSynchronize(); 
-  checkCudaErrors(cudaGetLastError());
   
   cudaFree(d_intermediate);
 }
 
-// TODO: нужны временные буфферы
+__global__ void simple_histo_kernel(
+    const float * const d_logLuminance, const int size,
+    unsigned int * const d_histo, const int numBins,
+    float min_logLum, float logLumRange)
+{ 
+  int globalId = threadIdx.x + blockDim.x * blockIdx.x;
+  if (globalId >= size)
+    return; 
+    
+  float value = d_logLuminance[globalId];
 
+  // bin
+  unsigned int bin = cudaMin2(
+      static_cast<unsigned int>(numBins - 1), 
+      static_cast<unsigned int>((value - min_logLum) / logLumRange * numBins));
+
+  // Inc global memory. Partial histos not used.
+  atomicAdd(&(d_histo[bin]), 1);
+}
+
+__global__ void kern_exclusive_scan_cache(const unsigned int * const d_in, unsigned int * const d_out,    //float * const d_sink, 
+    int n)
+{ 
+  // результаты работы потоков можем расшаривать через эту
+  // память или через глобальную
+  extern __shared__ unsigned int temp[]; 
+  int globalId = threadIdx.x + blockDim.x * blockIdx.x;
+  int localId  = threadIdx.x;
+  
+  // Load input into shared memory.  
+  // This is exclusive scan, so shift right by one  
+  // and set first element to 0  
+  unsigned int tmpVal = 0;
+  if (localId > 0)
+    if (globalId < n)
+      tmpVal = d_in[globalId-1];
+    else 
+      tmpVal = 0;
+
+  temp[localId] = tmpVal;
+  __syncthreads();  
+
+  for (int offset = 1; offset < n; offset *= 2)  // 2^i
+  {  
+    if (localId >= offset) {
+      unsigned int temp_val0 = temp[localId];
+      unsigned int temp_val1 = temp[localId-offset]; 
+      // TODO: возможно быстрее прибавить тут, а может и нет
+      __syncthreads();
+      
+      temp[localId] = temp_val0 + temp_val1;  
+    }
+    
+    // буффера переписали
+    __syncthreads();  
+  }  
+  d_out[globalId] = temp[localId]; // write output 
+}
+
+// not float
+__global__ void spread(const unsigned int* const d_tmp, unsigned int * const d_io, const int size) {
+  int globalIdx = threadIdx.x + blockDim.x * blockIdx.x;
+  if (globalIdx < size)
+    d_io[globalIdx] += d_tmp[blockIdx.x];
+}
+
+__global__ void yeild_tailes(const unsigned int* const d_source, const unsigned int* const d_first_stage, unsigned int * d_out, const int size) {
+  int globalIdx = threadIdx.x + blockDim.x * blockIdx.x;
+  int tail_idx = blockDim.x * (blockIdx.x+1) - 1;
+  if (globalIdx < size)
+    d_out[blockIdx.x] = d_source[tail_idx] + d_first_stage[tail_idx];
+}
+
+void scan_hillis_single_block(const unsigned int * const d_in, unsigned int * const d_out, const int size) 
+{
+  
+  int threads = maxThreadsPerBlock;
+  int blocks = ceil((1.0f*size) / maxThreadsPerBlock);
+  
+  // assumes that size is not greater than maxThreadsPerBlock^2
+  // and that size is a multiple of maxThreadsPerBlock
+  assert(size <= threads * threads);  // для двушаговой редукции, чтобы уложиться
+  assert(blocks * threads >= size);  // нужно будет ослабить - shared-mem дозаполним внутри ядер
+  assert(isPow2(threads));  // должно делиться на 2 до конца - А нужно ли?
+  //assert(blocks == 2);  // пока чтобы не комбинировать результаты блоков
+
+  // Sectioned scan
+  kern_exclusive_scan_cache<<< blocks, threads, threads * sizeof(unsigned int) >>>(d_in, d_out, size);
+  checkCudaErrors(cudaGetLastError());
+  
+  unsigned int * d_sink;
+  unsigned int * d_sink_out;
+  checkCudaErrors(cudaMalloc((void **) &d_sink, blocks * sizeof(unsigned int)));
+  checkCudaErrors(cudaMalloc((void **) &d_sink_out, blocks * sizeof(unsigned int)));
+  // map
+  yeild_tailes<<< blocks, threads >>>(d_in, d_out, d_sink, size);
+  checkCudaErrors(cudaGetLastError());
+  
+  // запускаем scan на временном массиве
+  kern_exclusive_scan_cache<<< 1, threads, threads * sizeof(unsigned int) >>>(d_sink, d_sink_out, threads);
+  checkCudaErrors(cudaGetLastError());
+  
+  // делаем map на исходном массиве
+  spread<<< blocks, threads >>>(d_sink_out, d_out, size);
+  checkCudaErrors(cudaGetLastError());
+  
+  checkCudaErrors(cudaFree(d_sink));
+  checkCudaErrors(cudaFree(d_sink_out));
+}
+
+
+// TODO: нужны временные буфферы
 void your_histogram_and_prefixsum(const float* const d_logLuminance,
                                   unsigned int* const d_cdf,
                                   float &min_logLum,
@@ -191,41 +300,58 @@ void your_histogram_and_prefixsum(const float* const d_logLuminance,
                                   const size_t numCols,
                                   const size_t numBins)
 {
-  
  
-  
-  
   //TODO
   /*Here are the steps you need to implement
-    1) find the minimum and maximum value in the input logLuminance channel
-       store in min_logLum and max_logLum
-       
-       массив с данными должен быть не изменным, поэтому нужно хранить копию в shared
-    */
+  1) find the minimum and maximum value in the input logLuminance channel
+      store in min_logLum and max_logLum
+      
+      массив с данными должен быть не изменным, поэтому нужно хранить копию в shared
+  */
+  int size = numRows * numCols;
   
   float* d_elem;
   cudaMalloc((void **) &d_elem, sizeof(float));  // 1 значение
-  reduce_shared(d_logLuminance, d_elem, numRows * numCols);
+  reduce_shared(d_logLuminance, d_elem, size);
   cudaMemcpy(&max_logLum, d_elem, sizeof(float), cudaMemcpyDeviceToHost);
   
   // min
   int key = 1;
-  reduce_shared(d_logLuminance, d_elem, numRows * numCols, key);
+  reduce_shared(d_logLuminance, d_elem, size, key);
   cudaMemcpy(&min_logLum, d_elem, sizeof(float), cudaMemcpyDeviceToHost);
   cudaFree(d_elem);
   
   /*
     2) subtract them to find the range
-    
-    // Похоже гистограмма как таковая не нужна
-    // TODO: Можно ли использовать cdf? кажется можно
-    3) generate a histogram of all the values in the logLuminance channel using
-       the formula: bin = (lum[i] - lumMin) / lumRange * numBins
-    4) Perform an exclusive scan (prefix sum) on the histogram to get
-       the cumulative distribution of luminance values (this should go in the
-       incoming d_cdf pointer which already has been allocated for you)       */
+  */
+  float logLumRange = max_logLum - min_logLum;
+  
+  /*
+  // Похоже гистограмма как таковая не нужна
+  // TODO: Можно ли использовать cdf? кажется можно
+  3) generate a histogram of all the values in the logLuminance channel using
+      the formula: bin = (lum[i] - lumMin) / lumRange * numBins
+  */
+  unsigned int *d_histo;
+  cudaMalloc((void **)& d_histo, numBins * sizeof(unsigned int));
+  
+  unsigned int h_histo[numBins];
+  for(int i = 0; i < numBins; i++) h_histo[i] = 0;
+  cudaMemcpy(d_histo, h_histo, numBins * sizeof(unsigned int), cudaMemcpyHostToDevice);
+  
+  int threads = maxThreadsPerBlock;
+  int blocks = ceil((1.0f*size) / maxThreadsPerBlock);
+  simple_histo_kernel<<< blocks, threads >>>(d_logLuminance, size, d_histo, numBins, min_logLum, logLumRange);
+  
 
+  /*
+  4) Perform an exclusive scan (prefix sum) on the histogram to get
+      the cumulative distribution of luminance values (this should go in the
+      incoming d_cdf pointer which already has been allocated for you)       */
+  
+  scan_hillis_single_block(d_histo, d_cdf, numBins);
 
+  cudaFree(d_histo);
 }
 
 
