@@ -92,7 +92,7 @@ __device__ void cudaSwap(T& a, T& b)
 // DANGER: похоже слишком много синхронизации, возможно с двумя буфферами быстрее.
 // TODO: убрать sink. лучше сделать еще один map
 //template <class U>
-__global__ void kern_exclusive_scan_cache(const float * const d_in, float * const d_out,    //float * const d_sink, 
+__global__ void kern_exclusive_hillis_scan_cache(const float * const d_in, float * const d_out,    //float * const d_sink, 
     int n)
 { 
   // результаты работы потоков можем расшаривать через эту
@@ -195,7 +195,7 @@ __global__ void exclusive_scan_kernel_doubled_cache(float * d_out, const float *
   d_out[localId] = temp[p_sink * n + localId /*1*/]; // write output 
 }
 
-void scan_hillis_single_block(float * d_out, const float * const d_in, const int size) 
+void scan(float * d_out, const float * const d_in, const int size) 
 {
   
   int threads = maxThreadsPerBlock;
@@ -214,13 +214,13 @@ void scan_hillis_single_block(float * d_out, const float * const d_in, const int
   checkCudaErrors(cudaMalloc((void **) &d_sink_out, blocks));
 
   // Sectioned scan
-  kern_exclusive_scan_cache<<< blocks, threads, threads * sizeof(float) >>>(d_in, d_out, size);
+  kern_exclusive_hillis_scan_cache<<< blocks, threads, threads * sizeof(float) >>>(d_in, d_out, size);
   
   // map
   yeild_tailes<<< blocks, threads >>>(d_in, d_out, d_sink, size);
   
   // запускаем scan на временном массиве
-  kern_exclusive_scan_cache<<< 1, threads, threads * sizeof(float) >>>(d_sink, d_sink_out, threads);
+  kern_exclusive_hillis_scan_cache<<< 1, threads, threads * sizeof(float) >>>(d_sink, d_sink_out, threads);
   
   // делаем map на исходном массиве
   spread<<< blocks, threads >>>(d_sink_out, d_out, size);
@@ -229,6 +229,21 @@ void scan_hillis_single_block(float * d_out, const float * const d_in, const int
   cudaFree(d_sink_out);
 }
 
+/// Belloh
+__global__ void kern_exclusive_belloh_scan_cache(
+    const float * const d_in, float * const d_out,
+    int n)
+{ 
+  // результаты работы потоков можем расшаривать через эту
+  // память или через глобальную
+  extern __shared__ float temp[]; 
+  int globalId = threadIdx.x + blockDim.x * blockIdx.x;
+  int localId  = threadIdx.x;
+  
+}
+
+
+/// LAUNCHER
 int main(int argc, char **argv)
 {
   int deviceCount;
@@ -290,7 +305,7 @@ int main(int argc, char **argv)
   case 0:
       printf("Running reduce hill exclusive\n");
       cudaEventRecord(start, 0);
-      scan_hillis_single_block(d_out, d_in, ARRAY_SIZE);
+      scan(d_out, d_in, ARRAY_SIZE);
       checkCudaErrors(cudaGetLastError());
       cudaEventRecord(stop, 0);
       break;
