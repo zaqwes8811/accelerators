@@ -49,6 +49,19 @@ template <class Type> __device__ Type max_cuda( Type a, Type b ) {
   return a > b ? a : b;
 }
 
+/*
+class IElem {
+public:
+  explicit IElem(float value) : value_(value) {}
+  float get() const { return value_; }
+  
+private:
+  const float value_;
+};*/
+
+// /*, IElem elem - doesn't work*/ /*, float I_elem - not supported*/ - такие не типовые параметрые не компилируются
+//template<float (* const operation)(float, float), float (* const neutral)()>
+
 //TODO: Injection operation - failed.
 // Don't work in homework. Strange but it is it! При разыменовании функтора все портится
 // Тут работает, там нет. Отличие в том, что указатель передается через несколько вызовов, хотя может это ничего не значит.

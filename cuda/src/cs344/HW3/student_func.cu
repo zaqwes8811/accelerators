@@ -89,16 +89,12 @@
 const int maxThreadsPerBlock = 1024;
 
 
-template <class Type> __device__ Type min_cuda( Type a, Type b ) {
+template <class Type> __device__ Type cuMin( Type a, Type b ) {
   // I - +inf
   return a < b ? a : b;
 }
 
-__device__ float get_neutral_max() {
-  return -FLT_MAX;  
-}
-
-template <class Type> __device__ Type max_cuda( Type a, Type b ) {
+template <class Type> __device__ Type cuMax( Type a, Type b ) {
   // I - -inf
   return a > b ? a : b;
 }
@@ -107,54 +103,54 @@ inline int isPow2(int a) {
   return !(a&(a-1));
 }
 
-/*
-class IElem {
-public:
-  explicit IElem(float value) : value_(value) {}
-  float get() const { return value_; }
-  
-private:
-  const float value_;
-};*/
-
-// /*, IElem elem - doesn't work*/ /*, float I_elem - not supported*/ - такие не типовые параметрые не компилируются
-template<float (* const operation)(float, float), float (* const neutral)()>
-__global__ void shmem_max_reduce_kernel(const float * const d_in, float * const d_out, const int size)
+__global__ void min_max_reduce_kernel(
+    const float * const d_in, float * const d_out, const int size, 
+    const int key=0)
 {
-    extern __shared__ float sdata[];
-    
-    // Reuse code
-    int myId = threadIdx.x + blockDim.x * blockIdx.x;
-    int tid  = threadIdx.x;
+  assert(key < 2);
+  
+  extern __shared__ float sdata[];
 
-    // load shared mem from global mem
-    if (myId < size)
-      sdata[tid] = d_in[myId];
-    else 
-    {
-      sdata[tid] = (*neutral)();
-    }
-    __syncthreads();            // make sure entire block is loaded!
-    
-    // do reduction in shared mem
-    for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1)
-    {
-        if (tid < s)
-        {
-          float tmp = (*operation)(sdata[tid], sdata[tid + s]); 
-	  sdata[tid] = tmp;
-        }
-        __syncthreads();        // make sure all adds at one stage are done!
-    }
+  float I_elem = -FLT_MAX;
+  float (* op)(float, float)(cuMax);
+  if (1 == key) 
+  {
+    I_elem = +FLT_MAX;
+    op = cuMin;
+  }
+  
+  // Reuse code
+  int globalId = threadIdx.x + blockDim.x * blockIdx.x;
+  int tid  = threadIdx.x;
 
-    // only thread 0 writes result for this block back to global mem
-    if (tid == 0)
-    {
-        d_out[blockIdx.x] = sdata[0];
-    }
+  // load shared mem from global mem
+  if (globalId < size)
+    sdata[tid] = d_in[globalId];
+  else 
+  {
+    sdata[tid] = I_elem;
+  }
+  __syncthreads();            // make sure entire block is loaded!
+  
+  // do reduction in shared mem
+  for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1)
+  {
+      if (tid < s)
+      {
+	float tmp = (*op)(sdata[tid], sdata[tid + s]); 
+	sdata[tid] = tmp;
+      }
+      __syncthreads();        // make sure all adds at one stage are done!
+  }
+
+  // only thread 0 writes result for this block back to global mem
+  if (tid == 0)
+  {
+      d_out[blockIdx.x] = sdata[0];
+  }
 }
 
-void reduce_shared(float const * const d_in, float * const d_out, int size)// const ReduceOperation* const op) 
+void reduce_shared(float const * const d_in, float * const d_out, int size, const int key=0)// const ReduceOperation* const op) 
 {
   int threads = maxThreadsPerBlock;
   int blocks = ceil((1.0f*size) / maxThreadsPerBlock);
@@ -170,7 +166,7 @@ void reduce_shared(float const * const d_in, float * const d_out, int size)// co
   cudaMalloc((void **) &d_intermediate, ARRAY_BYTES); // overallocated
 
   // Step 1: Вычисляем результаты для каждого блока
-  shmem_max_reduce_kernel<max_cuda, get_neutral_max><<<blocks, threads, threads * sizeof(float)>>>(d_in, d_intermediate, size);
+  min_max_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_in, d_intermediate, size, key);
   cudaDeviceSynchronize(); 
   checkCudaErrors(cudaGetLastError());
 
@@ -178,7 +174,7 @@ void reduce_shared(float const * const d_in, float * const d_out, int size)// co
   // now we're down to one block left, so reduce it
   threads = blocks; // launch one thread for each block in prev step
   blocks = 1;
-  shmem_max_reduce_kernel<max_cuda, get_neutral_max><<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_out, threads);
+  min_max_reduce_kernel<<<blocks, threads, threads * sizeof(float)>>>(d_intermediate, d_out, threads, key);
   cudaDeviceSynchronize(); 
   checkCudaErrors(cudaGetLastError());
   
@@ -208,10 +204,14 @@ void your_histogram_and_prefixsum(const float* const d_logLuminance,
     */
   
   float* d_elem;
-  float h_elem;
   cudaMalloc((void **) &d_elem, sizeof(float));  // 1 значение
   reduce_shared(d_logLuminance, d_elem, numRows * numCols);
+  cudaMemcpy(&max_logLum, d_elem, sizeof(float), cudaMemcpyDeviceToHost);
   
+  // min
+  int key = 1;
+  reduce_shared(d_logLuminance, d_elem, numRows * numCols, key);
+  cudaMemcpy(&min_logLum, d_elem, sizeof(float), cudaMemcpyDeviceToHost);
   cudaFree(d_elem);
   
   /*
@@ -227,3 +227,5 @@ void your_histogram_and_prefixsum(const float* const d_logLuminance,
 
 
 }
+
+
