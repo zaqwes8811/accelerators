@@ -22,6 +22,33 @@ const int maxThreadsPerBlock = 1024;
 
 using std::vector;
 
+// http://codepad.org/TEgVmOo0
+
+/*
+ typedef float (*p_op)(const float& x, const float& y);
+
+__device__ float min_op(const float& x, const float& y)
+{
+    return min(x, y);
+}
+
+__device__ float max_op(const float& x, const float& y)
+{
+    return max(x, y);
+}
+
+template <p_op op>
+__global__
+void kernel(args)
+{
+    ...
+    data_2 = op(data_0, data_1);
+    ...
+}
+
+kernel<min_op><<<config>>>(args);
+ */
+
 // http://habrahabr.ru/post/146793/ !! трюки на С++
 
 // Scan: 

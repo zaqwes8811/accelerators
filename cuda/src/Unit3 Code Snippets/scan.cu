@@ -78,6 +78,8 @@ for d = 1 to log2(n) do
       x[out][k] = x[in][k]
 */
 
+// про буфферы http://forums.udacity.com/questions/100037170/double-buffer-approach-for-hw3#cs344
+
 // http://www.cplusplus.com/reference/algorithm/swap/
 template <class T>
 __device__ void cudaSwap(T& a, T& b) 
