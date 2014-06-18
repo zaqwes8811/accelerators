@@ -234,11 +234,26 @@ __global__ void kern_exclusive_belloh_scan_cache(
     const float * const d_in, float * const d_out,
     int n)
 { 
+  
+  assert(isPow2(blockDim.x) || 0);
   // результаты работы потоков можем расшаривать через эту
   // память или через глобальную
   extern __shared__ float temp[]; 
   int globalId = threadIdx.x + blockDim.x * blockIdx.x;
   int localId  = threadIdx.x;
+  
+  // Load input into shared memory.  
+  // This is exclusive scan, so shift right by one  
+  // and set first element to 0  
+  float tmpVal = 0;
+  if (localId > 0)
+    if (globalId < n)
+      tmpVal = d_in[globalId-1];
+    else 
+      tmpVal = 0;
+
+  temp[localId] = tmpVal;
+  __syncthreads(); 
   
 }
 

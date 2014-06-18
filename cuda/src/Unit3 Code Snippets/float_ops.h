@@ -20,7 +20,7 @@ inline bool isEqual(float x, float y)
   // see Knuth section 4.2.2 pages 217-218
 }
 
-inline int isPow2(int a) {
+inline __device__ __host__ int isPow2(int a) {
   return !(a&(a-1));
 }
 
