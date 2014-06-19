@@ -215,11 +215,14 @@ __global__ void kern_exclusive_scan_cache(const unsigned int * const d_in, unsig
   unsigned int tmpVal = 0;
   if (localId > 0)
     if (globalId < n)
+    {
       tmpVal = d_in[globalId-1];
+    }
     else 
       tmpVal = 0;
 
   temp[localId] = tmpVal;
+  
   __syncthreads();  
 
   for (int offset = 1; offset < n; offset *= 2)  // 2^i
@@ -268,6 +271,7 @@ void scan_hillis_single_block(const unsigned int * const d_in, unsigned int * co
 
   // Sectioned scan
   kern_exclusive_scan_cache<<< blocks, threads, threads * sizeof(unsigned int) >>>(d_in, d_out, size);
+  cudaDeviceSynchronize();
   checkCudaErrors(cudaGetLastError());
   
   unsigned int * d_sink;
@@ -276,14 +280,17 @@ void scan_hillis_single_block(const unsigned int * const d_in, unsigned int * co
   checkCudaErrors(cudaMalloc((void **) &d_sink_out, blocks * sizeof(unsigned int)));
   // map
   yeild_tailes<<< blocks, threads >>>(d_in, d_out, d_sink, size);
+  cudaDeviceSynchronize();
   checkCudaErrors(cudaGetLastError());
   
   // запускаем scan на временном массиве
   kern_exclusive_scan_cache<<< 1, threads, threads * sizeof(unsigned int) >>>(d_sink, d_sink_out, threads);
+  cudaDeviceSynchronize();
   checkCudaErrors(cudaGetLastError());
   
   // делаем map на исходном массиве
   spread<<< blocks, threads >>>(d_sink_out, d_out, size);
+  cudaDeviceSynchronize();
   checkCudaErrors(cudaGetLastError());
   
   checkCudaErrors(cudaFree(d_sink));

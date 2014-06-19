@@ -21,6 +21,8 @@
 
 #define checkCudaErrors(val) check( (val), #val, __FILE__, __LINE__)
 
+extern void scan_hillis_single_block(const unsigned int * const d_in, unsigned int * const d_out, const int size);
+
 template<typename T>
 void check(T err, const char* const func, const char* const file, const int line) {
   if (err != cudaSuccess) {
@@ -31,15 +33,13 @@ void check(T err, const char* const func, const char* const file, const int line
   }
 }
 
-
-const int maxThreadsPerBlock = 1024;
-
 using std::vector;
 using std::equal;
 using std::for_each;
 
 int main(int argc, char **argv)
 {
+  /// Check device
   int deviceCount;
   cudaGetDeviceCount(&deviceCount);
   if (deviceCount == 0) {
@@ -58,48 +58,47 @@ int main(int argc, char **argv)
              (int)devProps.major, (int)devProps.minor, 
              (int)devProps.clockRate);
   }
+  
+  int whichKernel = 0;
+  if (argc == 2) {
+      whichKernel = atoi(argv[1]);
+  }
 
-  const int ARRAY_SIZE = maxThreadsPerBlock * 7 - 4;
-  const int ARRAY_BYTES = ARRAY_SIZE * sizeof(float);
+  /// Real work
+  const int maxThreadsPerBlock = 8;
+  const int ARRAY_SIZE = maxThreadsPerBlock * 2 - 1;
+  const int ARRAY_BYTES = ARRAY_SIZE * sizeof(unsigned int);
 
   // Serial:
   // generate the input array on the host
-  float h_in[ARRAY_SIZE];
-  float h_scan_gold[ARRAY_SIZE];
-  float sum = 0.0f;
+  unsigned int h_in[ARRAY_SIZE];
+  unsigned int h_scan_gold[ARRAY_SIZE];
+  unsigned int sum = 0;
   for(int i = 0; i < ARRAY_SIZE; i++) {
     h_scan_gold[i] = sum;
-    h_in[i] = 1.0f * (i+1);
+    h_in[i] = i+1;
     sum += h_in[i];  
   }
 
   // Parallel
   // declare GPU memory pointers
-  float * d_in, * d_out;//, * d_out;
+  unsigned int * d_in, * d_out;//, * d_out;
 
   // allocate GPU memory
   cudaMalloc((void **) &d_in, ARRAY_BYTES);
   cudaMalloc((void **) &d_out, ARRAY_BYTES); // overallocated
-  //cudaMalloc((void **) &d_out, sizeof(float));
 
   // transfer the input array to the GPU
   checkCudaErrors(cudaMemcpy(d_in, h_in, ARRAY_BYTES, cudaMemcpyHostToDevice)); 
-
-  int whichKernel = 0;
-  if (argc == 2) {
-      whichKernel = atoi(argv[1]);
-  }
-      
   cudaEvent_t start, stop;
   cudaEventCreate(&start);
   cudaEventCreate(&stop);
 
-  whichKernel = 0;
   switch(whichKernel) {
   case 0:
       printf("Running reduce hill exclusive\n");
       cudaEventRecord(start, 0);
-      //scan_hillis_single_block(d_out, d_in, ARRAY_SIZE);
+      scan_hillis_single_block(d_in, d_out, ARRAY_SIZE);
       checkCudaErrors(cudaGetLastError());
       cudaEventRecord(stop, 0);
       break;
@@ -113,7 +112,7 @@ int main(int argc, char **argv)
   elapsedTime /= 100.0f;      // 100 trials
 
   // copy back the sum from GPU
-  float h_out[ARRAY_SIZE]; // ARRAY_BYTES
+  unsigned int h_out[ARRAY_SIZE]; // ARRAY_BYTES
   checkCudaErrors(cudaMemcpy(h_out, d_out, ARRAY_BYTES, cudaMemcpyDeviceToHost));
   
   printf("average time elapsed: %f\n", elapsedTime);
@@ -122,22 +121,17 @@ int main(int argc, char **argv)
   cudaFree(d_in);
   cudaFree(d_out);
   
-  // Check: сравнить бы с моделью
-  vector<float> hGold;
-  vector<float> hOut;
-  unsigned dataArraySize = sizeof(h_scan_gold) / sizeof(float);
+  /// Check result
+  vector<unsigned int> hGold;
+  vector<unsigned int> hOut;
+  unsigned dataArraySize = sizeof(h_scan_gold) / sizeof(unsigned int);
   assert(dataArraySize == ARRAY_SIZE);
   hGold.insert(hGold.end(), &h_scan_gold[0], &h_scan_gold[dataArraySize]);
   hOut.insert(hOut.end(), &h_out[0], &h_out[dataArraySize]);
   assert(hOut.size() == hGold.size());
-  assert(
-  equal
-  //for_each
-    //equal_adapt
-    (hGold.begin(), hGold.end(), hOut.begin(), AlmostEqualPredicate)//;
-  );
-  
-     
+  assert(equal(hGold.begin(), hGold.end(), hOut.begin()
+  //, AlmostEqualPredicate
+  ));
   return 0;
 }
 
