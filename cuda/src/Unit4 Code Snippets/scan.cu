@@ -78,8 +78,6 @@ for d = 1 to log2(n) do
       x[out][k] = x[in][k]
 */
 
-// про буфферы http://forums.udacity.com/questions/100037170/double-buffer-approach-for-hw3#cs344
-
 // http://www.cplusplus.com/reference/algorithm/swap/
 template <class T>
 __device__ void cudaSwap(T& a, T& b) 
@@ -92,7 +90,7 @@ __device__ void cudaSwap(T& a, T& b)
 // DANGER: похоже слишком много синхронизации, возможно с двумя буфферами быстрее.
 // TODO: убрать sink. лучше сделать еще один map
 //template <class U>
-__global__ void kern_exclusive_hillis_scan_cache(const float * const d_in, float * const d_out,    //float * const d_sink, 
+__global__ void kern_exclusive_scan_cache(const float * const d_in, float * const d_out,    //float * const d_sink, 
     int n)
 { 
   // результаты работы потоков можем расшаривать через эту
@@ -195,7 +193,7 @@ __global__ void exclusive_scan_kernel_doubled_cache(float * d_out, const float *
   d_out[localId] = temp[p_sink * n + localId /*1*/]; // write output 
 }
 
-void scan(float * d_out, const float * const d_in, const int size) 
+void scan_hillis_single_block(float * d_out, const float * const d_in, const int size) 
 {
   
   int threads = maxThreadsPerBlock;
@@ -214,14 +212,13 @@ void scan(float * d_out, const float * const d_in, const int size)
   checkCudaErrors(cudaMalloc((void **) &d_sink_out, blocks));
 
   // Sectioned scan
-  kern_exclusive_hillis_scan_cache<<< blocks, threads, threads * sizeof(float) >>>(d_in, d_out, size);
-  //!!! Нужна синхронизация
+  kern_exclusive_scan_cache<<< blocks, threads, threads * sizeof(float) >>>(d_in, d_out, size);
   
   // map
   yeild_tailes<<< blocks, threads >>>(d_in, d_out, d_sink, size);
   
   // запускаем scan на временном массиве
-  kern_exclusive_hillis_scan_cache<<< 1, threads, threads * sizeof(float) >>>(d_sink, d_sink_out, threads);
+  kern_exclusive_scan_cache<<< 1, threads, threads * sizeof(float) >>>(d_sink, d_sink_out, threads);
   
   // делаем map на исходном массиве
   spread<<< blocks, threads >>>(d_sink_out, d_out, size);
@@ -230,36 +227,7 @@ void scan(float * d_out, const float * const d_in, const int size)
   cudaFree(d_sink_out);
 }
 
-/// Belloh
-__global__ void kern_exclusive_belloh_scan_cache(
-    const float * const d_in, float * const d_out,
-    int n)
-{ 
-  
-  assert(isPow2(blockDim.x) || 0);
-  // результаты работы потоков можем расшаривать через эту
-  // память или через глобальную
-  extern __shared__ float temp[]; 
-  int globalId = threadIdx.x + blockDim.x * blockIdx.x;
-  int localId  = threadIdx.x;
-  
-  // Load input into shared memory.  
-  // This is exclusive scan, so shift right by one  
-  // and set first element to 0  
-  float tmpVal = 0;
-  if (localId > 0)
-    if (globalId < n)
-      tmpVal = d_in[globalId-1];
-    else 
-      tmpVal = 0;
-
-  temp[localId] = tmpVal;
-  __syncthreads(); 
-  
-}
-
-
-/// LAUNCHER
+#ifndef SCAN_AS_UNIT
 int main(int argc, char **argv)
 {
   int deviceCount;
@@ -321,7 +289,7 @@ int main(int argc, char **argv)
   case 0:
       printf("Running reduce hill exclusive\n");
       cudaEventRecord(start, 0);
-      scan(d_out, d_in, ARRAY_SIZE);
+      scan_hillis_single_block(d_out, d_in, ARRAY_SIZE);
       checkCudaErrors(cudaGetLastError());
       cudaEventRecord(stop, 0);
       break;
@@ -362,4 +330,4 @@ int main(int argc, char **argv)
      
   return 0;
 }
-
+#endif
