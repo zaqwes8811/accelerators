@@ -14,6 +14,7 @@ QMAKE_CXXFLAGS += -O2  -Wall -Wno-deprecated -pg -std=c++11
 
 SOURCES += \
   anthony_williams/ch8_design_test.cc \
+  anthony_williams/ch9_adv_test.cc \
   ../3rdparty/gmock-1.6.0/fused-src/gmock-gtest-all.cc \
   launcher.cc
 
