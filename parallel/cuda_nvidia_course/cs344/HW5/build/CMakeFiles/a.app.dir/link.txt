@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/a.app.dir/reference_calc.cpp.o CMakeFiles/a.app.dir/./a.app_generated_main.cu.o CMakeFiles/a.app.dir/./a.app_generated_student.cu.o  -o a.app -rdynamic /usr/local/cuda-5.5/lib/libcudart.so -lcuda -Wl,-rpath,/usr/local/cuda-5.5/lib 
