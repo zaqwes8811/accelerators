@@ -4,6 +4,8 @@
 *.dep
 *.dll
 
+*.app
+
 *.exe
 *.exe.*
 *.idb
