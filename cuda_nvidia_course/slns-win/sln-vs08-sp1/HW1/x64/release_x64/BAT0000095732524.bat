@@ -1,1 +1,0 @@
-@echo Manifest resource last updated at %TIME% on %DATE% > ".\x64\release_x64\mt.dep"

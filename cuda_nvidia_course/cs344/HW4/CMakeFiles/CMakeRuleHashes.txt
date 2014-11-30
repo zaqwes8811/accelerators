@@ -1,3 +1,0 @@
-# Hashes of file build rules.
-1ff3bf99b3d5a03c704ec6766cefedf0 CMakeFiles/HW3.dir/./HW3_generated_HW4.cu.o
-d32a9489d379e675342ab9d788ee310c CMakeFiles/HW3.dir/./HW3_generated_student_func.cu.o
