@@ -3,6 +3,7 @@
 *.cache
 *.dep
 *.dll
+*target*
 
 *.app
 
