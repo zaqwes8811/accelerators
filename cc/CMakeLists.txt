@@ -138,8 +138,8 @@ elseif (UNIX)
       # http://stackoverflow.com/questions/9511422/undefined-reference-to-clock-gettime-gcc-4-6-cmake
       # http://www.unix.com/man-page/opensolaris/3lib/librt/
       #
-      # https://software.intel.com/en-us/forums/topic/285308 boost_system boost_thread
-      link_libraries(tbb tbbmalloc  pthread rt)  # !! pthread and rt last!!
+      # https://software.intel.com/en-us/forums/topic/285308
+      link_libraries(tbb tbbmalloc boost_system boost_thread  pthread rt)  # !! pthread and rt last!!
     endif()
   endif()
 endif()
@@ -149,7 +149,8 @@ message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 # Sources
 file( GLOB canaryHttp
   ${Source}/details/*.cc
-  ${Source}/async-parallel-computing/*.h
+  ${Source}/async-parallel/*.h
+  ${Source}/async-parallel/*.cc
   ${Source}/canary/*.cc
   ${Source}/heart/*.h
   ${Source}/canary/*.h)
@@ -208,10 +209,10 @@ file( GLOB proTests
     ${unitTests}/train/*.cc
     ${unitTests}/stanford_algoritms_part2/*.cc
     ${unitTests}/tricks_intermediate/*.cc
-    ${unitTests}/lang_core/*.cc
+    ${unitTests}/async-parallel/*.cc
     ${unitTests}/mem_heap_stack/*.cc
     ${unitTests}/extern/*.cc
-    ${unitTests}/async-parallel-computing/patterns/*.cc
+    ${unitTests}/async-parallel/patterns/*.cc
     ${unitTests}/stl/*.cc
     ${unitTests}/tbb/*.cc
     ${unitTests}/async-parallel-computing/safe_data_structures/*.cc
