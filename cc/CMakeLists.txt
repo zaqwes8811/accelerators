@@ -21,8 +21,8 @@ set(Source "source/")
 set(testsRoot "./tests")
 set(root ".")
 
-set(BigExtern "D:/work/big-3rdparty/")
-#set(BigExtern "/home/zaqwes/big-3rdparty/")
+#set(BigExtern "D:/work/big-3rdparty/")
+set(BigExtern "/home/zaqwes/big-3rdparty/")
 
 set(Intern "./intern/")
 set(User "/home/zaqwes")

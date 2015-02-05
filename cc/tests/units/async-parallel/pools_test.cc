@@ -394,5 +394,10 @@ TEST(TMP, Test) {
 }
 */
 }
+
+TEST(AsPl, SingleThread)
+{
+
+}
 }  // space
 

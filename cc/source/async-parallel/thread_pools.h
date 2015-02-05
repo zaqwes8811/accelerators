@@ -57,6 +57,12 @@
 #include <boost/thread.hpp>
 #include <boost/asio.hpp>
 
+/**
+
+https://events.yandex.ru/lib/talks/2488/
+    Многопоточность в браузере. Модель акторов
+*/
+
 namespace thread_pools {
 class AsioThreadPool {
 public:

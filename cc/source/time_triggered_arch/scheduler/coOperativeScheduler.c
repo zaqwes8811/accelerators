@@ -1,5 +1,5 @@
 #include "time_triggered_arch/config.h"  // in every *.c or *.cc file
-#include "time_triggered_arch/scheduler/coOperativeScheduler.h"
+#include "time_triggered_arch/scheduler/cooperativeScheduler.h"
 #include "time_triggered_arch/tasks/onChain.h"
 
 //static

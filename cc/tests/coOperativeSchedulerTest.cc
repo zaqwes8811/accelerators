@@ -5,7 +5,7 @@ extern "C" {
 #endif
 
 #include "time_triggered_arch/vm/vm.h"
-#include "time_triggered_arch/scheduler/coOperativeScheduler.h"
+#include "time_triggered_arch/scheduler/cooperativeScheduler.h"
 #include "time_triggered_arch/tasks/onChain.h"
 #include "time_triggered_arch/scheduler_raw/sch52.h"
 
