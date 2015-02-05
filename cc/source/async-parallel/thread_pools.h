@@ -58,15 +58,17 @@
 #include <boost/asio.hpp>
 
 /**
-
-https://events.yandex.ru/lib/talks/2488/
+  https://events.yandex.ru/lib/talks/2488/
     Многопоточность в браузере. Модель акторов
+
+ Chromium project.
 */
 
 namespace thread_pools {
 class AsioThreadPool {
 public:
   AsioThreadPool();
+  explicit AsioThreadPool(int countWorkers);
   ~AsioThreadPool();
 
   /**
@@ -86,7 +88,6 @@ private:
   boost::asio::io_service m_io_service;
   boost::thread_group m_threads;
   boost::asio::io_service::work m_work;
-  int cm_size;
 };
 
 }

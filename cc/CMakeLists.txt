@@ -142,7 +142,7 @@ elseif (UNIX)
       ENDIF()
 
       message("I'm NOT ARM processor")
-      add_definitions(  -std=c++0x)
+      #add_definitions(  -std=c++0x)
       link_directories(${BigExtern}/boost_1_57_0/stage_gcc/lib)
       # how split embedded form just linux
       # http://stackoverflow.com/questions/9534126/automatically-linking-socket-shared-library-in-nix
