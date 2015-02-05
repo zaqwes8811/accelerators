@@ -4,6 +4,7 @@
 *.dep
 *.dll
 *target*
+*.user
 
 *.app
 

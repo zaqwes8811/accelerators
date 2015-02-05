@@ -21,8 +21,8 @@ set(Source "source/")
 set(testsRoot "./tests")
 set(root ".")
 
-#set(BigExtern "D:/work/big-3rdparty/")
-set(BigExtern "/home/zaqwes/big-3rdparty/")
+set(BigExtern "D:/work/big-3rdparty/")
+#set(BigExtern "/home/zaqwes/big-3rdparty/")
 
 set(Intern "./intern/")
 set(User "/home/zaqwes")
@@ -42,6 +42,19 @@ include_directories(${BigExtern}/asl_1.0.43)
 include_directories(${unitTests})
 include_directories(${User}/opt/clang-cilkplus/include)
 include_directories(/home/zaqwes/vdisks/tools/clang-cilkplus/archive-linux/lib)
+
+set(GMock "./extern/gmock-1.6.0/fused-src")
+set(Canary "./source/time_triggered_arch")
+
+# Test framework
+include_directories(${GMock}/)
+include_directories(./src/)
+
+file( GLOB  canarySchedulerRaw  ${Canary}/scheduler_raw/*.c ${Canary}/scheduler_raw/*.h)
+file( GLOB  canaryScheduler  ${Canary}/scheduler/*.c)
+file( GLOB  canaryLogicalDevices  ${Canary}/logical_devices/*.c)
+file( GLOB  canaryVM  ${Canary}/vm/*.c)
+file( GLOB  canaryTasks  ${Canary}/tasks/*.c)
 
 # link the libraries to the executable
 if (MINGW)
@@ -249,12 +262,24 @@ add_executable(blocked_tests.bin
     ${externCode}
     ${blockedTestSources}
     ${proSources}
+    ${canarySchedulerRaw}
+    ${canaryScheduler}
+    ${canaryLogicalDevices}
+    ${canaryVM}
+    ${canaryTasks}
+    ${test}
     ${canarySources}
 )
 
 add_executable(unittest.bin
     ${Source}/mains/launcher_tests.cc
     ${GMock}/gmock-gtest-all.cc
+    ${canarySchedulerRaw}
+    ${canaryScheduler}
+    ${canaryLogicalDevices}
+    ${canaryVM}
+    ${canaryTasks}
+    ${test}
     ${unitTests}
     ${externCode}
     ${proSources}
