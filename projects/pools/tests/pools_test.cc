@@ -158,7 +158,7 @@ void task_with_parameter(int value)
   print("  task_with_parameter(" + to_string(value) + ")\n");
 }
 
-int task_int_1()
+int no_safe_func()
 {
   //try {
     print("  task_int_1()\n");
@@ -357,7 +357,7 @@ TEST(ThPool, SFLib) //void func()
 // Для портабельной передач исключений между потоками нужна фичи языка
 // http://stackoverflow.com/questions/8876459/boost-equivalent-of-stdasync
 TEST(ThPool, Own) {
-  boost::packaged_task<int> task(task_int_1);
+  boost::packaged_task<int> task(no_safe_func);
   boost::future<int> fi = task.get_future();
   boost::thread thread(boost::move(task));  // если закомменить, то деадлок
   EXPECT_THROW(fi.get(), std::runtime_error);
