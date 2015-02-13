@@ -4,7 +4,7 @@
 
 #define BOOST_THREAD_PROVIDES_FUTURE
 
-#include "async-parallel/thread_pools.h"
+#include "pools/thread_pools.h"
 
 #include <gtest/gtest.h>
 #include <boost/bind/bind.hpp>

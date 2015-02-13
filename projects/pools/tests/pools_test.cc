@@ -11,7 +11,7 @@
 //#define BOOST_THREAD_USES_LOG_THREAD_ID
 //#define BOOST_THREAD_QUEUE_DEPRECATE_OLD
 
-#include "async-parallel/thread_pools.h"
+#include "pools/thread_pools.h"
 
 //#include <boost/thread/thread_pool.hpp>
 //#include <boost/thread/user_scheduler.hpp>
@@ -93,6 +93,9 @@ std::string funcReturnStringWithParams(std::string & param)
 
 void logMsg(const std::string& reason, int i)
 {
+  static int k;
+  //++k;
+
   boost::lock_guard<boost::mutex> lock(mio); // 2.
   std::cout << reason << " for " << i << " at " << std::time(0) << std::endl;
 }
@@ -253,6 +256,8 @@ TEST(ThPool, OwnAsioPool) {
   using boost::ref;
   using boost::cref;
   using boost::bind;
+  using std::cout;
+  using std::endl;
 
   thread_pools::AsioThreadPool p;
   Templ templ;
@@ -270,9 +275,9 @@ TEST(ThPool, OwnAsioPool) {
   p.get().post(bind(&packaged_task<std::string>::operator(), boost::ref(task)));
   p.get().post(bind(&packaged_task<std::pair<int, int>  >::operator(), boost::ref(t)));
 
-  EXPECT_FALSE(f.is_ready());
+  //EXPECT_FALSE(f.is_ready());
   while (!f.is_ready()) {
-    //cout << "wait" << endl;
+    cout << "wait" << endl;
   }
 
   string answer = f.get();
@@ -304,7 +309,7 @@ TEST(ThPool, AsioBase) {
   // одну задачу
   io_service.post(boost::bind(&task_t::operator(), example));
 
-  EXPECT_FALSE(f.is_ready());
+  //EXPECT_FALSE(f.is_ready());
 
   string answer = f.get();
   std::cout << "string_with_params: " << answer << std::endl;
