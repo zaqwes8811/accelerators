@@ -50,7 +50,10 @@ int no_safe_func()
 }
 
 
-
+// From Sutter:
+//   http://www.drdobbs.com/parallel/prefer-using-active-objects-instead-of-n/225700095
+//   http://www.drdobbs.com/cpp/prefer-using-futures-or-callbacks-to-com/226700179
+//   http://www.drdobbs.com/architecture-and-design/know-when-to-use-an-active-object-instea/227500074?pgno=3
 // http://www.chromium.org/developers/design-documents/threading
 class SingleWorker
 {
