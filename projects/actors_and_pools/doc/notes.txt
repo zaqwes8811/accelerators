@@ -1,0 +1,7 @@
+// http://habrahabr.ru/company/intel/blog/206030/
+
+Модель акторов
+http://blogs.msdn.com/b/ru-hpc/archive/2009/11/25/9928475.aspx Программная модель актеров
+
+Troubles:
+- порадок прихода сообщений не гарантирован
