@@ -97,7 +97,7 @@ private:
 };
 
 class Threads {
-  static SingleWorker s_dbWorker;
+  static SingleWorker s_dbWorker;  // make weak access
 
 public:
   static std::string dbId() {
