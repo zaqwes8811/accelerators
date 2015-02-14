@@ -82,13 +82,23 @@ ${ChromiumRoot}/base/*command_line.cc
 ${ChromiumRoot}/base/vlog.cc
 ${ChromiumRoot}/base/synchronization/lock.cc
 ${ChromiumRoot}/base/synchronization/lock_impl_posix.cc
+${ChromiumRoot}/base/synchronization/waitable_event_posix.cc
+${ChromiumRoot}/base/synchronization/condition_variable_posix.cc
+
 ${ChromiumRoot}/base/strings/utf_string_conversions.cc
 ${ChromiumRoot}/base/strings/utf_string_conversion_utils.cc
 ${ChromiumRoot}/base/strings/string_util.cc
 ${ChromiumRoot}/base/strings/string_piece.cc
 ${ChromiumRoot}/base/strings/string16.cc
+${ChromiumRoot}/base/strings/string_split.cc
+${ChromiumRoot}/base/strings/string_number_conversions.cc
 ${ChromiumRoot}/base/debug/alias.cc
 ${ChromiumRoot}/base/debug/debugger.cc
+${ChromiumRoot}/base/debug/debugger_posix.cc
+${ChromiumRoot}/base/threading/platform_thread_linux.cc
+${ChromiumRoot}/base/threading/platform_thread_posix.cc
+${ChromiumRoot}/base/threading/thread_id_name_manager.cc
+${ChromiumRoot}/base/safe_strerror_posix.cc
 )
 
 
