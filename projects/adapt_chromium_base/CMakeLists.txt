@@ -72,9 +72,18 @@ file( GLOB set0
     ${Source}/mains/*.cc)
 
 file( GLOB chromiumTests
+# Units
 ${ChromiumRoot}/base/bind_unittest.cc
+${ChromiumRoot}/base/deferred_sequenced_task_runner_unittest.cc
+
+# Deps
+${ChromiumRoot}/base/deferred_sequenced_task_runner.cc
+${ChromiumRoot}/base/task_runner.cc
+
 ${ChromiumRoot}/base/memory/ref_counted.cc
 ${ChromiumRoot}/base/memory/weak_ptr.cc
+${ChromiumRoot}/base/memory/singleton.cc
+
 ${ChromiumRoot}/base/callback*.cc
 ${ChromiumRoot}/base/logging.cc
 ${ChromiumRoot}/base/*switches.cc
@@ -91,14 +100,80 @@ ${ChromiumRoot}/base/strings/string_util.cc
 ${ChromiumRoot}/base/strings/string_piece.cc
 ${ChromiumRoot}/base/strings/string16.cc
 ${ChromiumRoot}/base/strings/string_split.cc
+${ChromiumRoot}/base/strings/sys_string_conversions_posix.cc
 ${ChromiumRoot}/base/strings/string_number_conversions.cc
+${ChromiumRoot}/base/strings/string_util_constants.cc
+${ChromiumRoot}/base/strings/stringprintf.cc
+
 ${ChromiumRoot}/base/debug/alias.cc
 ${ChromiumRoot}/base/debug/debugger.cc
 ${ChromiumRoot}/base/debug/debugger_posix.cc
+
+${ChromiumRoot}/base/process/process_handle_posix.cc
+${ChromiumRoot}/base/process/process_metrics.cc
+${ChromiumRoot}/base/process/process_metrics_linux.cc
+${ChromiumRoot}/base/process/internal_linux.cc
+
 ${ChromiumRoot}/base/threading/platform_thread_linux.cc
 ${ChromiumRoot}/base/threading/platform_thread_posix.cc
 ${ChromiumRoot}/base/threading/thread_id_name_manager.cc
+${ChromiumRoot}/base/threading/thread_local_storage.cc
+${ChromiumRoot}/base/threading/thread_local_storage_posix.cc
+
+${ChromiumRoot}/base/profiler/tracked_time.cc
+${ChromiumRoot}/base/profiler/alternate_timer.cc
+
 ${ChromiumRoot}/base/safe_strerror_posix.cc
+${ChromiumRoot}/base/lazy_instance.cc
+${ChromiumRoot}/base/pickle.cc
+${ChromiumRoot}/base/at_exit.cc
+${ChromiumRoot}/base/tracked_objects.cc
+${ChromiumRoot}/base/tracking_info.cc
+${ChromiumRoot}/base/location.cc
+${ChromiumRoot}/base/values.cc
+${ChromiumRoot}/base/path_service.cc
+${ChromiumRoot}/base/base_paths_posix.cc
+${ChromiumRoot}/base/base_paths.cc
+${ChromiumRoot}/base/environment.cc
+${ChromiumRoot}/base/sys_info.cc
+${ChromiumRoot}/base/sys_info_posix.cc
+${ChromiumRoot}/base/sys_info_linux.cc
+
+${ChromiumRoot}/base/files/file_path.cc
+${ChromiumRoot}/base/files/file_util.cc
+${ChromiumRoot}/base/files/file_enumerator.cc
+${ChromiumRoot}/base/files/file_enumerator_posix.cc
+${ChromiumRoot}/base/files/file.cc
+${ChromiumRoot}/base/files/file_util_posix.cc
+${ChromiumRoot}/base/files/scoped_file.cc
+${ChromiumRoot}/base/files/scoped_temp_dir.cc
+${ChromiumRoot}/base/files/file_posix.cc
+${ChromiumRoot}/base/files/file_path_constants.cc
+
+${ChromiumRoot}/base/time/time.cc
+${ChromiumRoot}/base/time/time_posix.cc
+
+${ChromiumRoot}/base/nix/xdg_util.cc
+
+${ChromiumRoot}/base/metrics/sparse_histogram.cc
+${ChromiumRoot}/base/metrics/histogram.cc
+${ChromiumRoot}/base/metrics/sample_map.cc
+${ChromiumRoot}/base/metrics/histogram_base.cc
+${ChromiumRoot}/base/metrics/statistics_recorder.cc
+${ChromiumRoot}/base/metrics/histogram_samples.cc
+${ChromiumRoot}/base/metrics/bucket_ranges.cc
+${ChromiumRoot}/base/metrics/sample_vector.cc
+
+${ChromiumRoot}/base/json/*.cc
+
+${ChromiumRoot}/base/third_party/dmg_fp/g_fmt.cc
+${ChromiumRoot}/base/third_party/dmg_fp/dtoa.cc
+
+${ChromiumRoot}/base/third_party/nspr/prtime.cc
+
+${ChromiumRoot}/base/third_party/icu/icu_utf.cc
+
+${ChromiumRoot}/base/third_party/xdg_user_dirs/xdg_user_dir_lookup.cc
 )
 
 
@@ -108,5 +183,6 @@ add_executable(unittest.bin
     ${set0}
     ${chromiumTests}
 )
+
 
 

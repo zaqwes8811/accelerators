@@ -28,6 +28,7 @@
 #include <gtest/gtest.h>
 #include <boost/bind/bind.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/make_shared.hpp>
 
 #include <stdio.h>
 

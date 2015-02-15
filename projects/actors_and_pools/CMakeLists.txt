@@ -28,7 +28,7 @@ include_directories(${BigExtern}/boost_1_57_0)
 # link the libraries to the executable
 if (UNIX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         IF(LCB_USE_TSAN)
@@ -37,6 +37,7 @@ if (UNIX)
             set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}  -fsanitize=thread")
             set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=thread")
             link_directories(${BigExtern}/boost_1_57_0/clang_tsan_lib64/lib)
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -analyse")
         endif()
 
         link_libraries(
@@ -46,8 +47,6 @@ if (UNIX)
         IF(LCB_USE_TSAN)
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -g -fsanitize=thread -fPIC")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g -fsanitize=thread -fPIC")
-
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -analyse")
 
             #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}  -fsanitize=thread")
             set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=thread -pie")
