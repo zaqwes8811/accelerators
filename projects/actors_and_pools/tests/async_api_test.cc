@@ -3,10 +3,20 @@
 //
 // Pull and Push strategue
 
+// asio
+//   http://stackoverflow.com/questions/18202398/is-there-any-way-to-asynchronously-wait-for-a-future-in-boost-asio
+//   http://stackoverflow.com/questions/17282434/using-futures-with-boostasio
+
+// Main:
+//   http://www.drdobbs.com/parallel/prefer-futures-to-baked-in-async-apis/222301165?pgno=3
+//   https://github.com/facebook/folly/tree/master/folly/futures
+
+
+
 #define BOOST_THREAD_PROVIDES_FUTURE
 
 #include "parallel_ds/safe_queue.h"
-#include "actors.h"
+#include "pools/actors.h"
 
 #include <gtest/gtest.h>
 #include <boost/thread/future.hpp>
@@ -17,64 +27,34 @@
 #include <string>
 #include <future>
 
-namespace e1_cc98 {
-using std::unique_ptr;
-using std::thread;
-using std::bind;
-using std::shared_ptr;
+/**
+// Looks like good real use case
+void CallerMethod() {
+  // …
 
-// Example 1: Active helper, the general OO way
-//
-class Active {
-public:
+  // launch work asynchronously (in any
+  // fashion; for yuks let's use a thread pool)
+  // note that the types of "result" and
+  // "outTheOther" are now futures.
+  result = pool.run( ()=>{
+    DoSomething( this, that, outTheOther ) } );
 
-  class Message {        // base of all message types
-  public:
-    virtual ~Message() { }
-    virtual void Execute() { }
-  };
+  // These could also take a long time
+  // but now run concurrently with DoSomething
+  OtherWork();
+  MoreOtherWork();
 
-private:
-  // (suppress copying if in C++)
-
-  // private data
-  // unique_ptr not assing op
-  shared_ptr<Message> done;               // le sentinel
-  //message_queue
-  SafeQueue
-  < shared_ptr<Message> > mq;    // le queue
-
-  unique_ptr<thread> thd;                // le thread
-private:
-  // The dispatch loop: pump messages until done
-  void Run() {
-    shared_ptr<Message> msg;
-    while( (msg = mq.dequeue()) != done ) {
-      msg->Execute();
-    }
-  }
-
-public:
-  // Start everything up, using Run as the thread mainline
-  Active() : done( new Message ) {
-    thd = unique_ptr<thread>(
-                  new thread( bind(&Active::Run, this) ) );
-  }
-
-  // Shut down: send sentinel and wait for queue to drain
-  ~Active() {
-    Send( done );
-    thd->join();
-  }
-
-  // Enqueue a message
-  void Send( shared_ptr<Message> m ) {
-    mq.enqueue( m );
-  }
-};
+  // … now use result.wait() (might block) and outOther…
 }
 
+// useful case
+// .then()
+// "Up to this point we have skirted around the matter of waiting for Futures.
+You may never need to wait for a Future, because your code is event-driven and all
+follow-up action happens in a then-block."
 
+
+*/
 
 class Backgrounder {
 public:
@@ -241,6 +221,8 @@ private:
 // Build async API
 // cases
 //
+
+
 
 
 

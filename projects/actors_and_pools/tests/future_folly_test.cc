@@ -1,14 +1,18 @@
 
-#include "actors.h"
+#include "pools/actors.h"
 
 #include <folly/futures/Future.h>
 #include <gtest/gtest.h>
-//#include <boost/shared_ptr.hpp>
+#include <folly/Executor.h>
 
 #include <iostream>
 
 using namespace folly;
 using namespace std;
+
+class MyExecutor : public folly::Executor {
+
+};
 
 void foo(int x) {
   // do something with x
