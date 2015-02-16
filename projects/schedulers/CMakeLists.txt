@@ -1,3 +1,5 @@
+# FIXME: add ASan and TSan support
+
 # debig troubles
 # http://stackoverflow.com/questions/19912648/cmake-qtcreator-mingw-debug-mode-windows-7
 # http://www.cmake.org/Wiki/CMake_Useful_Variables
@@ -15,7 +17,7 @@
 # Intel TBB
 #   http://stackoverflow.com/questions/10726537/how-to-install-tbb-from-source-on-linux-and-make-it-work
 
-project(x64-boost-only)
+project(schedulers)
 cmake_minimum_required(VERSION 2.8)
 
 set(Extern "../../extern/")
@@ -38,11 +40,11 @@ include_directories(${Source})
 include_directories(${Extern}/loki-0.1.7/include)
 include_directories(${Extern})
 include_directories(${BigExtern}/boost_1_57_0)
-include_directories(${BigExtern}/asl_1.0.43)
 include_directories(${unitTests})
 include_directories(${User}/opt/clang-cilkplus/include)
 include_directories(${GMock}/)
 include_directories(./src/)
+include_directories(${Source}/../../)
 
 EXECUTE_PROCESS( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )
 message( STATUS "Architecture: ${ARCHITECTURE}" )

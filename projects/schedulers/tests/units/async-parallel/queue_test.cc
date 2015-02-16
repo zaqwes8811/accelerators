@@ -56,7 +56,7 @@ void push(const T& t){
 // когда забираем из стека, то тоже можно захватить auto_ptr'ом
 */
 
-#include "async-parallel/data_structures.h"
+#include "parallel_ds/data_structures.h"
 
 #include <gtest/gtest.h>
 #include <boost/thread/mutex.hpp>

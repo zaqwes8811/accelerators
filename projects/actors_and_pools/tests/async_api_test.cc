@@ -11,6 +11,8 @@
 //   http://www.drdobbs.com/parallel/prefer-futures-to-baked-in-async-apis/222301165?pgno=3
 //   https://github.com/facebook/folly/tree/master/folly/futures
 
+// FIXME: how to stop?
+// http://www.drdobbs.com/parallel/interrupt-politely/207100682
 
 
 #define BOOST_THREAD_PROVIDES_FUTURE

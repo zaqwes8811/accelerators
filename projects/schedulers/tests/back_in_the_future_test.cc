@@ -6,6 +6,10 @@
 // Boost/Boost.Asio
 // http://www.boost.org/doc/libs/1_53_0/libs/coroutine/doc/html/index.html
 
+//
+// FIXME: Troube
+//   http://www.drdobbs.com/parallel/break-up-and-interleave-work-to-keep-thr/217801299?pgno=3
+
 #include <gtest/gtest.h>
 
 #include <iostream>
