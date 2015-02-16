@@ -241,10 +241,15 @@ private:
 
 class AppScopeFake {
 public:
-  bool wasTerminated() const { return s_wasTerminated; }
-  void terminate() { s_wasTerminated = true; }
+  bool wasTerminated() const {
+      return s_wasTerminated;
+  }
+  void terminate() {
+      s_wasTerminated = true;
+  }
 private:
-  static bool s_wasTerminated;
+  // TSan found this race!
+  static boost::atomic_bool s_wasTerminated;
 };
 
 typedef enum kernels_Codes {
@@ -272,7 +277,7 @@ int udpServerKernel( boost::asio::io_service& io_service, AppScopeFake app) {
   }
 }
 
-bool AppScopeFake::s_wasTerminated = false;
+boost::atomic_bool AppScopeFake::s_wasTerminated(false);
 
 TEST(Parallel, Udp) {
   AppScopeFake app;

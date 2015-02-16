@@ -11,14 +11,16 @@
 project(pools)
 cmake_minimum_required(VERSION 2.8)
 
+# conf
+set (LCB_USE_TSAN Y)
+
+
 set(Extern "../../extern/")
 set(GMock "../../extern/gmock-1.6.0/fused-src")
 set(Source "source/")
 set(Tests "./tests")
 set(BigExtern "/opt/big-3rdparty/")
 
-# conf
-set (LCB_USE_TSAN Y)
 
 # Test framework
 include_directories(${GMock})
