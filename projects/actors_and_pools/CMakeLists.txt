@@ -24,6 +24,9 @@ set (LCB_USE_TSAN Y)
 include_directories(${GMock})
 include_directories(${Source})
 include_directories(${BigExtern}/boost_1_57_0)
+include_directories(/opt/folly/include)
+include_directories(${Source}/../../)
+
 
 # link the libraries to the executable
 if (UNIX)
@@ -51,10 +54,13 @@ if (UNIX)
             #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}  -fsanitize=thread")
             set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=thread -pie")
             link_directories(${BigExtern}/boost_1_57_0/gcc_tsan_lib64/lib)
+            link_directories(${BigExtern}/../folly/lib)
         endif()
         link_libraries(
             boost_system boost_thread
             tsan
+            folly
+            glog
             pthread rt)  # !! pthread and rt last!!
     endif()
 endif()
@@ -64,6 +70,7 @@ file( GLOB set0
     ${Source}/mains/*.cc
     ${Source}/pools/*.cc
     ${Source}/bug_report/*.cc
+    ${Source}/../../parallel_ds/*.h
     ${Tests}/*.cc)
 
 add_executable(unittest.bin

@@ -27,7 +27,7 @@ include_directories(${ChromiumRoot})
 include_directories(${ChromiumTesting}/gmock/include)
 include_directories(${ChromiumTesting}/gmock)
 include_directories(${ChromiumTesting}/gtest/include)
-#include_directories(${GMock})
+
 include_directories(${Source})
 include_directories(${BigExtern}/boost_1_57_0)
 
