@@ -1,5 +1,8 @@
 // Thinking
 // http://rsdn.ru/forum/cpp.applied/5468499.flat.2
+// !!! http://stackoverflow.com/questions/19572140/how-do-i-utilize-boostpackaged-task-function-parameters-and-boostasioio
+// Для портабельной передач исключений между потоками нужна фичи языка
+// http://stackoverflow.com/questions/8876459/boost-equivalent-of-stdasync
 
 #define BOOST_THREAD_PROVIDES_FUTURE
 
@@ -35,14 +38,23 @@ namespace boost {
 
 #include <cstdio>
 
-namespace {
-boost::mutex m_io_monitor;
-boost::mutex mio; // 1
-
+using boost::shared_ptr;
+using boost::make_shared;
+using boost::bind;
+using boost::packaged_task;
+using boost::future;
+using boost::ref;
+using boost::cref;
+using boost::bind;
+using std::cout;
+using std::endl;
 using std::string;
 using std::cout;
 using std::ostringstream;
 
+namespace {
+boost::mutex m_io_monitor;
+boost::mutex mio; // 1
 
 std::string ans("forty two");
 
@@ -163,28 +175,7 @@ int run_sim(Data*) { return 0; }
 const unsigned nsim = 50;
 
 void run(int tNumber) 
-{
-  /*boost::asio::io_service svc;
-  boost::asio::io_service::work work(svc);
-  boost::thread_group threads;
-  
-  // Как получить исключение
-  for(int i = 0; i < tNumber; ++i) // 4
-    threads.create_thread(boost::bind(&boost::asio::io_service::run, &svc));
- 
-  svc.post(boost::bind(jobOne, 1)); // 5
-  svc.post(boost::bind(jobOne, 1));
-  
-  boost::exception_ptr error;
-  svc.post(boost::bind(jobTwo, 50, boost::ref(error)));
- 
-  svc.stop(); // 6
-  threads.join_all(); // 7
-  
-  if (error)
-    boost::rethrow_exception(error);
-  */
-  
+{ 
   // https://gist.github.com/snaewe/1393807
   boost::asio::io_service svc;  // 2.
   boost::thread_group threads;
@@ -209,10 +200,6 @@ void run(int tNumber)
 }
 
 namespace tests {
-using boost::shared_ptr;
-using boost::make_shared;
-using boost::bind;
-
 class Templ {
 public:
   std::pair<int, int> doTheThing(
@@ -228,14 +215,6 @@ TEST(ThPool, AsioVersionCheck) {
 }
 
 TEST(ThPool, OwnAsioPool) {
-  using boost::packaged_task;
-  using boost::future;
-  using boost::ref;
-  using boost::cref;
-  using boost::bind;
-  using std::cout;
-  using std::endl;
-
   executors::AsioThreadPool p;
   Templ templ;
 
@@ -286,8 +265,6 @@ TEST(ThPool, AsioBase) {
   // одну задачу
   io_service.post(boost::bind(&task_t::operator(), example));
 
-  //EXPECT_FALSE(f.is_ready());
-
   string answer = f.get();
   std::cout << "string_with_params: " << answer << std::endl;
 
@@ -295,86 +272,6 @@ TEST(ThPool, AsioBase) {
   io_service.stop();
   threads.join_all();
 }
-
-// Не все хорошо стыкуется если C++98
-// С С++11 похоже есть расходжения
-// DANGER: похоже лучше свой пул.
-TEST(ThPool, SFLib) //void func()
-{ 
-  /*using namespace boost::threadpool;
-  //using boost::unique_future;
-  
-  //print("  Create a new thread pool\n");
-  pool tp(2); // tp is handle to the pool
-
-  // Add tasks
-  tp.schedule(&task_1);
-  //unique_future<void> f = tp.schedule(&task_2);
-  tp.schedule(&task_3);
-  tp.schedule(boost::bind(task_with_parameter, 4));
-  //boost::threadpool::future<int> res = schedule(tp, &task_int_1);
-  //unique_future<int> res1 =
-  //schedule(tp, &task_int_1);  // th::fut - не для продакшена, а так не ловит исключения
-  try {
-    //res.get();
-  } catch (runtime_error& e) {
-    
-  }*/
-
-  // The pool handle tp is allocated on stack and will 
-  // be destructed if it gets out of scope. Before the 
-  // pool is destroyed it waits for its tasks. 
-  // That means the current thread of execution is 
-  // blocked at the end of the function 
-  // (until all tasks are processed).
-  // while (&tp){int i = 3; ++i;}
-} 
-
-// !!! http://stackoverflow.com/questions/19572140/how-do-i-utilize-boostpackaged-task-function-parameters-and-boostasioio
-// Для портабельной передач исключений между потоками нужна фичи языка
-// http://stackoverflow.com/questions/8876459/boost-equivalent-of-stdasync
-TEST(ThPool, Own) {
-  boost::packaged_task<int> task(no_safe_func);
-  boost::future<int> fi = task.get_future();
-  boost::thread thread(boost::move(task));  // если закомменить, то деадлок
-  EXPECT_THROW(fi.get(), std::runtime_error);
-
-  //
-  //boost::future<int> fii =
-      //boost::async(task_int_1);
-  //decay_copy(boost::forward<F>(f))();
-  //fii.get();
-}
-
-/*
-TEST(TMP, Test) {
-  // https://github.com/mirror/boost/blob/master/libs/thread/example/executor.cpp
-  //boost::executor_adaptor<boost::thread_pool> ea;
-
-  unsigned nprocs = boost::thread::hardware_concurrency();
-  if (nprocs == 0)
-    nprocs = 2;   // cannot determine number of cores, let's say 2
-
-  Data data[nsim];
-  boost::future<int> futures[nsim];
-  int results[nsim];
-
-  for (unsigned i=0; i<nsim; ++i)
-  {
-    if ( ((i+1) % nprocs) != 0 ) {
-      // DANGER:
-      //futures[i] =
-          //boost::async(boost::bind(&run_sim, &data[i]));  // не компилируется
-      ;
-    } else
-      results[i] = run_sim(&data[i]);
-  }
-
-  for (unsigned i=0; i<nsim; ++i)
-    if ( ((i+1) % nprocs) != 0 )
-      results[i] = futures[i].get();
-}
-*/
 }
 
 }  // space

@@ -35,7 +35,7 @@
 int no_safe_func()
 {
   static int i;
-  ++i;
+  //++i;
   //try {
     //print("  task_int_1()\n");
     //throw 9;
@@ -71,14 +71,6 @@ public:
 
   void post(boost::function0<void> task) {
     m_pool.add(task);
-  }
-
-  // http://stackoverflow.com/questions/13157502/how-do-you-post-a-boost-packaged-task-to-an-io-service-in-c03
-  //void post(packaged_task)  // no way, but...
-  template<typename T>
-  void post(boost::shared_ptr<boost::packaged_task<T> > task) {
-    m_pool.add(boost::bind(
-                        &boost::packaged_task<T>::operator (), task));
   }
 
   static std::string getCurrentThreadId() {
@@ -157,14 +149,21 @@ TEST(AsPl, SingleThreadShared)
   NonThreadSafeObj obj;
 
   {
-    shared_ptr<packaged_task<int> > t0 = make_shared<packaged_task<int> >(no_safe_func);
-    future<int> f0 = t0->get_future();
+    packaged_task<int> t0(no_safe_func);
+    future<int> f0 = t0.get_future();
 
-    shared_ptr<packaged_task<int> > t1 = make_shared<packaged_task<int> >(no_safe_func);
-    future<int> f1 = t1->get_future();
+    packaged_task<int> t1(no_safe_func);
+    future<int> f1 = t1.get_future();
 
-    worker.post(t0);
-    worker.post(t1);  // worker1 - races
+    SingleWorker::Callable c0
+        = boost::bind(&boost::packaged_task<int>::operator(), boost::ref(t0));
+
+    SingleWorker::Callable c1
+        = boost::bind(&boost::packaged_task<int>::operator(), boost::ref(t1));
+
+    worker.post(c0);
+    worker.post(c1);
+    // worker1 - races
 
     EXPECT_THROW(f0.get(), std::runtime_error);
     EXPECT_THROW(f1.get(), std::runtime_error);

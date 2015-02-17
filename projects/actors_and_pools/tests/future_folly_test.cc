@@ -32,6 +32,7 @@ void foo(int x) {
 MyExecutor ge;
 
 TEST(FollyTest, My) {
+  //auto e = MyExecutor();
   MyExecutor e;
 
   cout << "making Promise" << endl;
@@ -39,7 +40,6 @@ TEST(FollyTest, My) {
   Future<int> f = p->getFuture();
 
   auto work = [](Try<int>&& t) {
-    cout << "Future then" << endl;
     foo(t.value());
   };
 
