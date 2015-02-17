@@ -1,0 +1,3 @@
+они какие-то мьютексы для сопрограмм делали
+
+http://www.chromium.org/developers/coding-style/important-abstractions-and-data-structures#TOC-base::SequencedWorkerPool-base::WorkerPool

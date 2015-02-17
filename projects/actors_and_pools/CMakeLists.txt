@@ -35,6 +35,9 @@ if (UNIX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
+    # Need boost 1.54
+    link_directories(${BigExtern}/../folly/lib)
+
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         IF(LCB_USE_TSAN)
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -g -fsanitize=thread")
@@ -47,7 +50,9 @@ if (UNIX)
 
         link_libraries(
             boost_system boost_thread
-            pthread rt)  # !! pthread and rt last!!
+            folly
+            glog
+            pthread rt)
     else()
         IF(LCB_USE_TSAN)
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -g -fsanitize=thread -fPIC")
@@ -56,7 +61,7 @@ if (UNIX)
             #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}  -fsanitize=thread")
             set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=thread -pie")
             link_directories(${BigExtern}/boost_1_57_0/gcc_tsan_lib64/lib)
-            link_directories(${BigExtern}/../folly/lib)
+
         endif()
         link_libraries(
             boost_system boost_thread
@@ -70,7 +75,7 @@ endif()
 message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 file( GLOB set0
     ${Source}/mains/*.cc
-    ${Source}/pools/*.cc
+    ${Source}/pools/*.h
     ${Source}/bug_report/*.cc
     ${Source}/../../parallel_ds/*.h
     ${Tests}/*.cc)

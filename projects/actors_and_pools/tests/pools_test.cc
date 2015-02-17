@@ -1,25 +1,9 @@
 // Thinking
 // http://rsdn.ru/forum/cpp.applied/5468499.flat.2
-// Buildeng boost
-//   bjam --with-system --with-thread --with-date_time --with-regex --with-serialization stage
 
 #define BOOST_THREAD_PROVIDES_FUTURE
 
-//https://github.com/mirror/boost/blob/master/libs/thread/example/executor.cpp
-//#define BOOST_THREAD_VERSION 4
-//#define BOOST_THREAD_PROVIDES_EXECUTORS
-//#define BOOST_THREAD_USES_LOG_THREAD_ID
-//#define BOOST_THREAD_QUEUE_DEPRECATE_OLD
-
-#include "pools/thread_pools.h"
-
-//#include <boost/thread/thread_pool.hpp>
-//#include <boost/thread/user_scheduler.hpp>
-//#include <boost/thread/executor.hpp>
-//#include <boost/thread/future.hpp>
-//#include <boost/assert.hpp>
-//#include <string>
-//#include <boost/thread/caller_context.hpp>
+#include "pools/actors.h"
 
 #include <gtest/gtest.h>
 
@@ -51,14 +35,7 @@ namespace boost {
 
 #include <cstdio>
 
-
-//using boost::unique_future;
-
-// Non-Boost yet
-//#include <boost/threadpool.hpp>
-
 namespace {
-//using namespace std;
 boost::mutex m_io_monitor;
 boost::mutex mio; // 1
 
@@ -259,7 +236,7 @@ TEST(ThPool, OwnAsioPool) {
   using std::cout;
   using std::endl;
 
-  thread_pools::AsioThreadPool p;
+  executors::AsioThreadPool p;
   Templ templ;
 
   int in = 9;
@@ -272,8 +249,8 @@ TEST(ThPool, OwnAsioPool) {
   packaged_task<std::string> task(bind(&funcReturnStringWithParams, ans));
   future<string> f = task.get_future();
 
-  p.get().post(bind(&packaged_task<std::string>::operator(), boost::ref(task)));
-  p.get().post(bind(&packaged_task<std::pair<int, int>  >::operator(), boost::ref(t)));
+  p.add(bind(&packaged_task<std::string>::operator(), boost::ref(task)));
+  p.add(bind(&packaged_task<std::pair<int, int>  >::operator(), boost::ref(t)));
 
   //EXPECT_FALSE(f.is_ready());
   while (!f.is_ready()) {

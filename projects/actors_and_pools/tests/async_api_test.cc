@@ -73,7 +73,7 @@ public:
 
 private:
   PrivateData somePrivateStateAcrossCalls;
-  e_cc11::Active a;
+  cc11::Actior a;
 };
 
 TEST(Sutter, ActiveObj) {
@@ -103,7 +103,7 @@ public:
 
 private:
   PrivateData somePrivateStateAcrossCalls;
-  e_cc11::Active a;
+  cc11::Actior a;
 };
 
 class BackgrounderBoost {
@@ -137,7 +137,7 @@ public:
 
 private:
   PrivateData somePrivateStateAcrossCalls;
-  e_cc11::Active a;
+  cc11::Actior a;
 };
 
 TEST(Sutter, PullReturn) {

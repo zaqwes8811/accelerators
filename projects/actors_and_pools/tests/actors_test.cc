@@ -23,7 +23,7 @@
 
 #define BOOST_THREAD_PROVIDES_FUTURE
 
-#include "pools/thread_pools.h"
+#include "pools/actors.h"
 
 #include <gtest/gtest.h>
 #include <boost/bind/bind.hpp>
@@ -70,14 +70,14 @@ public:
   SingleWorker() : m_pool(1) { }
 
   void post(boost::function0<void> task) {
-    m_pool.get().post(task);
+    m_pool.add(task);
   }
 
   // http://stackoverflow.com/questions/13157502/how-do-you-post-a-boost-packaged-task-to-an-io-service-in-c03
   //void post(packaged_task)  // no way, but...
   template<typename T>
   void post(boost::shared_ptr<boost::packaged_task<T> > task) {
-    m_pool.get().post(boost::bind(
+    m_pool.add(boost::bind(
                         &boost::packaged_task<T>::operator (), task));
   }
 
@@ -97,7 +97,7 @@ public:
   }
 
 private:
-  thread_pools::AsioThreadPool m_pool;
+  executors::AsioThreadPool m_pool;
 };
 
 class Threads {

@@ -5,30 +5,71 @@
 
 #include "parallel_ds/safe_queue.h"
 
+#include <boost/noncopyable.hpp>
+#include <boost/weak_ptr.hpp>
+#include <boost/thread.hpp>
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
+#include <boost/scoped_ptr.hpp>
+
 #include <thread>
 #include <memory>
 
-namespace e_cc11 {
-using std::unique_ptr;
-using std::thread;
-using std::bind;
-using std::shared_ptr;
-using std::function;
+namespace executors {
+class AsioThreadPool : public boost::noncopyable {
+public:
+  typedef boost::function0<void> Func;
 
+  AsioThreadPool()
+    : m_io_service()
+    , m_threads()
+    , m_work(m_io_service)
+  {
+      m_threads.create_thread(boost::bind(&boost::asio::io_service::run, &m_io_service));
+  }
+
+  explicit AsioThreadPool(int countWorkers)
+    : m_io_service()
+    , m_threads()
+    , m_work(m_io_service)
+  {
+    for (int i = 0; i < countWorkers; ++i)
+      m_threads.create_thread(boost::bind(&boost::asio::io_service::run, &m_io_service));
+  }
+
+  ~AsioThreadPool() {
+    m_io_service.stop();
+    m_threads.join_all();
+  }
+
+public:
+  void add(Func f) {
+    m_io_service.post(f);
+  }
+
+private:
+  boost::asio::io_service m_io_service;
+  boost::thread_group m_threads;
+  boost::asio::io_service::work m_work;
+};
+}
+
+
+namespace cc11 {
 // Example 2: Active helper, in idiomatic C++(0x)
 //
-class Active {
+class Actior {
 public:
-  typedef function<void()> Message;
+  typedef std::function<void()> Message;
 
 private:
 
-  Active( const Active& );           // no copying
-  void operator=( const Active& );    // no copying
+  Actior( const Actior& );           // no copying
+  void operator=( const Actior& );    // no copying
 
   bool done;                         // le flag
   SafeQueue<Message> mq;        // le queue
-  unique_ptr<thread> thd;          // le thread
+  std::unique_ptr<std::thread> thd;          // le thread
 
   void Run() {
     while( !done ) {
@@ -39,12 +80,12 @@ private:
 
 public:
 
-  Active() : done(false) {
-    thd = unique_ptr<thread>(
-                  new thread( [=]{ this->Run(); } ) );
+  Actior() : done(false) {
+    thd = std::unique_ptr<std::thread>(
+                  new std::thread( [=]{ this->Run(); } ) );
   }
 
-  ~Active() {
+  ~Actior() {
     Send( [&]{ done = true; } ); ;
     thd->join();
   }
@@ -55,15 +96,10 @@ public:
 };
 }
 
-namespace e1_cc98 {
-using std::unique_ptr;
-using std::thread;
-using std::bind;
-using std::shared_ptr;
-
+namespace cc98 {
 // Example 1: Active helper, the general OO way
 //
-class Active {
+class Actor {
 public:
 
   class Message {        // base of all message types
@@ -77,16 +113,13 @@ private:
 
   // private data
   // unique_ptr not assing op
-  shared_ptr<Message> done;               // le sentinel
-  //message_queue
-  SafeQueue
-  < shared_ptr<Message> > mq;    // le queue
-
-  unique_ptr<thread> thd;                // le thread
+  boost::shared_ptr<Message> done;               // le sentinel
+  SafeQueue< boost::shared_ptr<Message> > mq;    // le queue
+  boost::scoped_ptr<boost::thread> thd;                // le thread
 private:
   // The dispatch loop: pump messages until done
   void Run() {
-    shared_ptr<Message> msg;
+    boost::shared_ptr<Message> msg;
     while( (msg = mq.dequeue()) != done ) {
       msg->Execute();
     }
@@ -94,19 +127,19 @@ private:
 
 public:
   // Start everything up, using Run as the thread mainline
-  Active() : done( new Message ) {
-    thd = unique_ptr<thread>(
-                  new thread( bind(&Active::Run, this) ) );
-  }
+  Actor() :
+      done( new Message )
+    , thd(new boost::thread( boost::bind(&Actor::Run, this)))
+    { }
 
   // Shut down: send sentinel and wait for queue to drain
-  ~Active() {
+  ~Actor() {
     Send( done );
     thd->join();
   }
 
   // Enqueue a message
-  void Send( shared_ptr<Message> m ) {
+  void Send( boost::shared_ptr<Message> m ) {
     mq.enqueue( m );
   }
 };
