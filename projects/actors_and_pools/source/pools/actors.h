@@ -3,7 +3,7 @@
 #ifndef S_ACTORS_H_
 #define S_ACTORS_H_
 
-#include "parallel_ds/safe_queue.h"
+#include "pools/safe_queue.h"
 
 #include <boost/noncopyable.hpp>
 #include <boost/weak_ptr.hpp>

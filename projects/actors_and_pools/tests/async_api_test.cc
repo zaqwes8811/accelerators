@@ -1,6 +1,5 @@
 #define BOOST_THREAD_PROVIDES_FUTURE
 
-#include "parallel_ds/safe_queue.h"
 #include "pools/actors.h"
 
 #include <gtest/gtest.h>
