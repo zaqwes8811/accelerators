@@ -1,20 +1,3 @@
-// 0. Use Threads Correctly = Isolation + Asynchronous Messages
-// 1. Prefer Using Active Objects Instead of Naked Threads
-//
-// Pull and Push strategue
-
-// asio
-//   http://stackoverflow.com/questions/18202398/is-there-any-way-to-asynchronously-wait-for-a-future-in-boost-asio
-//   http://stackoverflow.com/questions/17282434/using-futures-with-boostasio
-
-// Main:
-//   http://www.drdobbs.com/parallel/prefer-futures-to-baked-in-async-apis/222301165?pgno=3
-//   https://github.com/facebook/folly/tree/master/folly/futures
-
-// FIXME: how to stop?
-// http://www.drdobbs.com/parallel/interrupt-politely/207100682
-
-
 #define BOOST_THREAD_PROVIDES_FUTURE
 
 #include "parallel_ds/safe_queue.h"
