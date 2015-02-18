@@ -3,21 +3,21 @@
 #ifndef SAFE_QUEUE
 #define SAFE_QUEUE
 
+#include <boost/noncopyable.hpp>
+
 #include <queue>
 #include <mutex>
 #include <condition_variable>
 
+namespace concurent {
 template <class T>
-class SafeQueue
+class message_queue : public boost::noncopyable
 {
 public:
-  SafeQueue(void)
+  message_queue(void)
     : q()
     , m()
     , c()
-  {}
-
-  ~SafeQueue(void)
   {}
 
   void enqueue(T t)
@@ -44,4 +44,5 @@ private:
   mutable std::mutex m;
   std::condition_variable c;
 };
+}
 #endif

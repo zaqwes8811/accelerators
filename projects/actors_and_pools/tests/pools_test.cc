@@ -147,7 +147,7 @@ void task_with_parameter(int value)
   print("  task_with_parameter(" + to_string(value) + ")\n");
 }
 
-int no_safe_func()
+int failed_func()
 {
   //try {
     print("  task_int_1()\n");

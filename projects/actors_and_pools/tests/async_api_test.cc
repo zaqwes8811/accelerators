@@ -12,7 +12,7 @@
 #include <future>
 
 /**
-// Use case: Looks like good real use case
+@Use case: Looks like good real use case
 void CallerMethod() {
   // …
 
@@ -31,15 +31,18 @@ void CallerMethod() {
   // … now use result.wait() (might block) and outOther…
 }
 
-// Use case:
+@Use case:
 // .then()
 // "Up to this point we have skirted around the matter of waiting for Futures.
 You may never need to wait for a Future, because your code is event-driven and all
 follow-up action happens in a then-block."
 
-// Use case:
+@Use case:
 //   Trouble - interliver - operations MUST not have shared state!
 //   Else data races!
+
+@Use case:
+private generator with incaps. state
 */
 
 class Backgrounder {

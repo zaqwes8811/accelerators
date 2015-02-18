@@ -1,5 +1,9 @@
 // http://habrahabr.ru/company/intel/blog/206030/
 
+они какие-то мьютексы для сопрограмм делали
+
+http://www.chromium.org/developers/coding-style/important-abstractions-and-data-structures#TOC-base::SequencedWorkerPool-base::WorkerPool
+
 Модель акторов
 http://blogs.msdn.com/b/ru-hpc/archive/2009/11/25/9928475.aspx Программная модель актеров
 

@@ -14,3 +14,5 @@
 // FIXME: how to stop?
 // http://www.drdobbs.com/parallel/interrupt-politely/207100682
 
+!!! http://stackoverflow.com/questions/14870478/write-a-well-designed-async-non-async-api
+

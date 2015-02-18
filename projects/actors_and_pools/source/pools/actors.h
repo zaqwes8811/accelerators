@@ -3,6 +3,8 @@
 #ifndef S_ACTORS_H_
 #define S_ACTORS_H_
 
+#define BOOST_THREAD_PROVIDES_FUTURE  // FIXME: bad
+
 #include "pools/safe_queue.h"
 
 #include <boost/noncopyable.hpp>
@@ -11,9 +13,12 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/thread/future.hpp>
 
 #include <thread>
 #include <memory>
+#include <string>
 
 namespace executors {
 class AsioThreadPool : public boost::noncopyable {
@@ -68,7 +73,7 @@ private:
   void operator=( const Actior& );    // no copying
 
   bool done;                         // le flag
-  SafeQueue<Message> mq;        // le queue
+  concurent::message_queue<Message> mq;        // le queue
   std::unique_ptr<std::thread> thd;          // le thread
 
   void Run() {
@@ -114,7 +119,7 @@ private:
   // private data
   // unique_ptr not assing op
   boost::shared_ptr<Message> done;               // le sentinel
-  SafeQueue< boost::shared_ptr<Message> > mq;    // le queue
+  concurent::message_queue< boost::shared_ptr<Message> > mq;    // le queue
   boost::scoped_ptr<boost::thread> thd;                // le thread
 private:
   // The dispatch loop: pump messages until done
@@ -144,5 +149,46 @@ public:
   }
 };
 }
+
+// From Sutter:
+//   http://www.drdobbs.com/parallel/prefer-using-active-objects-instead-of-n/225700095
+//   http://www.drdobbs.com/cpp/prefer-using-futures-or-callbacks-to-com/226700179
+//   http://www.drdobbs.com/architecture-and-design/know-when-to-use-an-active-object-instea/227500074?pgno=3
+// http://www.chromium.org/developers/design-documents/threading
+class SingleWorker
+{
+public:
+  // typedefs
+  typedef boost::function0<void> Callable;
+
+  // http://stackoverflow.com/questions/19192122/template-declaration-of-typedef-typename-footbar-bar
+  //typedef
+  //template <typename T>
+  //boost::shared_ptr<boost::packaged_task<T> > Task;
+
+  SingleWorker() : m_pool(1) { }
+
+  void post(Callable task) {
+    m_pool.add(task);
+  }
+
+  static std::string getCurrentThreadId() {
+    return boost::lexical_cast<std::string>(boost::this_thread::get_id());
+  }
+
+  std::string getId() {
+    boost::packaged_task<std::string> t(&getCurrentThreadId);
+    boost::future<std::string> f = t.get_future();
+
+    SingleWorker::Callable pkg
+        = boost::bind(&boost::packaged_task<std::string>::operator(), boost::ref(t));
+    post(pkg);
+
+    return f.get();
+  }
+
+private:
+  executors::AsioThreadPool m_pool;
+};
 
 #endif
