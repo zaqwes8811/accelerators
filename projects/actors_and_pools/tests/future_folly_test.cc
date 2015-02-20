@@ -1,6 +1,6 @@
 
-#include "pools/actors.h"
-#include "pools/actors_cc11.h"
+#include "actors_and_workers/actors.h"
+#include "actors_and_workers/actors_cc11.h"
 
 #include <folly/futures/Future.h>
 #include <gtest/gtest.h>

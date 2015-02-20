@@ -6,7 +6,7 @@
 
 #define BOOST_THREAD_PROVIDES_FUTURE
 
-#include "pools/actors.h"
+#include "actors_and_workers/actors.h"
 
 #include <gtest/gtest.h>
 

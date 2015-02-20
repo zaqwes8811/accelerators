@@ -21,7 +21,7 @@
   https://github.com/facebook/folly/tree/master/folly/futures
 */
 
-#include "pools/actors.h"
+#include "actors_and_workers/actors.h"
 
 #include <gtest/gtest.h>
 #include <boost/bind/bind.hpp>
