@@ -15,4 +15,11 @@
 // http://www.drdobbs.com/parallel/interrupt-politely/207100682
 
 !!! http://stackoverflow.com/questions/14870478/write-a-well-designed-async-non-async-api
+Should I expose asynchronous wrappers for synchronous methods?
+The ability to invoke a synchronous method asynchronously does nothing for scalability, 
+because you’re typically still consuming the same amount of resources you would 
+have if you’d invoked it synchronously -> если те же ресурсы (время потока, мьютексы?) смысле нет
+
+
+
 

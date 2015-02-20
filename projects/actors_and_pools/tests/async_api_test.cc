@@ -1,6 +1,7 @@
 #define BOOST_THREAD_PROVIDES_FUTURE
 
 #include "pools/actors.h"
+#include "pools/actors_cc11.h"
 
 #include <gtest/gtest.h>
 #include <boost/thread/future.hpp>

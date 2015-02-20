@@ -16,8 +16,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/thread/future.hpp>
 
-#include <thread>
-#include <memory>
 #include <string>
 
 namespace executors {
@@ -56,48 +54,6 @@ private:
   boost::asio::io_service m_io_service;
   boost::thread_group m_threads;
   boost::asio::io_service::work m_work;
-};
-}
-
-
-namespace cc11 {
-// Example 2: Active helper, in idiomatic C++(0x)
-//
-class Actior {
-public:
-  typedef std::function<void()> Message;
-
-private:
-
-  Actior( const Actior& );           // no copying
-  void operator=( const Actior& );    // no copying
-
-  bool done;                         // le flag
-  concurent::message_queue<Message> mq;        // le queue
-  std::unique_ptr<std::thread> thd;          // le thread
-
-  void Run() {
-    while( !done ) {
-      Message msg = mq.dequeue();
-      msg();            // execute message
-    } // note: last message sets done to true
-  }
-
-public:
-
-  Actior() : done(false) {
-    thd = std::unique_ptr<std::thread>(
-                  new std::thread( [=]{ this->Run(); } ) );
-  }
-
-  ~Actior() {
-    Send( [&]{ done = true; } ); ;
-    thd->join();
-  }
-
-  void Send( Message m ) {
-    mq.enqueue( m );
-  }
 };
 }
 
