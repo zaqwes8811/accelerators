@@ -75,7 +75,7 @@ endif()
 message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 file( GLOB set0
     ${Source}/mains/*.cc
-    ${Source}/pools/*.h
+    ${Source}/actors_and_workers/*.h
     ${Source}/bug_report/*.cc
     ${Source}/../../parallel_ds/*.h
     ${Tests}/*.cc)

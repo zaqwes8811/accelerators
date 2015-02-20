@@ -3,8 +3,6 @@
 #ifndef S_ACTORS_CC11_H_
 #define S_ACTORS_CC11_H_
 
-#define BOOST_THREAD_PROVIDES_FUTURE  // FIXME: bad
-
 #include "safe_queue.h"
 
 #include <thread>
