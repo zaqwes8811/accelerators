@@ -14,7 +14,18 @@ namespace cc11 {
 //
 class Actior {
 public:
-  typedef std::function<void()> Message;
+    typedef std::function<void()> Message;
+
+    Actior() : done(false)
+    { thd = std::unique_ptr<std::thread>(new std::thread( [=]{ this->Run(); } ) ); }
+
+    ~Actior() {
+      Send( [&]{ done = true; } ); ;
+      thd->join();
+    }
+
+    void Send( Message m )
+    { mq.enqueue( m ); }
 
 private:
 
@@ -30,22 +41,6 @@ private:
       Message msg = mq.dequeue();
       msg();            // execute message
     } // note: last message sets done to true
-  }
-
-public:
-
-  Actior() : done(false) {
-    thd = std::unique_ptr<std::thread>(
-                  new std::thread( [=]{ this->Run(); } ) );
-  }
-
-  ~Actior() {
-    Send( [&]{ done = true; } ); ;
-    thd->join();
-  }
-
-  void Send( Message m ) {
-    mq.enqueue( m );
   }
 };
 }

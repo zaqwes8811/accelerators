@@ -28,6 +28,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/make_shared.hpp>
 
+#define FROM_HERE ""
+
 #include <stdio.h>
 
 int failed_func() {
@@ -44,19 +46,44 @@ int failed_func() {
   //}
 }
 
+// FIXME: incapsulate thread id's
+// Static and global - lifetime troubles
 class Threads {
-  static SingleWorker s_dbWorker;  // make weak access
-
 public:
+  enum Ids {
+    UI
+  };
+
   static std::string dbId() {
-    return s_dbWorker.getId();
+    auto p = get().lock();
+    if (!p)
+      throw std::runtime_error(FROM_HERE);
+    return p->getId();
+  }
+
+  static void post(SingleWorker::Callable fun, Ids id) {
+    auto p = get().lock();
+    if (!p)
+      throw std::runtime_error(FROM_HERE);
+    return p->post(fun);
   }
 
 private:
+  // recoder
+  //static std::m
+
+  //int decodeId()
+
   Threads();
+
+  static std::shared_ptr<SingleWorker> s_dbWorker;  // make weak access
+
+  static std::weak_ptr<SingleWorker> get() {
+    return s_dbWorker;
+  }
 };
 
-SingleWorker Threads::s_dbWorker;
+std::shared_ptr<SingleWorker> Threads::s_dbWorker(new SingleWorker);
 
 
 class NonThreadSafeObj {
@@ -117,6 +144,9 @@ TEST(AsPl, SingleThreadShared)
 
     std::cout << SingleWorker::getCurrentThreadId() << std::endl;
     std::cout << Threads::dbId() << std::endl;
+
+    Threads::post(&failed_func, Threads::UI);
+
     std::cout << worker.getId() << std::endl;
   }
 }
