@@ -51,17 +51,10 @@ int failed_func() {
 class Threads {
 public:
   enum Ids {
-    UI
+    DB
   };
 
-  static std::string dbId() {
-    auto p = get().lock();
-    if (!p)
-      throw std::runtime_error(FROM_HERE);
-    return p->getId();
-  }
-
-  static void post(SingleWorker::Callable fun, Ids id) {
+  static void post(Ids id, SingleWorker::Callable fun) {
     auto p = get().lock();
     if (!p)
       throw std::runtime_error(FROM_HERE);
@@ -69,10 +62,17 @@ public:
   }
 
 private:
-  // recoder
-  //static std::m
+  static std::string decodeId(Ids id) {
+    //if (id == )
+    return "";
+  }
 
-  //int decodeId()
+  static std::string dbId() {
+    auto p = get().lock();
+    if (!p)
+      throw std::runtime_error(FROM_HERE);
+    return p->getId();
+  }
 
   Threads();
 
@@ -143,10 +143,34 @@ TEST(AsPl, SingleThreadShared)
     EXPECT_THROW(f1.get(), std::runtime_error);
 
     std::cout << SingleWorker::getCurrentThreadId() << std::endl;
-    std::cout << Threads::dbId() << std::endl;
-
-    Threads::post(&failed_func, Threads::UI);
-
     std::cout << worker.getId() << std::endl;
+  }
+}
+
+TEST(AsPl, ThMon)
+{
+  using boost::make_shared;
+  using boost::packaged_task;
+  using boost::shared_ptr;
+  using boost::future;
+
+  {
+    packaged_task<int> t0(failed_func);
+    future<int> f0 = t0.get_future();
+
+    packaged_task<int> t1(failed_func);
+    future<int> f1 = t1.get_future();
+
+    SingleWorker::Callable c0
+        = boost::bind(&boost::packaged_task<int>::operator(), boost::ref(t0));
+
+    SingleWorker::Callable c1
+        = boost::bind(&boost::packaged_task<int>::operator(), boost::ref(t1));
+
+    Threads::post(Threads::DB, c1);
+    Threads::post(Threads::DB, c0);
+
+    EXPECT_THROW(f0.get(), std::runtime_error);
+    EXPECT_THROW(f1.get(), std::runtime_error);
   }
 }
