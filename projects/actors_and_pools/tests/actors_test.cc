@@ -22,16 +22,16 @@
 */
 
 #include "actors_and_workers/actors.h"
+#include "actors_and_workers/arch.h"
 
 #include <gtest/gtest.h>
 #include <boost/bind/bind.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/make_shared.hpp>
 
-#define FROM_HERE ""
-
 #include <stdio.h>
 
+namespace objs {
 int failed_func() {
   //try {
     //print("  task_int_1()\n");
@@ -46,45 +46,6 @@ int failed_func() {
   //}
 }
 
-// FIXME: incapsulate thread id's
-// Static and global - lifetime troubles
-class Threads {
-public:
-  enum Ids {
-    DB
-  };
-
-  static void post(Ids id, SingleWorker::Callable fun) {
-    auto p = get().lock();
-    if (!p)
-      throw std::runtime_error(FROM_HERE);
-    return p->post(fun);
-  }
-
-private:
-  static std::string decodeId(Ids id) {
-    //if (id == )
-    return "";
-  }
-
-  static std::string dbId() {
-    auto p = get().lock();
-    if (!p)
-      throw std::runtime_error(FROM_HERE);
-    return p->getId();
-  }
-
-  Threads();
-
-  static std::shared_ptr<SingleWorker> s_dbWorker;  // make weak access
-
-  static std::weak_ptr<SingleWorker> get() {
-    return s_dbWorker;
-  }
-};
-
-std::shared_ptr<SingleWorker> Threads::s_dbWorker(new SingleWorker);
-
 
 class NonThreadSafeObj {
 public:
@@ -95,13 +56,14 @@ public:
 private:
   std::string m_s;
 };
+}  // space
 
 
 TEST(AsPl, SingleThread)
 {
   SingleWorker worker;
 
-  boost::packaged_task<int> task(failed_func);
+  boost::packaged_task<int> task(objs::failed_func);
   boost::future<int> fi = task.get_future();
 
   SingleWorker::Callable f = boost::bind(&boost::packaged_task<int>::operator(), boost::ref(task));
@@ -120,13 +82,13 @@ TEST(AsPl, SingleThreadShared)
   SingleWorker worker;
   SingleWorker worker1;
 
-  NonThreadSafeObj obj;
+  objs::NonThreadSafeObj obj;
 
   {
-    packaged_task<int> t0(failed_func);
+    packaged_task<int> t0(objs::failed_func);
     future<int> f0 = t0.get_future();
 
-    packaged_task<int> t1(failed_func);
+    packaged_task<int> t1(objs::failed_func);
     future<int> f1 = t1.get_future();
 
     SingleWorker::Callable c0
@@ -155,10 +117,10 @@ TEST(AsPl, ThMon)
   using boost::future;
 
   {
-    packaged_task<int> t0(failed_func);
+    packaged_task<int> t0(objs::failed_func);
     future<int> f0 = t0.get_future();
 
-    packaged_task<int> t1(failed_func);
+    packaged_task<int> t1(objs::failed_func);
     future<int> f1 = t1.get_future();
 
     SingleWorker::Callable c0

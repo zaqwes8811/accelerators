@@ -8,7 +8,7 @@
 #  http://www.youtube.com/watch?v=V2_80g0eOMc
 #  http://www.youtube.com/watch?v=capbD_aRz40
 
-project(pools)
+project(actors_and_workers)
 cmake_minimum_required(VERSION 2.8)
 
 # conf
@@ -76,6 +76,7 @@ message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 file( GLOB set0
     ${Source}/mains/*.cc
     ${Source}/actors_and_workers/*.h
+    ${Source}/actors_and_workers/*.cc
     ${Source}/bug_report/*.cc
     ${Source}/../../parallel_ds/*.h
     ${Tests}/*.cc)

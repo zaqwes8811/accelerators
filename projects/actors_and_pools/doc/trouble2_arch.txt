@@ -1,2 +1,7 @@
 Пусть куча актров, но кто-то должен пихать в них задачи? Они друг-другу?
 Main thread? Thread with loop?
+
+что движет код? IO events? scheduler (cron)?
+- http/snmp server
+- ui
+- serial requests

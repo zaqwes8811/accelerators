@@ -1,0 +1,7 @@
+Cons:
+- Up danger dangling ptr and links!  - MSan catch some
+- async code - callback hell
+- failed code dev locality
+- data races anyway
+
+Pro:
