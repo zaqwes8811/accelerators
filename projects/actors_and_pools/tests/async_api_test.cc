@@ -1,6 +1,6 @@
 #define BOOST_THREAD_PROVIDES_FUTURE
 
-#include "actors_and_workers/actors.h"
+#include "actors_and_workers/actors_cc98.h"
 #include "actors_and_workers/actors_cc11.h"
 
 #include <gtest/gtest.h>

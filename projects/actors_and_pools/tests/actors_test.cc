@@ -21,7 +21,7 @@
   https://github.com/facebook/folly/tree/master/folly/futures
 */
 
-#include "actors_and_workers/actors.h"
+#include "actors_and_workers/actors_cc98.h"
 #include "actors_and_workers/arch.h"
 
 #include <gtest/gtest.h>

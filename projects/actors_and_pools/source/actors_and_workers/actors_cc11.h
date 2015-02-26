@@ -3,7 +3,7 @@
 #ifndef S_ACTORS_CC11_H_
 #define S_ACTORS_CC11_H_
 
-#include "safe_queue.h"
+#include "safe_queue_cc11.h"
 
 #include <thread>
 #include <memory>

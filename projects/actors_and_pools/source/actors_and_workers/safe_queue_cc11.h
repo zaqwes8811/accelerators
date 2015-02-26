@@ -10,6 +10,17 @@
 #include <condition_variable>
 
 namespace concurent {
+
+/**
+  \brief
+
+  \attention
+  If producer speed(task duration) bigger speed consumer queue be grow!
+  This case if consumer work much faster then producers put work to queue.
+
+  \fixme need up boundary
+
+*/
 template <class T>
 class message_queue : public boost::noncopyable
 {

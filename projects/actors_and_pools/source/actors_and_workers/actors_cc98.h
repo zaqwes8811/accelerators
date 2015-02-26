@@ -5,7 +5,7 @@
 
 #define BOOST_THREAD_PROVIDES_FUTURE  // FIXME: bad
 
-#include "actors_and_workers/safe_queue.h"
+#include "safe_queue_cc11.h"
 
 #include <boost/noncopyable.hpp>
 #include <boost/weak_ptr.hpp>
