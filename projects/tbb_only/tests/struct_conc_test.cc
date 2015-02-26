@@ -8,3 +8,7 @@
 // vector par
 
 // task - potential parallel work - soft to hard threads - preemptive - scheduler task to soft th - cooperative
+// less context switches - threads have mandatory concurrency semantics
+
+
+/// Machine model
