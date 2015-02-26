@@ -57,11 +57,10 @@ if (UNIX)
         IF(LCB_USE_TSAN)
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -g -fsanitize=thread -fPIC")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g -fsanitize=thread -fPIC")
-
             #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}  -fsanitize=thread")
             set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=thread -pie")
-            link_directories(${BigExtern}/boost_1_57_0/gcc_tsan_lib64/lib)
 
+            link_directories(${BigExtern}/boost_1_57_0/gcc_tsan_lib64/lib)
         endif()
         link_libraries(
             boost_system boost_thread
@@ -77,8 +76,6 @@ file( GLOB set0
     ${Source}/mains/*.cc
     ${Source}/actors_and_workers/*.h
     ${Source}/actors_and_workers/*.cc
-    ${Source}/bug_report/*.cc
-    ${Source}/../../parallel_ds/*.h
     ${Tests}/*.cc)
 
 add_executable(unittest.bin
