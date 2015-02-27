@@ -12,3 +12,18 @@
 
 
 /// Machine model
+
+
+/// Patterns
+// Nestint - static(fp) and dynamic(dp)
+// Trouble: composability
+// Trouble: potential parallelism to hardw. parall.
+//
+// Mem access patterns
+// Parallel: pack, pipeline(non scale - fp), geometric, gather, scatter
+// + sperscalar seq, futures,  ...
+// + expand(histogram?)
+//
+// Non-determ.
+//   Branch and bound
+//   Transactions - without locks?! commit/rollback but how?
