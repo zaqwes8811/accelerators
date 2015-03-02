@@ -1,5 +1,8 @@
 #include <gtest/gtest.h>
 #include <tbb/parallel_for.h>
+#include <tbb/parallel_reduce.h>
+
+#include <algorithm>
 
 // design patt -> (!)alg strategy patt -> impl patt
 
@@ -72,4 +75,73 @@ TEST(StructConc, SAXPY) {
 TEST(StructConc, Mandelbrot) {
 
 }
+
+/// Collectives
+template <typename T>
+T reduce(
+    T (*f)(T, T),
+    size_t n,
+    T a[],
+    T identity
+) {
+  T accum = identity;
+  for (size_t i = 0; i < n; ++i) {
+    accum = f(accum, a[i]);
+  }
+  return accum;
+}
+// assoc and commut
+// float not assoc
+
+// tiling is important
+
+// reduce result must be wider then in's float -> double...
+
+
+float tbb_sprod(
+    size_t n
+    , const float* a
+    , const float* b
+    ) {
+
+  auto op = [=] (
+      tbb::blocked_range<size_t>& r,
+      float in
+      ) {
+
+    // FIXME: a and r.end() - iter to one container?
+    return std::inner_product(a + r.begin(), a + r.end(), b + r.begin(), in);
+  };
+
+  return tbb::parallel_reduce(
+        tbb::blocked_range<size_t>(0, n)
+        , float(0)
+        , op
+        , std::plus<float>());
+}
+TEST(StructConc, DotProducts) {
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
