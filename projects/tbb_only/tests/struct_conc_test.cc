@@ -77,6 +77,7 @@ TEST(StructConc, Mandelbrot) {
 }
 
 /// Collectives
+/// Can fuse map+reduce and map+scan
 template <typename T>
 T reduce(
     T (*f)(T, T),
@@ -115,13 +116,42 @@ float tbb_sprod(
 
   return tbb::parallel_reduce(
         tbb::blocked_range<size_t>(0, n)
-        , float(0)
+        , float(0)  // best for templates
         , op
         , std::plus<float>());
 }
-TEST(StructConc, DotProducts) {
 
+// compilator ignore float -> double partial replacment
+double tbb_sprod2(
+    size_t n
+    , const float* a
+    , const float* b
+    ) {
+
+  auto op = [=] (
+      tbb::blocked_range<size_t>& r,
+      double in
+      ) {
+
+    // FIXME: a and r.end() - iter to one container?
+    return std::inner_product(a + r.begin(), a + r.end()
+                              , b + r.begin(), in
+                              , std::plus<double>()
+                              , std::multiplies<double>());
+  };
+
+  return tbb::parallel_reduce(
+        tbb::blocked_range<size_t>(0, n)
+        , double(0)  // best for templates
+        , op
+        , std::plus<double>());
 }
+
+TEST(StructConc, DotProducts) {
+  tbb_sprod2(0, NULL, NULL);
+}
+
+// scan
 
 
 
