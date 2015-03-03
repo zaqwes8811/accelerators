@@ -1,0 +1,43 @@
+// Layers pattern
+app
+[Middleware]
+os/protocols - C interface at 
+hw
+
+// MW
+(!)host infr. mw - wrap os apis
+(!)distrib. mw - corba, .. - relay small overhead
+common mw services - j2ee
+domain spec mw servces - aircraft control
+
+FIXME: jvm - middleware?
+
+//
+cons: 
+- overhead
+- how much layers
+
+# Next()
+
+#
+Task based arch vs 
+- cost
+
+Message-based arch
+- less intuitive design
+
+# Socket API - to low level
+Note: sock and select() - have much troubles
+bound to end and/or remote host
+
+exist POSIX functions - r/w rv/wv
+3d model study
+
+Attention: ! sync ev demux ! wait events on handles
+
+# Th and Proc
+Proc - isolation
+
+# Locks
+non-recurs
+Attention: r/w lock -
