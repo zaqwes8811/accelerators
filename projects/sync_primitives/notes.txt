@@ -46,18 +46,6 @@ Proc - isolation
 http://www.transl-gunsmoker.ru/2010/05/blog-post_21.html
 - cond var
 
-# 
-loop:
-	Pattern knowl.
-	trade-off analysis
-	design and impl. decisions
-	impl and intergate pattern and code
-end loop
-
-patt. not forever
-	design may be just design
-	alg. may be just alg.
-
 
 
 

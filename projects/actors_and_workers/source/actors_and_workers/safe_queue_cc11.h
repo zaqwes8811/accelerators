@@ -25,6 +25,9 @@ template <class T>
 class message_queue : public boost::noncopyable
 {
 public:
+	// FIXME: need done() method
+	//   See Sean Parent:Better Code:Concur.
+
   message_queue(void)
     : q()
     , m()
