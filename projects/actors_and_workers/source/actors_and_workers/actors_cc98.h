@@ -19,6 +19,8 @@
 #include <string>
 
 namespace executors {
+
+// FIXME: unknow scheduling algorithm
 class AsioThreadPool : public boost::noncopyable {
 public:
   typedef boost::function0<void> Func;
