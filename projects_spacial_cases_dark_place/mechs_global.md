@@ -1,0 +1,1 @@
+http://www.slideshare.net/sermp/better-code-concurrency?ref=http://meetingcpp.ru/?page_id=625
