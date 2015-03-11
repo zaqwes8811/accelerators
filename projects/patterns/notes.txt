@@ -58,6 +58,20 @@ patt. not forever
 	design may be just design
 	alg. may be just alg.
 
+GoF
+- creation
+- structural
+- behavioral
+//
++ destroy - missing in gof
+
+POSA1 - concurent, network
+- arch patterns
+- design patt.
+
+Brocker, Command Proc., Proxy
+
+
 
 
 
