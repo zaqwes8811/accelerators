@@ -17,9 +17,20 @@ lock
 	Выполнение отчета
 unlock
 
+V2:
 можно использовать rw-locks!
 
 можно разбить на части - читатели не должны читать из решающей сети, тогда обработка сетью может быть
 .. нет не может - если придут два пакета может быть очередь такая
 pack0;pack1;network;... - потеря данных
+
+V3:
+New arch
+HTTP + SNMP + Serial -> asio -> Th0  // may be to much ops
+  // especialy if long tasks
+SNMP Journal -> Th0
+FIXME: where write to IMStore -> Th0 or Thx
+
+
+
 
