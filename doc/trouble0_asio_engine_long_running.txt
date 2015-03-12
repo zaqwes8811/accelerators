@@ -1,0 +1,3 @@
+http://stackoverflow.com/questions/17648725/long-running-blocking-operations-in-boost-asio-handlers
+
+N3388: Using Asio with C++11
