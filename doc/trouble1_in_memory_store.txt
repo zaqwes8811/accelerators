@@ -28,6 +28,7 @@ V3:
 New arch
 HTTP + SNMP + Serial -> asio -> Th0  // may be to much ops
   // especialy if long tasks
+!! if asio in one thread - can be races anyway!! (work with kernel)
 SNMP Journal -> Th0  // may be to Th0 to
 FIXME: where write to IMStore -> Th0 or Thx
 FIXME: some io ops with timeouts

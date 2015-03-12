@@ -1,0 +1,4 @@
+Christopher Kohlhoff: Thinking Asynchronously: Designing Applications with Boost.Asio
+
+- Lifetime
+FIXME: take by ref, and RefCount obj to?

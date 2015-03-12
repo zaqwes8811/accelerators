@@ -20,6 +20,9 @@ The ability to invoke a synchronous method asynchronously does nothing for scala
 because you’re typically still consuming the same amount of resources you would 
 have if you’d invoked it synchronously -> если те же ресурсы (время потока, мьютексы?) смысле нет
 
+Share from this:
+http://stackoverflow.com/questions/712279/what-is-the-usefulness-of-enable-shared-from-this
+
 
 
 
