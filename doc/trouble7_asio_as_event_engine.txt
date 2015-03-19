@@ -1,0 +1,6 @@
+while() 
+	io.poll()
+
+	// do stuff - with sleep() or analogs
+
+// BAD: make events unpredictable!
