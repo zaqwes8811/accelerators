@@ -1,0 +1,2 @@
+http://zao.se/~zao/boostcon/10/2010_presentations/thu/funccpp.pdf
+http://cppcast.com/2015/03/david-sankel/
