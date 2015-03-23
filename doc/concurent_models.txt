@@ -1,0 +1,2 @@
+"Tuesday, January 28, 2014
+Comparision of different concurrency models: Actors, CSP, Disruptor and Threads"
