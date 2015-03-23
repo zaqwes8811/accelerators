@@ -1,2 +1,0 @@
-http://blog.golang.org/concurrency-is-not-parallelism
-"Плюсы и минусы Go для разработчиков на C++ - Вячеслав Бахмутов"
