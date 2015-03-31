@@ -52,6 +52,7 @@ object W3 extends App {
     //def tail: List[T]
   }
 
+  /*
   class Nil[T] extends List[T] {
     def isEmpty: Boolean = true
     def head: Nothing = throw NoSuchElementException("Nil.head")
@@ -75,6 +76,9 @@ object W3 extends App {
     else nth2(index - 1, l.tail)
   }
 
+  */
+
+  // Lists
 }
 
 
