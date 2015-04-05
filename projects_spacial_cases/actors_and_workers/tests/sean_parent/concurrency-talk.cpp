@@ -12,6 +12,10 @@
 #include <memory>
 #include <thread>
 #include <vector>
+#include <mutex>
+#include <condition_variable>
+#include <atomic>
+#include <type_traits>
 
 #include <boost/multiprecision/cpp_int.hpp>
 
@@ -19,6 +23,12 @@
 
 using namespace std;
 using namespace boost::multiprecision;
+
+/******************/
+// Need for C++11
+// http://en.cppreference.com/w/cpp/types/result_of
+template< class T >
+using result_of_t = typename result_of<T>::type;
 
 /**************************************************************************************************/
 
