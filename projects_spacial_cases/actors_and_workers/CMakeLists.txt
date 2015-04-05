@@ -76,7 +76,10 @@ file( GLOB set0
     ${Source}/mains/*.cc
     ${Source}/actors_and_workers/*.h
     ${Source}/actors_and_workers/*.cc
-    ${Tests}/*.cc)
+    ${Tests}/*.cc
+    ${Tests}/sean_parent/*.cc
+    ${Tests}/sean_parent/*.cpp)
+
 
 add_executable(unittest.bin
     ${GMock}/gmock-gtest-all.cc
