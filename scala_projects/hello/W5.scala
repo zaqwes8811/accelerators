@@ -99,12 +99,65 @@ object W5 extends App {
   // Maps
   //Option
   val capitalOfCountry = Map("US" -> "Wash", "Swit" -> "Bern")
+  for ((exp, coeff) <- capitalOfCountry) yield coeff + "x^" + exp
 
   def showCapital(country: String) = capitalOfCountry.get(country) match {
     case Some(capital) => capital
     case None          => "miss"
   }
+
+  class Poly(terms0: Map[Int, Double]) {
+    val terms = terms0.withDefaultValue(0.0)
+
+    def this(bindings: (Int, Double)*) = this(bindings.toMap)
+
+    def +(other: Poly) = {
+      new Poly(terms ++ (other.terms map adjust))
+    }
+
+    def adjust(term: (Int, Double)): (Int, Double) = {
+      val (exp, coeff) = term;
+      exp -> (coeff + terms(exp))
+    }
+
+    def addTerm(terms: Map[Int, Double], term: (Int, Double)) = ???
+
+    override def toString = {
+      (for ((exp, k) <- terms.toList.sorted.reverse) yield k + "x^" + exp) mkString " + "
+    }
+  }
+
+  // list. groupBy - Multimap from Guava
+  val p1 = new Poly(1 -> 2.0, 3 -> 4.0, 5 -> 6.2)
+  val p2 = new Poly(Map(0 -> 3.0, 3 -> 7.0))
+  println(p1 + p2)
+
 }
+
+object PolyM {
+  class Poly(terms0: Map[Int, Double]) {
+    val terms = terms0.withDefaultValue(0.0)
+
+    def this(bindings: (Int, Double)*) = this(bindings.toMap)
+
+    def + (other: Poly) = new Poly((other.terms foldLeft terms)(addTerm))
+
+    def addTerm(terms: Map[Int, Double], term: (Int, Double)) = {
+      val (exp, coeff) = term
+      terms + (exp -> (coeff + terms(exp)))
+    }
+
+    override def toString = {
+      (for ((exp, k) <- terms.toList.sorted.reverse) yield k + "x^" + exp) mkString " + "
+    }
+  }
+
+  // list. groupBy - Multimap from Guava
+  //val p1 = new Poly(1 -> 2.0, 3 -> 4.0, 5 -> 6.2)
+  val p2 = new Poly(Map(0 -> 3.0, 3 -> 7.0))
+  //println(p1 + p2)
+}
+
 
 
 
