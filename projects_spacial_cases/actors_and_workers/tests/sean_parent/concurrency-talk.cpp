@@ -83,19 +83,28 @@ class notification_queue {
     condition_variable      _ready;
     
 public:
+    // Non templ?
     bool try_pop(function<void()>& x) {
         lock_t lock{_mutex, try_to_lock};
-        if (!lock || _q.empty()) return false;
+
+        if (!lock || _q.empty())
+            return false;
+
         x = move(_q.front());
         _q.pop_front();
         return true;
     }
     
+    // Templ?
     template<typename F>
     bool try_push(F&& f) {
         {
             lock_t lock{_mutex, try_to_lock};
             if (!lock) return false;
+
+            // About forwarding
+            // http://stackoverflow.com/questions/3582001/advantages-of-using-forward
+            // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2002/n1385.htm
             _q.emplace_back(forward<F>(f));
         }
         _ready.notify_one();
@@ -112,13 +121,18 @@ public:
     
     bool pop(function<void()>& x) {
         lock_t lock{_mutex};
-        while (_q.empty() && !_done) _ready.wait(lock);
-        if (_q.empty()) return false;
+        while (_q.empty() && !_done)
+            _ready.wait(lock);
+
+        if (_q.empty())
+            return false;
+
         x = move(_q.front());
         _q.pop_front();
         return true;
     }
     
+    // Templ?
     template<typename F>
     void push(F&& f) {
         {
