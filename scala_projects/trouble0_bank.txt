@@ -1,0 +1,4 @@
+Akka course examplt
+Trouble: if failed deposit after withdraw ok
+
+? http://doc.akka.io/docs/akka/2.1-M1/scala/transactors.html
