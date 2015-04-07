@@ -1,0 +1,4 @@
+https://blogs.oracle.com/arungupta/entry/scala_and_maven_getting_started
+
+AkkA
+http://doc.akka.io/docs/akka/snapshot/intro/getting-started.html
