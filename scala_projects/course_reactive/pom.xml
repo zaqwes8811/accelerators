@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+<modelVersion>4.0.0</modelVersion>
+<packaging>war</packaging>
+<version>0.0.1-SNAPSHOT</version>
+
+<groupId>com.zaqwes</groupId>
+<artifactId>vcard-gae-maven</artifactId>
+
+<properties>
+    <appengine.app.version>1</appengine.app.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <scala.version>2.10.0</scala.version>
+</properties>
+
+<prerequisites>
+    <maven>3.1.0</maven>
+</prerequisites>
+
+
+<dependencies>
+
+<dependency>
+    <groupId>com.typesafe.akka</groupId>
+    <artifactId>akka-actor_2.10</artifactId>
+    <version>2.3.2</version>
+</dependency>
+
+<dependency>
+    <groupId>com.google.code.findbugs</groupId>
+    <artifactId>jsr305</artifactId>
+    <version>3.0.0</version>
+</dependency>
+
+<dependency>
+    <groupId>org.scala-lang</groupId>
+    <artifactId>scala-library</artifactId>
+    <version>${scala.version}</version>
+</dependency>
+
+<dependency>
+    <groupId>org.scalatest</groupId>
+    <artifactId>scalatest</artifactId>
+    <version>1.2</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.scala-tools.testing</groupId>
+    <!--artifactId>specs_${scala.version}</artifactId-->
+    <artifactId>specs_2.10</artifactId>
+    <version>1.6.9</version>
+    <scope>test</scope>
+</dependency>
+
+
+<!-- https://code.google.com/p/caliper/ -->
+<dependency>
+  <groupId>com.google.caliper</groupId>
+  <artifactId>caliper</artifactId>
+  <version>1.0-beta-1</version>
+</dependency>
+
+<dependency>
+    <groupId>com.carrotsearch</groupId>
+    <artifactId>junit-benchmarks</artifactId>
+    <version>0.7.2</version>
+    <scope>test</scope>
+</dependency>
+
+
+<!-- Test Dependencies -->
+<dependency>
+    <groupId>org.jsefa</groupId>
+    <artifactId>jsefa</artifactId>
+    <version>0.9.3.RELEASE</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-csv</artifactId>
+    <version>1.0</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>junit</groupId>
+    <artifactId>junit</artifactId>
+    <version>4.10</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+	<groupId>junit</groupId>
+	<artifactId>junit-dep</artifactId>
+	<version>4.10</version>
+	<scope>test</scope>
+</dependency>
+
+</dependencies>
+
+
+<build>
+    <pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <version>2.15.0</version>
+            </plugin>
+        </plugins>
+    </pluginManagement>
+
+    <!-- for hot reload of the web application-->
+    <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
+    <plugins>
+
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>versions-maven-plugin</artifactId>
+            <version>2.1</version>
+            <executions>
+                <execution>
+                    <phase>compile</phase>
+                    <goals>
+                        <goal>display-dependency-updates</goal>
+                        <goal>display-plugin-updates</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <version>3.1</version>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <source>1.7</source>
+                <target>1.7</target>
+            </configuration>
+            <executions>
+                <execution>
+                    <phase>compile</phase>
+                    <goals>
+                        <goal>compile</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-war-plugin</artifactId>
+            <version>2.4</version>
+            <configuration>
+                <archiveClasses>true</archiveClasses>
+                <webResources>
+                    <!-- in order to interpolate version from pom into appengine-web.xml -->
+                    <resource>
+                        <directory>${basedir}/src/main/webapp/WEB-INF</directory>
+                        <filtering>true</filtering>
+                        <targetPath>WEB-INF</targetPath>
+                    </resource>
+                </webResources>
+            </configuration>
+        </plugin>
+
+        <plugin>
+            <groupId>org.scala-tools</groupId>
+            <artifactId>maven-scala-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>scala-compile-first</id>
+                    <phase>process-resources</phase>
+                    <goals>
+                        <goal>add-source</goal>
+                        <goal>compile</goal>
+                    </goals>
+                </execution>
+                <execution>
+                    <id>scala-test-compile</id>
+                    <phase>process-test-resources</phase>
+                    <goals>
+                        <goal>testCompile</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+
+<repositories>
+    <repository>
+        <id>spring-releases</id>
+        <url>http://repo.spring.io/libs-release</url>
+    </repository>
+</repositories>
+
+<pluginRepositories>
+    <pluginRepository>
+        <id>spring-releases</id>
+        <url>http://repo.spring.io/libs-release</url>
+    </pluginRepository>
+</pluginRepositories>
+</project>
