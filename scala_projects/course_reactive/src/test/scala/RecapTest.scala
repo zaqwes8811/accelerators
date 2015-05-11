@@ -5,12 +5,6 @@ import org.junit.Assert._
 import org.junit._
 
 
-// http://scalareactive.org/core/Signal
-// http://www.slideshare.net/remeniuk/frp-scalagwt
-// https://www.typesafe.com/community/core-projects/scala
-import scala.concurrent._
-import rx._
-
 // https://github.com/lihaoyi/utest
 // http://stackoverflow.com/questions/28898445/cannot-get-utest-to-see-my-tests
 
@@ -90,14 +84,7 @@ class RecapTest {
     print(r)
   }
 
-  @Test
-  def testObs() = {
-    val a = Var(1); val b = Var(2)
-    val c = Rx{ a() + b() }
-    println(c()) // 3
-    a() = 4
-    println(c()) // 6
-  }
+
 }
 
 
@@ -118,30 +105,6 @@ object fu {
 
   case class JNull() extends JSON
 
-  // FRP
-  // http://pl.postech.ac.kr/~maidinh/blog/?p=199
-  // http://infoscience.epfl.ch/record/176887/files/DeprecatingObservers2012.pdf
-  // https://github.com/lihaoyi/scala.rx
-  class BankAccount {
-    //private
-    //var
-    val balance = Var(0)
-    //balance = 0
-
-    def deposit(amount: Int): Unit =
-      if (amount > 0) {
-        val b = balance()  // solved
-        balance() =
-          //balance()
-          b
-        + amount // wrong - cyclic
-      }
-
-    def withdraw(amount: Int): Unit =
-      if (0 < amount && amount <= balance()) {
-        balance() = balance() - amount
-      } else throw new Error()
-  }
 }
 
 

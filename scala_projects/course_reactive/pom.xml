@@ -6,7 +6,7 @@
 <version>0.0.1-SNAPSHOT</version>
 
 <groupId>com.zaqwes</groupId>
-<artifactId>vcard-gae-maven</artifactId>
+<artifactId>course_reactive</artifactId>
 
 <properties>
     <appengine.app.version>1</appengine.app.version>
