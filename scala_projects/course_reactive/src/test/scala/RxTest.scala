@@ -6,6 +6,9 @@
 // http://www.slideshare.net/remeniuk/frp-scalagwt
 // https://www.typesafe.com/community/core-projects/scala
 
+// Flat map
+//   http://twitter.github.io/effectivescala/#Twitter's%20standard%20libraries-Futures
+
 import org.junit.Test
 
 import scala.concurrent._
@@ -50,6 +53,11 @@ class RxTest {
           balance() = balance() - amount
         } else throw new Error()
     }
+  }
+
+  @Test
+  def testMayer() = {
+
   }
 
 }
