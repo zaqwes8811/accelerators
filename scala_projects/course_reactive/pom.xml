@@ -11,7 +11,7 @@
 <properties>
     <appengine.app.version>1</appengine.app.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <scala.version>2.10.0</scala.version>
+    <scala.version>2.10.1</scala.version>
 </properties>
 
 <prerequisites>
@@ -20,6 +20,11 @@
 
 
 <dependencies>
+<dependency>
+    <groupId>com.scalarx</groupId>
+    <artifactId>scalarx_2.10</artifactId>
+    <version>0.1</version>
+</dependency>
 
 <dependency>
     <groupId>com.typesafe.akka</groupId>
@@ -29,7 +34,7 @@
 
 <dependency>
     <groupId>org.scalatest</groupId>
-    <artifactId>scalatest_2.11</artifactId>
+    <artifactId>scalatest_2.10</artifactId>
     <version>2.2.4</version>
     <scope>test</scope>
 </dependency>
@@ -40,7 +45,6 @@
     <version>0.3.0</version>
     <!--scope>test</scope-->
 </dependency>
-
 
     <dependency>
     <groupId>com.google.code.findbugs</groupId>
@@ -69,36 +73,7 @@
     <scope>test</scope>
 </dependency>
 
-
-<!-- https://code.google.com/p/caliper/ -->
-<dependency>
-  <groupId>com.google.caliper</groupId>
-  <artifactId>caliper</artifactId>
-  <version>1.0-beta-1</version>
-</dependency>
-
-<dependency>
-    <groupId>com.carrotsearch</groupId>
-    <artifactId>junit-benchmarks</artifactId>
-    <version>0.7.2</version>
-    <scope>test</scope>
-</dependency>
-
-
 <!-- Test Dependencies -->
-<dependency>
-    <groupId>org.jsefa</groupId>
-    <artifactId>jsefa</artifactId>
-    <version>0.9.3.RELEASE</version>
-    <scope>test</scope>
-</dependency>
-
-<dependency>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-csv</artifactId>
-    <version>1.0</version>
-    <scope>test</scope>
-</dependency>
 <dependency>
     <groupId>junit</groupId>
     <artifactId>junit</artifactId>
