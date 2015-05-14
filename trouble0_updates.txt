@@ -1,0 +1,3 @@
+Scala: match -> ? Match7?
+Scala: Future, Promise, async/await -> folly, hpx..., Model Actors
+Scala: frp, Rx -> RxCpp

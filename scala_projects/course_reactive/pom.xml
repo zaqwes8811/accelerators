@@ -26,17 +26,17 @@
     <version>0.1</version>
 </dependency>
 
-    <dependency>
-        <groupId>io.reactivex</groupId>
-        <artifactId>rxscala_2.10</artifactId>
-        <version>0.24.1</version>
-    </dependency>
+<dependency>
+    <groupId>io.reactivex</groupId>
+    <artifactId>rxscala_2.10</artifactId>
+    <version>0.24.1</version>
+</dependency>
 
 
-    <dependency>
-    <groupId>com.typesafe.akka</groupId>
-    <artifactId>akka-actor_2.10</artifactId>
-    <version>2.3.2</version>
+<dependency>
+<groupId>com.typesafe.akka</groupId>
+<artifactId>akka-actor_2.10</artifactId>
+<version>2.3.2</version>
 </dependency>
 
 <dependency>

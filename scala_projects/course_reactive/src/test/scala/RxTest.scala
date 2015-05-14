@@ -10,9 +10,11 @@
 //   http://twitter.github.io/effectivescala/#Twitter's%20standard%20libraries-Futures
 
 import org.junit.Test
+import rx.{Rx, Var}  // other Rx
 
-import scala.concurrent._
-import rx._
+import rx.lang.scala.Observable
+import scala.concurrent.duration._
+import scala.language.postfixOps
 
 @Test
 class RxTest {
@@ -55,9 +57,23 @@ class RxTest {
     }
   }
 
+  // W4 and W5
   @Test
   def testMayer() = {
+    val ticks: Observable[Long] = Observable.interval(1 seconds)
+    val evens: Observable[Long] = ticks.filter(_%2==0)
+    val bufs = evens.slidingBuffer(count=2, skip=1)
+    val s = bufs.subscribe(println(_))
 
+    //readLine()  // need it
+
+    s.unsubscribe()
+  }
+
+
+  @Test
+  def testLostSched() = {
+    // lessing remember but can't get it
   }
 
 }
