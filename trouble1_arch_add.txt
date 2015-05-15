@@ -1,0 +1,12 @@
+
+# Techs
+http://berb.github.io/diploma-thesis/original/056_other.html
+- Futures and Observables 
+- Coroutines, Fibers, Green threads
+- Channels + message passing
+
+"Async - callback world anyway"
+
+FIXME: And Event-driven + half sync / half async + FSM
+
+https://www.informit.com/library/content.aspx?b=STY_Csharp_24hours&seqNum=50

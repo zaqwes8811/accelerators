@@ -1,16 +1,4 @@
 Step up:
-
-# Techs
-http://berb.github.io/diploma-thesis/original/056_other.html
-- Futures and Observables 
-- Coroutines, Fibers, Green threads
-- Channels + message passing
-
-"Async - callback world anyway"
-
-FIXME: And Event-driven + half sync / half async + FSM
-
-# Map
 Scala: match 
 	-> ? Match7?
 
