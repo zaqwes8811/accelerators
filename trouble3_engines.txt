@@ -1,0 +1,11 @@
+- UI
+- periodic events - cron, asio
+- IO - events
+
+
+Why not signal/slots
+
+http://ledentsov.de/2014/06/22/rxcpp-cplusplus-background-ticker-easy/
+
+Rx
+http://ledentsov.de/2013/02/16/a-responsive-windows-forms-ui-using-rx/
