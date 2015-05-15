@@ -1,4 +1,23 @@
-Scala: match -> ? Match7?
-Scala: Future, Promise, async/await -> folly, hpx..., Model Actors
-  Sean Parent - concurence
-Scala: frp, Rx -> RxCpp
+Step up:
+
+Calculation models - sync/async
+
+"Async - callback world anyway"
+
+Futures and Observables + event-driven + half sync / half async
+
+http://berb.github.io/diploma-thesis/original/056_other.html
+
+Scala: match 
+	-> ? Match7?
+
+Scala: Future, Promise, async/await 
+	-> folly, hpx, Sean Parent - concurency
+
+Scala: frp, Rx 
+	-> RxCpp
+
+Scala: Actors 
+	-> "Browser actor model"
+
+
