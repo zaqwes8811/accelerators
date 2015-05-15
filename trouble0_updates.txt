@@ -1,13 +1,16 @@
 Step up:
 
-Calculation models - sync/async
+# Techs
+http://berb.github.io/diploma-thesis/original/056_other.html
+- Futures and Observables 
+- Coroutines, Fibers, Green threads
+- Channels + message passing
 
 "Async - callback world anyway"
 
-Futures and Observables + event-driven + half sync / half async
+FIXME: And Event-driven + half sync / half async + FSM
 
-http://berb.github.io/diploma-thesis/original/056_other.html
-
+# Map
 Scala: match 
 	-> ? Match7?
 
