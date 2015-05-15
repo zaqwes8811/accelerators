@@ -5,3 +5,5 @@ Main thread? Thread with loop?
 - http/snmp server
 - ui
 - serial requests
+
+Reactive arch = event driven -> (scalable + resilient) -> responsive
