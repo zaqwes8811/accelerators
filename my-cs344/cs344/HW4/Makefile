@@ -39,10 +39,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/zaqwes/work/cs344/My/cs344/HW4
+CMAKE_SOURCE_DIR = /home/zaqwes/work/parallelize/cuda/src/cs344/HW4
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/zaqwes/work/cs344/My/cs344/HW4
+CMAKE_BINARY_DIR = /home/zaqwes/work/parallelize/cuda/src/cs344/HW4
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -69,9 +69,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zaqwes/work/cs344/My/cs344/HW4/CMakeFiles /home/zaqwes/work/cs344/My/cs344/HW4/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zaqwes/work/parallelize/cuda/src/cs344/HW4/CMakeFiles /home/zaqwes/work/parallelize/cuda/src/cs344/HW4/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zaqwes/work/cs344/My/cs344/HW4/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zaqwes/work/parallelize/cuda/src/cs344/HW4/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

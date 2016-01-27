@@ -1,19 +1,22 @@
-#include "float_ops.h"
+// TODO: расширить на несколько блоков
+// Scan: 
+// http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html
 
-#include <cuda_runtime.h>
-
+// C
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
+// C++
 #include <iostream>
 #include <vector>
 #include <algorithm>
 
-#define SCAN_AS_UNIT
+// 3rdparty
+#include <cuda_runtime.h>
 
-extern void scan_hillis_single_block(
-  float * d_out, const float * const d_in, const int size);
+// App
+#include "float_ops.h"
 
 #define checkCudaErrors(val) check( (val), #val, __FILE__, __LINE__)
 
@@ -190,8 +193,7 @@ __global__ void exclusive_scan_kernel_doubled_cache(float * d_out, const float *
   d_out[localId] = temp[p_sink * n + localId /*1*/]; // write output 
 }
 
-void scan_hillis_single_block(
-  float * d_out, const float * const d_in, const int size) 
+void scan_hillis_single_block(float * d_out, const float * const d_in, const int size) 
 {
   
   int threads = maxThreadsPerBlock;
