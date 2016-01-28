@@ -21,27 +21,10 @@
 
 CC=g++
 
-CPPFLAGS= \
-	`pkg-config opencv --cflags` \
-	-m64 \
-	-mfpmath=sse \
-	-Ofast \
-	-ffast-math #\
-	#-ftree-vectorize \
-	#-ftree-vectorizer-verbose=9
-	#-march=native  \
-	# -flto \
+CPPFLAGS=
 
-all: w.bin
-
-w.bin: main.o
-	$(CC) --version
-	uname -a
-	$(CC) -o $@  main.o `pkg-config opencv --libs`
-
-#main.o: main.cc
-#	$(CC)  -c -o main.o main.cc 
-#	#`pkg-config opencv --cflags`
+all: sse
+	$(CC) -m32 -mfpmath=sse -fno-permissive sse.cc -o sse
 
 clean:
 	rm *.o *.bin
