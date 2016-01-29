@@ -21,10 +21,12 @@
 
 CC=g++
 
-CPPFLAGS=
+# CPPFLAGS=
 
-all: sse
-	$(CC) -m32 -mfpmath=sse -fno-permissive sse.cc -o sse
+all:
+	#$(CC) -m32 -ffast-math -mfpmath=sse -msse -Ofast sse.cc -o sse
+	#-Ofast  - segfault
+	$(CC) -m32 -msse sse.cc -Ofast -o sse
 
 clean:
 	rm *.o *.bin

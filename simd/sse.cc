@@ -1,12 +1,18 @@
+
+
+#include "iostream"
+
+// A 16byte = 128bit vector struct
+#include <assert.h>
+#include <stdint.h>
+
+using namespace std;
+
 // http://neilkemp.us/src/sse_tutorial/sse_tutorial.html
 
 // sse - collection 128 bit cpu regis.
 
 // float - 32 bit
-
-// A 16byte = 128bit vector struct
-#include <assert.h>
-#include <stdint.h>
 
 struct Vector4
 {    
@@ -15,23 +21,20 @@ struct Vector4
 
 Vector4 SSE_Add( const Vector4& Op_A, const Vector4& Op_B ) 
 {
-		// fixme: make asm inserts
+	// fixme: make asm inserts
 	Vector4 Ret_Vector;
-	void* p = (void*)&Op_A;
-	void* p1 = 0;
 
-	int a, b;
-	// __asm__
-	// (
-	// 	"movl %1, %%eax\n\t"
-	// 	"movl %%eax, %0\n\t"
-	// 	:"=r" (p1) : "r"(p)
-	// );
+	uint32_t* faulting_address = 0;
 
-	int i = 0;
-	uint32_t* faulting_address = reinterpret_cast<uint32_t*>(&i);
-	asm volatile("mov %%eax, %0" : "=r" (faulting_address));
+	__asm__ ("movl %1, %%eax\n\t"
+	     "movl %%eax, %0\n\t"
+	     "movups %%xmm0, (%%eax)\n\t"
+	     :"=r"(faulting_address)        /* output */
+	     :"r"((void*)&Op_A)         /* input */
+	     :"%eax"         /* clobbered register */  // withou segfault if -Ofast
+	     );
 
+	cout << hex << &Op_A << endl << faulting_address << endl;
 
 	// assert( p == p1 );
 		// 	mov ebx, Op_B
