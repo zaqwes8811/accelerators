@@ -26,7 +26,10 @@ CC=g++
 all:
 	#$(CC) -m32 -ffast-math -mfpmath=sse -msse -Ofast sse.cc -o sse
 	#-Ofast  - segfault
-	$(CC) -m32 -msse sse.cc -Ofast -o sse
+	$(CC) -g -m32 -msse sse.cc -std=c++11 -Ofast  -O0 -o sse
 
 clean:
 	rm *.o *.bin
+
+run: all
+	./sse

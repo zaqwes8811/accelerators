@@ -56,5 +56,13 @@ void threshold_NEON(unsigned char* src, unsigned char* dst, int length,
 
 int main()
 {
+
+	// http://www.ethernut.de/en/documents/arm-inline-asm.html
+	// diff from x86
+	int a = 90;
+	__asm__
+	(
+		"mov r0, %[a];"::[a] "r" (a)
+	);
 	return 0;
 }
