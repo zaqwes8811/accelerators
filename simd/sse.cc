@@ -19,6 +19,13 @@ struct AlignedStorage
     	sizeof(T) * N, std::alignment_of<T>::value>::type data;
 };
 
+//
+//
+// Full line - auto/../intris. + Global algorithm
+//
+//
+//  http://delta-course.org/docs/delta4/day2/D4T1L3.pdf
+
 // Getting started
 //   http://stackoverflow.com/questions/1389712/getting-started-with-sse
 
@@ -36,11 +43,21 @@ struct AlignedStorage
 
 // asm gdb https://www.recurse.com/blog/7-understanding-c-by-learning-assembly
 
-/// TROUBLE: align
+//
+//
+// TROUBLE: align
+//
+//
 //   http://www.cplusplus.com/forum/general/98106/
 //   https://msdn.microsoft.com/en-us/library/01fth20w(v=vs.80).aspx
+// align
+// https://software.intel.com/en-us/forums/intel-c-compiler/topic/328019
+//__attribute__ ((aligned(16)))
+//
+// !!https://software.intel.com/en-us/articles/data-alignment-to-assist-vectorization
+// https://software.intel.com/en-us/articles/memory-management-for-optimal-performance-on-intel-xeon-phi-coprocessor-alignment-and
 
-// __attribute__(aligned(16)) 
+// __attribute__(aligned(16)) // Win
 struct Vector4
 {    
 	Vector4() {
@@ -48,7 +65,7 @@ struct Vector4
 	}
 
     float x, y, z, w;        
-};
+} __attribute__((aligned(16)));
 
 Vector4 SSE_Add( const Vector4& Op_A, const Vector4& Op_B ) 
 {
@@ -71,12 +88,25 @@ Vector4 SSE_Add( const Vector4& Op_A, const Vector4& Op_B )
 	return Ret_Vector;
 }
 
+// asm vs intri.
+//   https://software.intel.com/en-us/forums/software-tuning-performance-optimization-platform-monitoring/topic/280882
 Vector4 SSE_mul( const Vector4& Op_A, const Vector4& Op_B )
 {
 	// __m128 vector1 = _mm_set1_ps(4, 3, 2, 1); // Little endian, stored in 'reverse'
 	Vector4 Ret_Vector;
 	// __m128 f = _mm_set1_ps( Op_B );
-	__m128 f = _mm_loadu_ps( (float*)&Op_A );
+	__m128 a = _mm_load_ps( (float*)&Op_A );
+	__m128 b = _mm_load_ps( (float*)&Op_B );
+	__m128 r = _mm_mul_ps( a, b );
+
+	_mm_store_ps((float*)&Ret_Vector, r);
+
+	assert( Op_B.x * 5 == Ret_Vector.x );
+
+	// __asm__(
+		//"mov %[f], %%eax;"
+		// "mulps %%xmm0, %[f]" :: [f] "m" (f)  // can't make it work
+	// );
 
 	return Ret_Vector;
 }
@@ -87,18 +117,22 @@ int main()
 	// AlignedStorage<Vector4, 16> Op_C;
 	// AlignedStorage<Vector4, 16> Op_D;
 
-	// cout << hex << Op_C.data << " " << Op_D << endl;
-	Vector4 Op_A, Op_B;
+	Vector4 Op_A[2];
+	char dummy[17];
+	Vector4 Op_B;
 
-	// align
-	// https://software.intel.com/en-us/forums/intel-c-compiler/topic/328019
-	//__attribute__ ((aligned(16)))
-	Op_A.x = 1;
-	Op_B.x = 2;
+	Vector4* v = (Vector4 *)_mm_malloc(sizeof(Vector4), 16);
+
+	cout << hex << &Op_B << endl << &Op_A << endl;
+
+	Op_A[0].x = 5;
+	Op_A[1].x = 2;
 	Vector4 r = 
 		// SSE_Add
 		SSE_mul
-			( Op_A, Op_B ); 
+			( Op_A[0], *v ); 
 	// assert( ( r.x - 3 ) < 1e-5 );
+
+	_mm_free( v );
 	return 0;
 }
