@@ -19,12 +19,6 @@ struct AlignedStorage
     	sizeof(T) * N, std::alignment_of<T>::value>::type data;
 };
 
-//
-//
-// Full line - auto/../intris. + Global algorithm
-//
-//
-//  http://delta-course.org/docs/delta4/day2/D4T1L3.pdf
 
 // Getting started
 //   http://stackoverflow.com/questions/1389712/getting-started-with-sse
@@ -43,21 +37,7 @@ struct AlignedStorage
 
 // asm gdb https://www.recurse.com/blog/7-understanding-c-by-learning-assembly
 
-//
-//
-// TROUBLE: align
-//
-//
-//   http://www.cplusplus.com/forum/general/98106/
-//   https://msdn.microsoft.com/en-us/library/01fth20w(v=vs.80).aspx
-// align
-// https://software.intel.com/en-us/forums/intel-c-compiler/topic/328019
-//__attribute__ ((aligned(16)))
-//
-// !!https://software.intel.com/en-us/articles/data-alignment-to-assist-vectorization
-// https://software.intel.com/en-us/articles/memory-management-for-optimal-performance-on-intel-xeon-phi-coprocessor-alignment-and
 
-// __attribute__(aligned(16)) // Win
 struct Vector4
 {    
 	Vector4() {
