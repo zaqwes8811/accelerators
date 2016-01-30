@@ -9,10 +9,9 @@ Libs
 
 
 
-Full line - auto/../intris. + Global algorithm
-
-
- http://delta-course.org/docs/delta4/day2/D4T1L3.pdf
+!!!!Full line - auto/../intris. + Global algorithm
+http://sci.tuomastonteri.fi/programming/sse
+http://delta-course.org/docs/delta4/day2/D4T1L3.pdf
 
 
 
