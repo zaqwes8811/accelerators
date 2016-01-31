@@ -26,10 +26,17 @@ CC=g++
 all:
 	#$(CC) -m32 -ffast-math -mfpmath=sse -msse -Ofast sse.cc -o sse
 	#-Ofast  - segfault
-	$(CC) -g -m32 -msse sse.cc -std=c++11 -O0 -o sse
+	$(CC) -g -msse sse.cc -std=c++11 -O0 -o sse
 
-clean:
-	rm *.o *.bin
+avx_build:
+	# https://software.intel.com/en-us/articles/intel-avx-cc-intrinsics-emulation
+	$(CC) -g -mavx -O0 -c \
+			`pkg-config --cflags --libs opencv` \
+			avx_blurring.cc
+	$(CC) avx_blurring.o `pkg-config --cflags --libs opencv` -o avx
 
 run: all
 	./sse
+
+clean:
+	rm *.o *.bin *.out avx
