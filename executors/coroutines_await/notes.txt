@@ -1,2 +1,0 @@
-BoostCon 14
-Boost.Coroutines
