@@ -6,6 +6,7 @@
 using namespace std;
 
 // fixme: maybe do templ.
+// https://stackoverflow.com/questions/14707803/line-size-of-l1-and-l2-caches - i7 64 байта!!
 class DataLeafNode {
 public:
 	typedef int Index;
@@ -37,6 +38,12 @@ DataLeafNode::DataLeafNode() {
 
 int main() {
 	// "OpenVDB: An Open Source Data Structure and Toolkit for High-Resolution Volumes"
+	//
+	// caches
+	// https://www.edn.com/design/systems-design/4399725/Memory-Hierarchy-Design---Part-6--The-Intel-Core-i7
+	// https://www.edn.com/design/systems-design/4397051/Memory-Hierarchy-Design-part-1
+
+	//
 	// fixme: how to save?
 	// fixme: how to iterate
 	// fixme: не ясен порадок укладки
