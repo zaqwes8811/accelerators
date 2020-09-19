@@ -23,7 +23,7 @@ __global__ void nestedHelloWorld(int const iSize, int iDepth)
     // thread 0 launches child grid recursively
     if(tid == 0 && nthreads > 0)
     {
-        nestedHelloWorld<<<1, nthreads>>>(nthreads, ++iDepth);
+//        nestedHelloWorld<<<1, nthreads>>>(nthreads, ++iDepth);
         printf("-------> nested execution depth: %d\n", iDepth);
     }
 }

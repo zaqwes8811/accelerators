@@ -89,10 +89,10 @@ __global__ void gpuRecursiveReduce (int *g_idata, int *g_odata,
     // nested invocation to generate child grids
     if(tid == 0)
     {
-        gpuRecursiveReduce<<<1, istride>>>(idata, odata, istride);
+//        gpuRecursiveReduce<<<1, istride>>>(idata, odata, istride);
 
         // sync all child grids launched in this block
-        cudaDeviceSynchronize();
+//        cudaDeviceSynchronize();
     }
 
     // sync at block level again
@@ -125,7 +125,7 @@ __global__ void gpuRecursiveReduceNosync (int *g_idata, int *g_odata,
 
         if(tid == 0)
         {
-            gpuRecursiveReduceNosync<<<1, istride>>>(idata, odata, istride);
+//            gpuRecursiveReduceNosync<<<1, istride>>>(idata, odata, istride);
         }
     }
 }

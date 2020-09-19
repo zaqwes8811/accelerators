@@ -37,7 +37,7 @@
 #include <math.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include <mpi.h>
+#include </usr/include/mpi/mpi.h>
 #include "common.h"
 #include "common3d.h"
 
