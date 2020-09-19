@@ -33,3 +33,6 @@
 *BuildLog.htm
 *~
 *.ipch
+
+*/Debug/*
+*/Release/*
