@@ -43,6 +43,17 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="com.nvidia.cuda.ide.on_path.configuration.debug.858702383.923066985" name="/" resourcePath="external">
+						<toolChain id="com.nvidia.cuda.tools.toolchain.on_path.exe.debug.1996838994" name="CUDA Toolkit on the path" superClass="com.nvidia.cuda.tools.toolchain.on_path.exe.debug" unusedChildren="">
+							<tool id="nvcc.compiler.base.1089607465" name="NVCC Compiler" superClass="nvcc.compiler.base.528259838"/>
+							<tool id="nvcc.linker.base.135016454" name="NVCC Linker" superClass="nvcc.linker.base.1978679509"/>
+							<tool id="nvcc.archiver.base.1684720406" name="NVCC Archiver" superClass="nvcc.archiver.base.1668134133"/>
+							<tool id="com.nvidia.host.assembler.464715662" name="Host Assembler" superClass="com.nvidia.host.assembler.1273672534"/>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="external" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+					</sourceEntries>
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="com.nvidia.cuda.ide.build.project.ICudaProjectConfiguration">
@@ -73,7 +84,7 @@
 					<folderInfo id="com.nvidia.cuda.ide.on_path.configuration.release.245260851." name="/" resourcePath="">
 						<toolChain id="com.nvidia.cuda.ide.toolchain.on_path.exe.release.1202713198" name="CUDA Toolkit on the path" superClass="com.nvidia.cuda.ide.toolchain.on_path.exe.release">
 							<targetPlatform archList="all" binaryParser="com.nvidia.cuda.ide.elf;com.nvidia.cuda.ide.macho;com.nvidia.cuda.ide.cubin" id="com.nvidia.cuda.ide.targetPlatform.1744389460" isAbstract="false" name="Debug Platform" osList="linux,macosx" superClass="com.nvidia.cuda.ide.targetPlatform"/>
-							<builder buildPath="${workspace_loc:/book}/Release" id="com.nvidia.cuda.ide.builder.1805945437" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CUDA Toolkit 9.1 Builder" superClass="com.nvidia.cuda.ide.builder"/>
+							<builder buildPath="${workspace_loc:/book}/Release" id="com.nvidia.cuda.ide.builder.1805945437" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CUDA Toolkit 9.1 Builder" parallelBuildOn="true" parallelizationNumber="optimal" superClass="com.nvidia.cuda.ide.builder"/>
 							<tool id="nvcc.compiler.base.130800026" name="NVCC Compiler" superClass="nvcc.compiler.base">
 								<option id="nvcc.compiler.deviceDebug.496388531" name="Generate device debug information (-G)" superClass="nvcc.compiler.deviceDebug"/>
 								<option id="nvcc.compiler.option.level.990055259" name="Generate host debug information (-g)" superClass="nvcc.compiler.option.level"/>
@@ -114,7 +125,14 @@
 		<project id="book.com.nvidia.cuda.ide.on_path.exe.1521357258" name="Executable" projectType="com.nvidia.cuda.ide.on_path.exe"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/book"/>
+		</configuration>
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/book"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		<scannerConfigBuildInfo instanceId="com.nvidia.cuda.ide.on_path.configuration.debug.858702383;com.nvidia.cuda.ide.on_path.configuration.debug.858702383.;nvcc.compiler.base.528259838;nvcc.compiler.input.cu.325050715">
